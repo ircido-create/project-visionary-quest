@@ -14,6 +14,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as GSlugRouteImport } from './routes/g.$slug'
+import { Route as AuthenticatedCandidatasIndexRouteImport } from './routes/_authenticated/candidatas.index'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -39,18 +40,26 @@ const GSlugRoute = GSlugRouteImport.update({
   path: '/g/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedCandidatasIndexRoute =
+  AuthenticatedCandidatasIndexRouteImport.update({
+    id: '/candidatas/',
+    path: '/candidatas/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/g/$slug': typeof GSlugRoute
+  '/candidatas/': typeof AuthenticatedCandidatasIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/g/$slug': typeof GSlugRoute
+  '/candidatas': typeof AuthenticatedCandidatasIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -59,12 +68,13 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/g/$slug': typeof GSlugRoute
+  '/_authenticated/candidatas/': typeof AuthenticatedCandidatasIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/dashboard' | '/g/$slug'
+  fullPaths: '/' | '/auth' | '/dashboard' | '/g/$slug' | '/candidatas/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/dashboard' | '/g/$slug'
+  to: '/' | '/auth' | '/dashboard' | '/g/$slug' | '/candidatas'
   id:
     | '__root__'
     | '/'
@@ -72,6 +82,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/_authenticated/dashboard'
     | '/g/$slug'
+    | '/_authenticated/candidatas/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -118,15 +129,24 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/candidatas/': {
+      id: '/_authenticated/candidatas/'
+      path: '/candidatas'
+      fullPath: '/candidatas/'
+      preLoaderRoute: typeof AuthenticatedCandidatasIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedCandidatasIndexRoute: typeof AuthenticatedCandidatasIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedCandidatasIndexRoute: AuthenticatedCandidatasIndexRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
