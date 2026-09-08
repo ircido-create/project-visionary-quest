@@ -290,9 +290,9 @@ function SettingsPage() {
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div className="grid gap-1.5">
-      <Label>{label}</Label>
+    <label className="grid gap-1.5">
+      <span className="text-sm font-medium">{label}</span>
       {children}
-    </div>
+    </label>
   );
 }
