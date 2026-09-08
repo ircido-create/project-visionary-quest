@@ -3,7 +3,7 @@ import { z } from "zod";
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { evaluateQualification, type ProgressSignals } from "@/lib/mcb/qualification";
-import type { Database } from "@/integrations/supabase/types";
+import type { Database, Json } from "@/integrations/supabase/types";
 
 type InfluencerRow = Database["public"]["Tables"]["influencers"]["Row"];
 type InfluencerStatus = Database["public"]["Enums"]["influencer_status"];
@@ -393,8 +393,8 @@ export const updateInfluencerMetrics = createServerFn({ method: "POST" })
         influencer_id: data.influencerId,
         rule_set_version: evaluation.ruleSetVersion,
         status: evaluation.status,
-        requirements: evaluation.requirements as unknown as Record<string, unknown>[],
-        progress: evaluation.progress as unknown as Record<string, unknown>,
+        requirements: evaluation.requirements as unknown as Json,
+        progress: evaluation.progress as unknown as Json,
       }),
       supabase.from("audit_logs").insert({
         tenant_id: data.tenantId,

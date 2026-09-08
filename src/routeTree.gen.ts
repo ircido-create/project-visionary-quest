@@ -10,42 +10,133 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AuthenticatedConfiguracoesRouteImport } from './routes/_authenticated/configuracoes'
+import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedTarefasRouteImport } from './routes/_authenticated/tarefas'
 import { Route as GSlugRouteImport } from './routes/g.$slug'
+import { Route as AuthenticatedCandidatasIndexRouteImport } from './routes/_authenticated/candidatas.index'
+import { Route as AuthenticatedCandidatasIdRouteImport } from './routes/_authenticated/candidatas.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedConfiguracoesRoute =
+  AuthenticatedConfiguracoesRouteImport.update({
+    id: '/configuracoes',
+    path: '/configuracoes',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedTarefasRoute = AuthenticatedTarefasRouteImport.update({
+  id: '/tarefas',
+  path: '/tarefas',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const GSlugRoute = GSlugRouteImport.update({
   id: '/g/$slug',
   path: '/g/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedCandidatasIndexRoute =
+  AuthenticatedCandidatasIndexRouteImport.update({
+    id: '/candidatas/',
+    path: '/candidatas/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedCandidatasIdRoute =
+  AuthenticatedCandidatasIdRouteImport.update({
+    id: '/candidatas/$id',
+    path: '/candidatas/$id',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/configuracoes': typeof AuthenticatedConfiguracoesRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
+  '/tarefas': typeof AuthenticatedTarefasRoute
   '/g/$slug': typeof GSlugRoute
+  '/candidatas/$id': typeof AuthenticatedCandidatasIdRoute
+  '/candidatas/': typeof AuthenticatedCandidatasIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/configuracoes': typeof AuthenticatedConfiguracoesRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
+  '/tarefas': typeof AuthenticatedTarefasRoute
   '/g/$slug': typeof GSlugRoute
+  '/candidatas/$id': typeof AuthenticatedCandidatasIdRoute
+  '/candidatas': typeof AuthenticatedCandidatasIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/auth': typeof AuthRoute
+  '/_authenticated/configuracoes': typeof AuthenticatedConfiguracoesRoute
+  '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/tarefas': typeof AuthenticatedTarefasRoute
   '/g/$slug': typeof GSlugRoute
+  '/_authenticated/candidatas/$id': typeof AuthenticatedCandidatasIdRoute
+  '/_authenticated/candidatas/': typeof AuthenticatedCandidatasIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/g/$slug'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/configuracoes'
+    | '/dashboard'
+    | '/tarefas'
+    | '/g/$slug'
+    | '/candidatas/$id'
+    | '/candidatas/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/g/$slug'
-  id: '__root__' | '/' | '/g/$slug'
+  to:
+    | '/'
+    | '/auth'
+    | '/configuracoes'
+    | '/dashboard'
+    | '/tarefas'
+    | '/g/$slug'
+    | '/candidatas/$id'
+    | '/candidatas'
+  id:
+    | '__root__'
+    | '/'
+    | '/_authenticated'
+    | '/auth'
+    | '/_authenticated/configuracoes'
+    | '/_authenticated/dashboard'
+    | '/_authenticated/tarefas'
+    | '/g/$slug'
+    | '/_authenticated/candidatas/$id'
+    | '/_authenticated/candidatas/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AuthRoute: typeof AuthRoute
   GSlugRoute: typeof GSlugRoute
 }
 
@@ -58,6 +149,41 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/configuracoes': {
+      id: '/_authenticated/configuracoes'
+      path: '/configuracoes'
+      fullPath: '/configuracoes'
+      preLoaderRoute: typeof AuthenticatedConfiguracoesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/dashboard': {
+      id: '/_authenticated/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/tarefas': {
+      id: '/_authenticated/tarefas'
+      path: '/tarefas'
+      fullPath: '/tarefas'
+      preLoaderRoute: typeof AuthenticatedTarefasRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/g/$slug': {
       id: '/g/$slug'
       path: '/g/$slug'
@@ -65,11 +191,46 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/candidatas/': {
+      id: '/_authenticated/candidatas/'
+      path: '/candidatas'
+      fullPath: '/candidatas/'
+      preLoaderRoute: typeof AuthenticatedCandidatasIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/candidatas/$id': {
+      id: '/_authenticated/candidatas/$id'
+      path: '/candidatas/$id'
+      fullPath: '/candidatas/$id'
+      preLoaderRoute: typeof AuthenticatedCandidatasIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedConfiguracoesRoute: typeof AuthenticatedConfiguracoesRoute
+  AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedTarefasRoute: typeof AuthenticatedTarefasRoute
+  AuthenticatedCandidatasIdRoute: typeof AuthenticatedCandidatasIdRoute
+  AuthenticatedCandidatasIndexRoute: typeof AuthenticatedCandidatasIndexRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedConfiguracoesRoute: AuthenticatedConfiguracoesRoute,
+  AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedTarefasRoute: AuthenticatedTarefasRoute,
+  AuthenticatedCandidatasIdRoute: AuthenticatedCandidatasIdRoute,
+  AuthenticatedCandidatasIndexRoute: AuthenticatedCandidatasIndexRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AuthRoute: AuthRoute,
   GSlugRoute: GSlugRoute,
 }
 export const routeTree = rootRouteImport

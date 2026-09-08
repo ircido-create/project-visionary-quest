@@ -6,7 +6,6 @@ import { useState } from "react";
 import { getManagerPage, submitApplication, type ApplicationInput } from "@/lib/mcb/public.functions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { METHOD_STAGES } from "@/lib/mcb/labels";
 
@@ -358,13 +357,13 @@ function Field({
   children: React.ReactNode;
 }) {
   return (
-    <div className="grid gap-1.5">
-      <Label>
+    <label className="grid gap-1.5">
+      <span className="text-sm font-medium">
         {label}
         {required ? <span className="text-destructive"> *</span> : null}
-      </Label>
+      </span>
       {children}
-    </div>
+    </label>
   );
 }
 
