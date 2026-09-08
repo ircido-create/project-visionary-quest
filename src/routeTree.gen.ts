@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedTarefasRouteImport } from './routes/_authenticated/tarefas'
 import { Route as GSlugRouteImport } from './routes/g.$slug'
 import { Route as AuthenticatedCandidatasIndexRouteImport } from './routes/_authenticated/candidatas.index'
 import { Route as AuthenticatedCandidatasIdRouteImport } from './routes/_authenticated/candidatas.$id'
@@ -34,6 +35,11 @@ const AuthRoute = AuthRouteImport.update({
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedTarefasRoute = AuthenticatedTarefasRouteImport.update({
+  id: '/tarefas',
+  path: '/tarefas',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const GSlugRoute = GSlugRouteImport.update({
@@ -58,6 +64,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/tarefas': typeof AuthenticatedTarefasRoute
   '/g/$slug': typeof GSlugRoute
   '/candidatas/$id': typeof AuthenticatedCandidatasIdRoute
   '/candidatas/': typeof AuthenticatedCandidatasIndexRoute
@@ -66,6 +73,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/tarefas': typeof AuthenticatedTarefasRoute
   '/g/$slug': typeof GSlugRoute
   '/candidatas/$id': typeof AuthenticatedCandidatasIdRoute
   '/candidatas': typeof AuthenticatedCandidatasIndexRoute
@@ -76,6 +84,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/tarefas': typeof AuthenticatedTarefasRoute
   '/g/$slug': typeof GSlugRoute
   '/_authenticated/candidatas/$id': typeof AuthenticatedCandidatasIdRoute
   '/_authenticated/candidatas/': typeof AuthenticatedCandidatasIndexRoute
@@ -86,6 +95,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/dashboard'
+    | '/tarefas'
     | '/g/$slug'
     | '/candidatas/$id'
     | '/candidatas/'
@@ -94,6 +104,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/dashboard'
+    | '/tarefas'
     | '/g/$slug'
     | '/candidatas/$id'
     | '/candidatas'
@@ -103,6 +114,7 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/auth'
     | '/_authenticated/dashboard'
+    | '/_authenticated/tarefas'
     | '/g/$slug'
     | '/_authenticated/candidatas/$id'
     | '/_authenticated/candidatas/'
@@ -145,6 +157,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/tarefas': {
+      id: '/_authenticated/tarefas'
+      path: '/tarefas'
+      fullPath: '/tarefas'
+      preLoaderRoute: typeof AuthenticatedTarefasRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/g/$slug': {
       id: '/g/$slug'
       path: '/g/$slug'
@@ -171,12 +190,14 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedTarefasRoute: typeof AuthenticatedTarefasRoute
   AuthenticatedCandidatasIdRoute: typeof AuthenticatedCandidatasIdRoute
   AuthenticatedCandidatasIndexRoute: typeof AuthenticatedCandidatasIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedTarefasRoute: AuthenticatedTarefasRoute,
   AuthenticatedCandidatasIdRoute: AuthenticatedCandidatasIdRoute,
   AuthenticatedCandidatasIndexRoute: AuthenticatedCandidatasIndexRoute,
 }
