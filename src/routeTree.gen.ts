@@ -15,6 +15,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as GSlugRouteImport } from './routes/g.$slug'
 import { Route as AuthenticatedCandidatasIndexRouteImport } from './routes/_authenticated/candidatas.index'
+import { Route as AuthenticatedCandidatasIdRouteImport } from './routes/_authenticated/candidatas.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -46,12 +47,19 @@ const AuthenticatedCandidatasIndexRoute =
     path: '/candidatas/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedCandidatasIdRoute =
+  AuthenticatedCandidatasIdRouteImport.update({
+    id: '/candidatas/$id',
+    path: '/candidatas/$id',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/g/$slug': typeof GSlugRoute
+  '/candidatas/$id': typeof AuthenticatedCandidatasIdRoute
   '/candidatas/': typeof AuthenticatedCandidatasIndexRoute
 }
 export interface FileRoutesByTo {
@@ -59,6 +67,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/g/$slug': typeof GSlugRoute
+  '/candidatas/$id': typeof AuthenticatedCandidatasIdRoute
   '/candidatas': typeof AuthenticatedCandidatasIndexRoute
 }
 export interface FileRoutesById {
@@ -68,13 +77,26 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/g/$slug': typeof GSlugRoute
+  '/_authenticated/candidatas/$id': typeof AuthenticatedCandidatasIdRoute
   '/_authenticated/candidatas/': typeof AuthenticatedCandidatasIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/dashboard' | '/g/$slug' | '/candidatas/'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/dashboard'
+    | '/g/$slug'
+    | '/candidatas/$id'
+    | '/candidatas/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/dashboard' | '/g/$slug' | '/candidatas'
+  to:
+    | '/'
+    | '/auth'
+    | '/dashboard'
+    | '/g/$slug'
+    | '/candidatas/$id'
+    | '/candidatas'
   id:
     | '__root__'
     | '/'
@@ -82,6 +104,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/_authenticated/dashboard'
     | '/g/$slug'
+    | '/_authenticated/candidatas/$id'
     | '/_authenticated/candidatas/'
   fileRoutesById: FileRoutesById
 }
@@ -136,16 +159,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCandidatasIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/candidatas/$id': {
+      id: '/_authenticated/candidatas/$id'
+      path: '/candidatas/$id'
+      fullPath: '/candidatas/$id'
+      preLoaderRoute: typeof AuthenticatedCandidatasIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedCandidatasIdRoute: typeof AuthenticatedCandidatasIdRoute
   AuthenticatedCandidatasIndexRoute: typeof AuthenticatedCandidatasIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedCandidatasIdRoute: AuthenticatedCandidatasIdRoute,
   AuthenticatedCandidatasIndexRoute: AuthenticatedCandidatasIndexRoute,
 }
 
