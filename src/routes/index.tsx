@@ -77,7 +77,12 @@ function Landing() {
               <Link to="/auth">Criar meu ambiente</Link>
             </Button>
             {data.managers[0] ? (
-              <Button asChild size="lg" variant="outline">
+              <Button
+                asChild
+                size="lg"
+                variant="outline"
+                className="border-primary-foreground/40 bg-transparent text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground"
+              >
                 <Link to="/g/$slug" params={{ slug: data.managers[0].slug }}>
                   Ver página de candidatura
                 </Link>
