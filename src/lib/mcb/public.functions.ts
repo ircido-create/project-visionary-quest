@@ -2,7 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { createClient } from "@supabase/supabase-js";
 import { z } from "zod";
 
-import type { Database } from "@/integrations/supabase/types";
+import type { Database, Json } from "@/integrations/supabase/types";
 import { evaluateQualification } from "@/lib/mcb/qualification";
 
 function publicClient() {
@@ -204,15 +204,15 @@ export const submitApplication = createServerFn({ method: "POST" })
       supabaseAdmin.from("applications").insert({
         tenant_id: tenant.id,
         influencer_id: influencer.id,
-        answers: data as unknown as Record<string, unknown>,
+        answers: data as unknown as Json,
       }),
       supabaseAdmin.from("qualification_results").insert({
         tenant_id: tenant.id,
         influencer_id: influencer.id,
         rule_set_version: evaluation.ruleSetVersion,
         status: evaluation.status,
-        requirements: evaluation.requirements as unknown as Record<string, unknown>[],
-        progress: evaluation.progress as unknown as Record<string, unknown>,
+        requirements: evaluation.requirements as unknown as Json,
+        progress: evaluation.progress as unknown as Json,
       }),
       supabaseAdmin.from("metric_snapshots").insert({
         tenant_id: tenant.id,
