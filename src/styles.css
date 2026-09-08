@@ -165,10 +165,8 @@
   box-shadow:
     0 1px 0 0 color-mix(in oklab, white 55%, transparent) inset,
     0 18px 40px -24px color-mix(in oklab, var(--plum) 45%, transparent);
-}
 
-@supports (backdrop-filter: blur(4px)) {
-  @utility glass {
+  @supports (backdrop-filter: blur(4px)) {
     background: color-mix(in oklab, var(--card) 62%, transparent);
     backdrop-filter: blur(14px) saturate(1.15);
   }
@@ -181,10 +179,8 @@
   box-shadow:
     0 1px 0 0 color-mix(in oklab, var(--gold) 18%, transparent) inset,
     0 24px 60px -30px oklch(0 0 0 / 60%);
-}
 
-@supports (backdrop-filter: blur(4px)) {
-  @utility glass-dark {
+  @supports (backdrop-filter: blur(4px)) {
     background: color-mix(in oklab, var(--plum) 58%, transparent);
     backdrop-filter: blur(16px) saturate(1.2);
   }
