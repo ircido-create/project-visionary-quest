@@ -87,6 +87,24 @@ function AuthPage() {
 
   async function handleGoogle() {
     setError(null);
+
+    // O endpoint de OAuth (/~oauth/initiate) é servido pela infraestrutura do
+    // Lovable, não pelo app. Rodando localmente ele não existe, e o redirecionamento
+    // levava a candidata a uma tela 404 sem explicação nenhuma. A checagem abaixo
+    // troca o beco sem saída por uma instrução. Se ela falhar por qualquer motivo,
+    // o fluxo segue normal em vez de bloquear quem conseguiria entrar.
+    try {
+      const probe = await fetch("/~oauth/initiate", { method: "HEAD", redirect: "manual" });
+      if (probe.status === 404) {
+        setError(
+          "Entrar com Google só funciona no aplicativo publicado. Neste ambiente, use e-mail e senha.",
+        );
+        return;
+      }
+    } catch {
+      // Sem rede ou requisição bloqueada: não dá para concluir nada, então segue.
+    }
+
     const result = await lovable.auth.signInWithOAuth("google", {
       redirect_uri: window.location.origin,
     });

@@ -88,37 +88,74 @@ export const createTenant = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
     const base = slugify(data.slug || data.name) || `gestora-${Date.now()}`;
+
+    const { data: plan } = await supabase
+      .from("plans")
+      .select("id")
+      .eq("code", "essencial")
+      .maybeSingle();
+
+    // O id é gerado aqui, e não lido de volta do banco, de propósito.
+    //
+    // Encadear `.select()` num insert faz o PostgREST usar RETURNING, e o Postgres
+    // aplica a política de SELECT à linha nova. A de `tenants` é can_read_tenant(id),
+    // que exige membresia — criada só no passo seguinte. Ou seja: a linha entrava e a
+    // leitura de volta era negada, com a mensagem enganosa "new row violates row-level
+    // security policy", que parece rejeição do insert e não é.
+    const tenantId = crypto.randomUUID();
+
+    // O laço de slug abaixo enxerga, sob RLS, apenas ambientes de demonstração e os
+    // desta usuária. Colisão com o slug de outra gestora é invisível aqui e chega como
+    // violação de unicidade (23505) no insert — por isso o retry trata os dois casos.
     let slug = base;
-    for (let attempt = 1; attempt < 6; attempt += 1) {
-      const { data: taken } = await supabase.from("tenants").select("id").eq("slug", slug).maybeSingle();
-      if (!taken) break;
-      slug = `${base}-${attempt}`;
+    let created = false;
+    for (let attempt = 0; attempt < 6 && !created; attempt += 1) {
+      if (attempt > 0) slug = `${base}-${attempt}`;
+
+      const { data: taken } = await supabase
+        .from("tenants")
+        .select("id")
+        .eq("slug", slug)
+        .maybeSingle();
+      if (taken) continue;
+
+      const { error } = await supabase.from("tenants").insert({
+        id: tenantId,
+        name: data.name,
+        slug,
+        created_by: userId,
+        plan_id: plan?.id ?? null,
+      });
+
+      if (!error) {
+        created = true;
+      } else if (error.code !== "23505") {
+        throw new Error(error.message);
+      }
     }
 
-    const { data: plan } = await supabase.from("plans").select("id").eq("code", "essencial").maybeSingle();
+    if (!created) {
+      throw new Error("Não foi possível criar o ambiente: o endereço já está em uso.");
+    }
 
-    const { data: tenant, error } = await supabase
-      .from("tenants")
-      .insert({ name: data.name, slug, created_by: userId, plan_id: plan?.id ?? null })
-      .select("id, slug")
-      .single();
-    if (error || !tenant) throw new Error(error?.message ?? "Não foi possível criar o ambiente.");
-
-    await supabase
+    // A partir daqui a membresia existe e can_read_tenant passa a valer para ela.
+    const { error: membershipError } = await supabase
       .from("tenant_memberships")
-      .insert({ tenant_id: tenant.id, user_id: userId, role: "manager_owner" });
+      .insert({ tenant_id: tenantId, user_id: userId, role: "manager_owner" });
+    if (membershipError) throw new Error(membershipError.message);
 
     await supabase.from("tenant_branding").insert({
-      tenant_id: tenant.id,
+      tenant_id: tenantId,
       manager_name: data.managerName ?? data.name,
       headline: "Do perfil pessoal à criadora de conteúdo pronta para análise.",
       subheadline:
         "Uma jornada prática para estruturar seu perfil, desenvolver presença, criar conexão e alcançar os requisitos necessários com autenticidade.",
-      authority_quote: "Antes de ensinar você a vender uma marca, vamos ensinar você a construir a sua.",
+      authority_quote:
+        "Antes de ensinar você a vender uma marca, vamos ensinar você a construir a sua.",
       bio: data.bio ?? null,
     });
 
-    return { id: tenant.id, slug: tenant.slug };
+    return { id: tenantId, slug };
   });
 
 function signalsFor(influencer: InfluencerRow): ProgressSignals {
