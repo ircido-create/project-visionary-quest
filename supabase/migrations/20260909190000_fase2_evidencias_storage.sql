@@ -35,21 +35,25 @@ revoke execute on function public.storage_tenant_id(text) from anon, public;
 grant execute on function public.storage_tenant_id(text) to authenticated;
 
 -- Leitura acompanha can_read_tenant (membros + ambientes de demonstração).
+drop policy if exists "evidencias_member_read" on storage.objects;
 create policy "evidencias_member_read" on storage.objects
 for select to authenticated
 using (bucket_id = 'evidencias' and public.can_read_tenant(public.storage_tenant_id(name)));
 
 -- Escrita exige participação real: quem só enxerga a demo não é membro, então o
 -- ambiente de demonstração fica somente leitura também no Storage.
+drop policy if exists "evidencias_member_insert" on storage.objects;
 create policy "evidencias_member_insert" on storage.objects
 for insert to authenticated
 with check (bucket_id = 'evidencias' and public.is_tenant_member(public.storage_tenant_id(name)));
 
+drop policy if exists "evidencias_member_update" on storage.objects;
 create policy "evidencias_member_update" on storage.objects
 for update to authenticated
 using (bucket_id = 'evidencias' and public.is_tenant_member(public.storage_tenant_id(name)))
 with check (bucket_id = 'evidencias' and public.is_tenant_member(public.storage_tenant_id(name)));
 
+drop policy if exists "evidencias_member_delete" on storage.objects;
 create policy "evidencias_member_delete" on storage.objects
 for delete to authenticated
 using (bucket_id = 'evidencias' and public.is_tenant_member(public.storage_tenant_id(name)));
