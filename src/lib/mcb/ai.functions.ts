@@ -10,8 +10,8 @@
 
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import Anthropic from "@anthropic-ai/sdk";
-import { zodOutputFormat } from "@anthropic-ai/sdk/helpers/zod";
+import { GoogleGenAI } from "@google/genai";
+import * as z4 from "zod/v4";
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { withAi, type AiAnalysisStatus } from "@/lib/mcb/ai-types";
@@ -28,15 +28,15 @@ import type { Json } from "@/integrations/supabase/types";
  * A chave é variável de ambiente gerenciada pelo Lovable em produção e vive em
  * `.env.local` no desenvolvimento — nunca no `.env`, que é versionado num repo público.
  */
-function getAnthropicClient() {
-  const apiKey = process.env["ANTHROPIC_API_KEY"];
+function getGeminiClient() {
+  const apiKey = process.env["GEMINI_API_KEY"];
   if (!apiKey) {
     throw new Error(
-      "ANTHROPIC_API_KEY não configurada. Em produção, cadastre o secret no Lovable; " +
+      "GEMINI_API_KEY não configurada. Em produção, cadastre o secret no Lovable; " +
         "localmente, use .env.local (nunca .env, que é versionado).",
     );
   }
-  return new Anthropic({ apiKey });
+  return new GoogleGenAI({ apiKey });
 }
 
 /** Roda a análise e grava o resultado. A linha é criada antes da chamada, para que
@@ -94,9 +94,8 @@ export const createProfileAnalysis = createServerFn({ method: "POST" })
       origem_dos_dados: influencer.data_source,
     };
 
+    // Sem cidade e estado de propósito: ver o cabeçalho de ai-prompt.ts.
     const profile = {
-      cidade: influencer.city,
-      estado: influencer.state,
       frequencia_stories: influencer.stories_frequency,
       frequencia_reels: influencer.reels_frequency,
       temas: influencer.topics,
@@ -135,34 +134,38 @@ export const createProfileAnalysis = createServerFn({ method: "POST" })
     };
 
     try {
-      const client = getAnthropicClient();
-      const response = await client.messages.parse({
+      const client = getGeminiClient();
+      const response = await client.models.generateContent({
         model: ANALYSIS_MODEL,
-        max_tokens: 16000,
-        system: SYSTEM_PROMPT,
-        thinking: { type: "adaptive" },
-        output_config: { effort: "high", format: zodOutputFormat(analysisSchema) },
-        messages: [{ role: "user", content: buildAnalysisPrompt(promptInput) }],
+        contents: buildAnalysisPrompt(promptInput),
+        config: {
+          systemInstruction: SYSTEM_PROMPT,
+          // O schema vem do mesmo zod que tipa AnalysisOutput, então a validação
+          // abaixo e o contrato pedido ao modelo não podem divergir.
+          responseMimeType: "application/json",
+          responseJsonSchema: z4.toJSONSchema(analysisSchema),
+        },
       });
 
-      if (response.stop_reason === "refusal") {
+      const texto = response.text;
+      if (!texto) {
+        await finish({ status: "ERRO", error: "O modelo não devolveu conteúdo." });
+        return { id: analysis.id, status: "ERRO" as const };
+      }
+
+      // Saída estruturada não dispensa validação: o schema é uma instrução ao modelo,
+      // não uma garantia. Se não passar, a análise falha em vez de gravar lixo.
+      const parsedJson: unknown = JSON.parse(texto);
+      const validado = analysisSchema.safeParse(parsedJson);
+      if (!validado.success) {
         await finish({
           status: "ERRO",
-          error: `O modelo recusou a solicitação (${response.stop_details?.category ?? "sem categoria"}).`,
+          error: `A resposta do modelo não seguiu o formato esperado: ${validado.error.message.slice(0, 300)}`,
         });
         return { id: analysis.id, status: "ERRO" as const };
       }
 
-      const parsed = response.parsed_output;
-      if (!parsed) {
-        await finish({
-          status: "ERRO",
-          error: "A resposta do modelo não seguiu o formato esperado.",
-        });
-        return { id: analysis.id, status: "ERRO" as const };
-      }
-
-      await finish({ status: "CONCLUIDA", output: parsed as unknown as Json, error: null });
+      await finish({ status: "CONCLUIDA", output: validado.data as unknown as Json, error: null });
 
       await supabase.from("audit_logs").insert({
         tenant_id: data.tenantId,
