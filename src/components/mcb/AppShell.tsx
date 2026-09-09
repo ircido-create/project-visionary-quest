@@ -70,7 +70,23 @@ export function AppShell({
           </nav>
 
           <div className="mt-8 border-t border-border/60 pt-4 text-xs text-muted-foreground">
-            <p className="truncate">{profile?.email ?? "Gestora"}</p>
+            <div className="flex items-center gap-2">
+              {profile?.avatar_url ? (
+                <img
+                  src={profile.avatar_url}
+                  alt={profile.full_name ?? "Foto do perfil"}
+                  className="h-8 w-8 rounded-full object-cover"
+                />
+              ) : (
+                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-muted text-sm font-medium text-foreground">
+                  {(profile?.full_name ?? profile?.email ?? "G").charAt(0).toUpperCase()}
+                </span>
+              )}
+              <div className="min-w-0">
+                <p className="truncate text-foreground">{profile?.full_name ?? "Gestora"}</p>
+                <p className="truncate">{profile?.email ?? ""}</p>
+              </div>
+            </div>
             <button
               type="button"
               className="mt-2 underline underline-offset-4 hover:text-foreground"

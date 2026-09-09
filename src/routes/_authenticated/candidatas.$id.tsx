@@ -12,6 +12,7 @@ import {
   getInfluencer,
   setTaskStatus,
   updateInfluencerMetrics,
+  updateInfluencerProfile,
 } from "@/lib/mcb/app.functions";
 import { useWorkspace } from "@/lib/mcb/useWorkspace";
 import { STATUS_LABELS, STATUS_ORDER, type InfluencerStatus } from "@/lib/mcb/labels";
@@ -46,6 +47,7 @@ function CandidateDetail() {
 
   const fetchDetail = useServerFn(getInfluencer);
   const saveMetrics = useServerFn(updateInfluencerMetrics);
+  const saveProfileData = useServerFn(updateInfluencerProfile);
   const saveStatus = useServerFn(changeInfluencerStatus);
   const saveNote = useServerFn(addNote);
   const saveTask = useServerFn(createTask);
@@ -69,6 +71,20 @@ function CandidateDetail() {
   const [noteBody, setNoteBody] = useState("");
   const [feedbackBody, setFeedbackBody] = useState("");
   const [taskForm, setTaskForm] = useState({ title: "", dueDate: "", priority: "MEDIA" as "BAIXA" | "MEDIA" | "ALTA" });
+  const [profileForm, setProfileForm] = useState({
+    fullName: "",
+    email: "",
+    whatsapp: "",
+    city: "",
+    state: "",
+    instagramHandle: "",
+    profileType: "NAO_SEI" as "PESSOAL" | "CRIADOR" | "COMERCIAL" | "NAO_SEI",
+    storiesFrequency: "",
+    reelsFrequency: "",
+    topics: "",
+    profileGoal: "",
+    mainDifficulty: "",
+  });
 
   useEffect(() => {
     if (!detail) return;
@@ -79,6 +95,20 @@ function CandidateDetail() {
       recentPosts6m: detail.influencer.recent_posts_6m ?? "NAO_SEI",
       profileType: detail.influencer.profile_type ?? "NAO_SEI",
       source: detail.influencer.data_source,
+    });
+    setProfileForm({
+      fullName: detail.influencer.full_name ?? "",
+      email: detail.influencer.email ?? "",
+      whatsapp: detail.influencer.whatsapp ?? "",
+      city: detail.influencer.city ?? "",
+      state: detail.influencer.state ?? "",
+      instagramHandle: detail.influencer.instagram_handle ?? "",
+      profileType: detail.influencer.profile_type ?? "NAO_SEI",
+      storiesFrequency: detail.influencer.stories_frequency ?? "",
+      reelsFrequency: detail.influencer.reels_frequency ?? "",
+      topics: detail.influencer.topics ?? "",
+      profileGoal: detail.influencer.profile_goal ?? "",
+      mainDifficulty: detail.influencer.main_difficulty ?? "",
     });
   }, [detail]);
 
@@ -116,6 +146,16 @@ function CandidateDetail() {
     },
     onError: () => toast.error("Não foi possível salvar as métricas."),
   });
+
+  const profileMutation = useMutation({
+    mutationFn: () => saveProfileData({ data: { tenantId: tenantId!, influencerId: id, ...profileForm } }),
+    onSuccess: () => {
+      toast.success("Dados da candidata atualizados.");
+      invalidate();
+    },
+    onError: () => toast.error("Não foi possível salvar os dados."),
+  });
+
 
   const statusMutation = useMutation({
     mutationFn: (status: InfluencerStatus) =>
@@ -356,6 +396,137 @@ function CandidateDetail() {
             <div className="sm:col-span-2">
               <Button type="submit" disabled={metricsMutation.isPending}>
                 {metricsMutation.isPending ? "Salvando..." : "Salvar e recalcular"}
+              </Button>
+            </div>
+          </form>
+        </section>
+
+        <section className="glass rounded-xl border border-border/60 p-6">
+          <h2 className="font-serif text-xl">Editar dados</h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Corrija o cadastro da candidata: contato, perfil e objetivos.
+          </p>
+          <form
+            className="mt-4 grid gap-3 sm:grid-cols-2"
+            onSubmit={(event) => {
+              event.preventDefault();
+              if (!guard()) return;
+              profileMutation.mutate();
+            }}
+          >
+            <div className="grid gap-1.5">
+              <Label htmlFor="pf-name">Nome completo</Label>
+              <Input
+                id="pf-name"
+                value={profileForm.fullName}
+                minLength={3}
+                required
+                onChange={(e) => setProfileForm((prev) => ({ ...prev, fullName: e.target.value }))}
+              />
+            </div>
+            <div className="grid gap-1.5">
+              <Label htmlFor="pf-email">E-mail</Label>
+              <Input
+                id="pf-email"
+                type="email"
+                required
+                value={profileForm.email}
+                onChange={(e) => setProfileForm((prev) => ({ ...prev, email: e.target.value }))}
+              />
+            </div>
+            <div className="grid gap-1.5">
+              <Label htmlFor="pf-whatsapp">WhatsApp</Label>
+              <Input
+                id="pf-whatsapp"
+                value={profileForm.whatsapp}
+                onChange={(e) => setProfileForm((prev) => ({ ...prev, whatsapp: e.target.value }))}
+              />
+            </div>
+            <div className="grid gap-1.5">
+              <Label htmlFor="pf-instagram">@ do Instagram</Label>
+              <Input
+                id="pf-instagram"
+                value={profileForm.instagramHandle}
+                onChange={(e) => setProfileForm((prev) => ({ ...prev, instagramHandle: e.target.value }))}
+              />
+            </div>
+            <div className="grid gap-1.5">
+              <Label htmlFor="pf-city">Cidade</Label>
+              <Input
+                id="pf-city"
+                value={profileForm.city}
+                onChange={(e) => setProfileForm((prev) => ({ ...prev, city: e.target.value }))}
+              />
+            </div>
+            <div className="grid gap-1.5">
+              <Label htmlFor="pf-state">Estado</Label>
+              <Input
+                id="pf-state"
+                value={profileForm.state}
+                onChange={(e) => setProfileForm((prev) => ({ ...prev, state: e.target.value }))}
+              />
+            </div>
+            <div className="grid gap-1.5">
+              <Label htmlFor="pf-type">Tipo de conta</Label>
+              <select
+                id="pf-type"
+                className="h-10 rounded-md border border-input bg-background px-3 text-sm"
+                value={profileForm.profileType}
+                onChange={(e) =>
+                  setProfileForm((prev) => ({ ...prev, profileType: e.target.value as typeof prev.profileType }))
+                }
+              >
+                <option value="CRIADOR">Criadora de conteúdo</option>
+                <option value="PESSOAL">Pessoal</option>
+                <option value="COMERCIAL">Comercial</option>
+                <option value="NAO_SEI">Sem informação</option>
+              </select>
+            </div>
+            <div className="grid gap-1.5">
+              <Label htmlFor="pf-stories">Frequência de stories</Label>
+              <Input
+                id="pf-stories"
+                value={profileForm.storiesFrequency}
+                onChange={(e) => setProfileForm((prev) => ({ ...prev, storiesFrequency: e.target.value }))}
+              />
+            </div>
+            <div className="grid gap-1.5">
+              <Label htmlFor="pf-reels">Frequência de reels</Label>
+              <Input
+                id="pf-reels"
+                value={profileForm.reelsFrequency}
+                onChange={(e) => setProfileForm((prev) => ({ ...prev, reelsFrequency: e.target.value }))}
+              />
+            </div>
+            <div className="grid gap-1.5">
+              <Label htmlFor="pf-topics">Temas</Label>
+              <Input
+                id="pf-topics"
+                value={profileForm.topics}
+                onChange={(e) => setProfileForm((prev) => ({ ...prev, topics: e.target.value }))}
+              />
+            </div>
+            <div className="grid gap-1.5 sm:col-span-2">
+              <Label htmlFor="pf-goal">Objetivo com o perfil</Label>
+              <Textarea
+                id="pf-goal"
+                rows={2}
+                value={profileForm.profileGoal}
+                onChange={(e) => setProfileForm((prev) => ({ ...prev, profileGoal: e.target.value }))}
+              />
+            </div>
+            <div className="grid gap-1.5 sm:col-span-2">
+              <Label htmlFor="pf-difficulty">Maior dificuldade</Label>
+              <Textarea
+                id="pf-difficulty"
+                rows={2}
+                value={profileForm.mainDifficulty}
+                onChange={(e) => setProfileForm((prev) => ({ ...prev, mainDifficulty: e.target.value }))}
+              />
+            </div>
+            <div className="sm:col-span-2">
+              <Button type="submit" disabled={profileMutation.isPending}>
+                {profileMutation.isPending ? "Salvando..." : "Salvar dados"}
               </Button>
             </div>
           </form>

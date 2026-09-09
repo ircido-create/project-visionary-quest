@@ -996,6 +996,7 @@ export type Database = {
         Returns: boolean
       }
       is_tenant_member: { Args: { _tenant: string }; Returns: boolean }
+      shares_tenant_with: { Args: { _user: string }; Returns: boolean }
       tenant_is_demo: { Args: { _tenant: string }; Returns: boolean }
     }
     Enums: {

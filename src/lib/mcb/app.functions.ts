@@ -26,7 +26,7 @@ export const getWorkspaces = createServerFn({ method: "GET" })
     const [{ data: memberships }, { data: demoTenants }, { data: profile }] = await Promise.all([
       supabase.from("tenant_memberships").select("tenant_id, role").eq("user_id", userId),
       supabase.from("tenants").select("id, name, slug, is_demo, plan_id").eq("is_demo", true).order("created_at"),
-      supabase.from("profiles").select("id, full_name, email").eq("id", userId).maybeSingle(),
+      supabase.from("profiles").select("id, full_name, email, avatar_url").eq("id", userId).maybeSingle(),
     ]);
 
     const ownTenantIds = (memberships ?? []).map((m) => m.tenant_id);
@@ -53,13 +53,22 @@ export const getWorkspaces = createServerFn({ method: "GET" })
 
 export const saveProfile = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { fullName: string; email: string }) =>
-    z.object({ fullName: z.string().trim().max(120), email: z.string().trim().email().max(160) }).parse(input),
+  .inputValidator((input: { fullName: string; email: string; avatarUrl?: string }) =>
+    z
+      .object({
+        fullName: z.string().trim().max(120),
+        email: z.string().trim().email().max(160),
+        avatarUrl: z.string().trim().max(500).optional(),
+      })
+      .parse(input),
   )
   .handler(async ({ data, context }) => {
-    const { error } = await context.supabase
-      .from("profiles")
-      .upsert({ id: context.userId, full_name: data.fullName, email: data.email });
+    const { error } = await context.supabase.from("profiles").upsert({
+      id: context.userId,
+      full_name: data.fullName,
+      email: data.email,
+      avatar_url: data.avatarUrl?.length ? data.avatarUrl : null,
+    });
     if (error) throw new Error(error.message);
     return { ok: true };
   });
@@ -588,10 +597,29 @@ export const getSettings = createServerFn({ method: "POST" })
       .select("id", { count: "exact", head: true })
       .eq("tenant_id", data.tenantId);
 
+    const memberIds = (members ?? []).map((m) => m.user_id);
+    let memberProfiles: Array<{ id: string; full_name: string | null; email: string | null; avatar_url: string | null }> =
+      [];
+    if (memberIds.length > 0) {
+      const { data: profileRows } = await supabase
+        .from("profiles")
+        .select("id, full_name, email, avatar_url")
+        .in("id", memberIds);
+      memberProfiles = profileRows ?? [];
+    }
+    const profileById = new Map(memberProfiles.map((p) => [p.id, p]));
+
     return {
       tenant,
       branding,
-      members: members ?? [],
+      currentUserId: context.userId,
+      currentRole: (members ?? []).find((m) => m.user_id === context.userId)?.role ?? null,
+      members: (members ?? []).map((m) => ({
+        ...m,
+        fullName: profileById.get(m.user_id)?.full_name ?? null,
+        email: profileById.get(m.user_id)?.email ?? null,
+        avatarUrl: profileById.get(m.user_id)?.avatar_url ?? null,
+      })),
       invitations: invitations ?? [],
       plans: plans ?? [],
       plan: (plans ?? []).find((p) => p.id === tenant?.plan_id) ?? null,
@@ -669,5 +697,169 @@ export const inviteMember = createServerFn({ method: "POST" })
       invited_by: userId,
     });
     if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+async function assertOwner(
+  supabase: { from: (t: "tenant_memberships") => any },
+  tenantId: string,
+  userId: string,
+) {
+  const { data } = await supabase
+    .from("tenant_memberships")
+    .select("role")
+    .eq("tenant_id", tenantId)
+    .eq("user_id", userId)
+    .maybeSingle();
+  if (data?.role !== "manager_owner") {
+    throw new Error("Apenas a dona do ambiente pode gerenciar a equipe.");
+  }
+}
+
+export const setMemberRole = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator(
+    (input: { tenantId: string; memberId: string; role: "manager_owner" | "manager_admin" | "manager_member" }) =>
+      z
+        .object({
+          tenantId: z.string().uuid(),
+          memberId: z.string().uuid(),
+          role: z.enum(["manager_owner", "manager_admin", "manager_member"]),
+        })
+        .parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    const { supabase, userId } = context;
+    await assertOwner(supabase, data.tenantId, userId);
+    if (data.memberId === userId) throw new Error("Você não pode alterar o seu próprio papel.");
+
+    const { error } = await supabase
+      .from("tenant_memberships")
+      .update({ role: data.role })
+      .eq("tenant_id", data.tenantId)
+      .eq("user_id", data.memberId);
+    if (error) throw new Error(error.message);
+
+    await supabase.from("audit_logs").insert({
+      tenant_id: data.tenantId,
+      actor_id: userId,
+      action: "member.role_changed",
+      entity: "tenant_memberships",
+      entity_id: data.memberId,
+      meta: { role: data.role },
+    });
+    return { ok: true };
+  });
+
+export const removeMember = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: { tenantId: string; memberId: string }) =>
+    z.object({ tenantId: z.string().uuid(), memberId: z.string().uuid() }).parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    const { supabase, userId } = context;
+    await assertOwner(supabase, data.tenantId, userId);
+    if (data.memberId === userId) throw new Error("Você não pode remover o seu próprio acesso.");
+
+    const { error } = await supabase
+      .from("tenant_memberships")
+      .delete()
+      .eq("tenant_id", data.tenantId)
+      .eq("user_id", data.memberId);
+    if (error) throw new Error(error.message);
+
+    await supabase.from("audit_logs").insert({
+      tenant_id: data.tenantId,
+      actor_id: userId,
+      action: "member.removed",
+      entity: "tenant_memberships",
+      entity_id: data.memberId,
+    });
+    return { ok: true };
+  });
+
+export const updateInfluencerProfile = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator(
+    (input: {
+      tenantId: string;
+      influencerId: string;
+      fullName: string;
+      email: string;
+      whatsapp?: string;
+      city?: string;
+      state?: string;
+      instagramHandle?: string;
+      profileType: "PESSOAL" | "CRIADOR" | "COMERCIAL" | "NAO_SEI";
+      storiesFrequency?: string;
+      reelsFrequency?: string;
+      topics?: string;
+      profileGoal?: string;
+      mainDifficulty?: string;
+    }) =>
+      z
+        .object({
+          tenantId: z.string().uuid(),
+          influencerId: z.string().uuid(),
+          fullName: z.string().trim().min(3).max(120),
+          email: z.string().trim().email().max(160),
+          whatsapp: z.string().trim().max(30).optional(),
+          city: z.string().trim().max(80).optional(),
+          state: z.string().trim().max(40).optional(),
+          instagramHandle: z.string().trim().max(60).optional(),
+          profileType: z.enum(["PESSOAL", "CRIADOR", "COMERCIAL", "NAO_SEI"]),
+          storiesFrequency: z.string().trim().max(60).optional(),
+          reelsFrequency: z.string().trim().max(60).optional(),
+          topics: z.string().trim().max(400).optional(),
+          profileGoal: z.string().trim().max(400).optional(),
+          mainDifficulty: z.string().trim().max(400).optional(),
+        })
+        .parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    const { supabase, userId } = context;
+    const clean = (value?: string) => (value && value.trim().length > 0 ? value.trim() : null);
+    const handle = clean(data.instagramHandle)?.replace(/^@/, "") ?? null;
+
+    const { data: updated, error } = await supabase
+      .from("influencers")
+      .update({
+        full_name: data.fullName,
+        email: data.email.toLowerCase(),
+        whatsapp: clean(data.whatsapp),
+        city: clean(data.city),
+        state: clean(data.state),
+        instagram_handle: handle,
+        instagram_url: handle ? `https://instagram.com/${handle}` : null,
+        profile_type: data.profileType,
+        stories_frequency: clean(data.storiesFrequency),
+        reels_frequency: clean(data.reelsFrequency),
+        topics: clean(data.topics),
+        profile_goal: clean(data.profileGoal),
+        main_difficulty: clean(data.mainDifficulty),
+      })
+      .eq("tenant_id", data.tenantId)
+      .eq("id", data.influencerId)
+      .select("*")
+      .maybeSingle();
+    if (error) throw new Error(error.message);
+    if (!updated) throw new Error("Candidata não encontrada neste ambiente.");
+
+    const evaluation = evaluateInfluencer(updated);
+    await Promise.all([
+      supabase
+        .from("influencers")
+        .update({ level: evaluation.progress.level, progress_score: evaluation.progress.score })
+        .eq("tenant_id", data.tenantId)
+        .eq("id", data.influencerId),
+      supabase.from("audit_logs").insert({
+        tenant_id: data.tenantId,
+        actor_id: userId,
+        action: "influencer.profile_updated",
+        entity: "influencers",
+        entity_id: data.influencerId,
+      }),
+    ]);
+
     return { ok: true };
   });
