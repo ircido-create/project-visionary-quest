@@ -29,24 +29,29 @@ function arg(name: string): string | undefined {
 }
 const hasFlag = (name: string) => process.argv.includes(`--${name}`);
 
-const url = process.env["SUPABASE_URL"];
-const serviceKey = process.env["SUPABASE_SERVICE_ROLE_KEY"];
-
-if (!url || !serviceKey) {
-  console.error(
-    "Faltam SUPABASE_URL e/ou SUPABASE_SERVICE_ROLE_KEY.\n" +
-      "Coloque a service role key no .env.local (nunca no .env, que é versionado).",
-  );
-  process.exit(1);
-}
-
 const slug = arg("slug") ?? "gestora-ircido";
 const portalEmail = arg("portal-email");
-const db = createClient<Database>(url, serviceKey, {
-  auth: { persistSession: false, autoRefreshToken: false },
-});
 
-type Seed = {
+/**
+ * O client e criado sob demanda, e nao no topo do modulo, para que CANDIDATAS
+ * possa ser importado por outros scripts sem exigir credencial nem derrubar o
+ * processo com process.exit.
+ */
+function connect() {
+  const url = process.env["SUPABASE_URL"];
+  const serviceKey = process.env["SUPABASE_SERVICE_ROLE_KEY"];
+  if (!url || !serviceKey) {
+    console.error(
+      "Faltam SUPABASE_URL e/ou SUPABASE_SERVICE_ROLE_KEY. Coloque a service role key no .env.local, nunca no .env.",
+    );
+    process.exit(1);
+  }
+  return createClient<Database>(url, serviceKey, {
+    auth: { persistSession: false, autoRefreshToken: false },
+  });
+}
+
+export type Seed = {
   nome: string;
   handle: string;
   cidade: string;
@@ -77,7 +82,7 @@ type Seed = {
   };
 };
 
-const CANDIDATAS: Seed[] = [
+export const CANDIDATAS: Seed[] = [
   {
     nome: "Mariana Alves Ribeiro",
     handle: "mari.alves.faz",
@@ -301,6 +306,8 @@ function monthsAgo(count: number, index: number): string {
 }
 
 async function main() {
+  const db = connect();
+
   const { data: tenant, error: tenantError } = await db
     .from("tenants")
     .select("id, name, slug, is_demo")
@@ -492,7 +499,10 @@ async function main() {
   }
 }
 
-main().catch((error) => {
-  console.error("\nErro:", error instanceof Error ? error.message : error);
-  process.exit(1);
-});
+// Só executa quando chamado direto. Importado, expõe apenas os dados e os tipos.
+if (import.meta.main) {
+  main().catch((error) => {
+    console.error("\nErro:", error instanceof Error ? error.message : error);
+    process.exit(1);
+  });
+}
