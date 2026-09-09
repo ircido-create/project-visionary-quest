@@ -10,7 +10,7 @@
 - [x] Documentação da fase 1
 
 ## Fase 2 — Evidências e IA auditável
-- [ ] Upload de prints com confirmação humana (Storage + tabela `files`)
+- [x] Upload de prints com confirmação humana (Storage + tabela `files`)
 - [ ] Análise de perfil com IA registrando entrada, saída e versão do prompt
 - [ ] Portal da candidata com tarefas e evolução
 
@@ -27,4 +27,8 @@
 ## Pendências conhecidas
 - [ ] Revisar aviso do verificador de segurança sobre funções auxiliares de permissão
       (`is_tenant_member`, `has_tenant_role`, `tenant_is_demo`, `has_platform_role`,
-      `can_read_tenant`) — hoje necessárias para as políticas de acesso.
+      `can_read_tenant`, `storage_tenant_id`) — hoje necessárias para as políticas de acesso.
+- [ ] As políticas do bucket `evidencias` foram criadas pela UI de Storage, não por
+      migração: o SQL editor não é dono de `storage.objects`. O arquivo
+      `supabase/migrations/20260909190000_fase2_evidencias_storage.sql` guarda a
+      definição, mas recriar o banco do zero exige repetir esse passo à mão.
