@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import { AppShell } from "@/components/mcb/AppShell";
+import { AnalysisSection } from "@/components/mcb/AnalysisSection";
 import { EvidenceSection } from "@/components/mcb/EvidenceSection";
 import {
   addNote,
@@ -680,6 +681,8 @@ function CandidateDetail() {
         </section>
 
         <EvidenceSection tenantId={tenantId!} influencerId={id} readOnly={readOnly} />
+
+        <AnalysisSection tenantId={tenantId!} influencerId={id} readOnly={readOnly} />
 
         <section className="glass rounded-xl border border-border/60 p-6 lg:col-span-3">
           <h2 className="font-serif text-xl">Histórico de status</h2>
