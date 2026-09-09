@@ -1,7 +1,9 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
 
 import { supabase } from "@/integrations/supabase/client";
+import { resolveLanding } from "@/lib/mcb/portal.functions";
 import { lovable } from "@/integrations/lovable/index";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -23,6 +25,14 @@ export const Route = createFileRoute("/auth")({
 
 function AuthPage() {
   const navigate = useNavigate();
+  const resolveDestination = useServerFn(resolveLanding);
+
+  // Candidata vai para o portal, gestora para o painel. A decisão é do servidor: o
+  // navegador não consegue consultar a candidatura, que fica atrás de RPC.
+  const goToLanding = useCallback(async () => {
+    const { to } = await resolveDestination();
+    navigate({ to: to === "portal" ? "/portal" : "/dashboard" });
+  }, [navigate, resolveDestination]);
   const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -33,9 +43,9 @@ function AuthPage() {
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
-      if (data.session) navigate({ to: "/dashboard" });
+      if (data.session) void goToLanding();
     });
-  }, [navigate]);
+  }, [goToLanding]);
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
@@ -55,14 +65,14 @@ function AuthPage() {
         if (signUpError) throw signUpError;
         const { data } = await supabase.auth.getSession();
         if (data.session) {
-          navigate({ to: "/dashboard" });
+          await goToLanding();
           return;
         }
         setMessage("Cadastro criado. Confirme o e-mail que enviamos para acessar sua conta.");
       } else {
         const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
         if (signInError) throw signInError;
-        navigate({ to: "/dashboard" });
+        await goToLanding();
       }
     } catch (cause) {
       setError(
@@ -85,7 +95,7 @@ function AuthPage() {
       return;
     }
     if (result.redirected) return;
-    navigate({ to: "/dashboard" });
+    await goToLanding();
   }
 
   return (
