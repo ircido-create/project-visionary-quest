@@ -5,8 +5,9 @@
  * `ai_analyses`, então mudar o texto abaixo sem subir a versão torna impossível
  * explicar depois por que duas candidatas receberam leituras diferentes.
  *
- * Ao editar o prompt, **suba a versão** — e trocar de modelo também conta, porque a
- * mesma pergunta feita a modelos diferentes produz leituras diferentes.
+ * Ao editar o prompt ou o schema, **suba a versão**. Trocar de modelo não exige isso:
+ * `ai_analyses.model` guarda o modelo em coluna própria, então a procedência já fica
+ * registrada sem confundir as duas coisas.
  *
  * v2: migrado para Gemini. O payload deixou de enviar cidade e estado: eles quase não
  * contribuem para a leitura e, combinados com o nicho, podiam identificar a candidata
@@ -19,7 +20,7 @@ import * as z from "zod/v4";
 export const PROMPT_VERSION = "v2";
 
 /** Modelo usado. Gravado junto da análise — resultado sem modelo não é auditável. */
-export const ANALYSIS_MODEL = "gemini-3.8-flash";
+export const ANALYSIS_MODEL = "gemini-3.6-flash";
 
 export const analysisSchema = z.object({
   resumo: z.string().describe("Duas ou três frases sobre onde a candidata está hoje."),

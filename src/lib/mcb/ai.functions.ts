@@ -39,6 +39,32 @@ function getGeminiClient() {
   return new GoogleGenAI({ apiKey });
 }
 
+/**
+ * A camada gratuita do Gemini devolve 503 UNAVAILABLE com frequência quando o modelo
+ * está congestionado, e o próprio erro pede para tentar de novo. Sem isto, a análise
+ * falha por sorte e não por mérito.
+ *
+ * Só repete em falha transitória: erro de chave, de schema ou de cota permanente
+ * repetir não conserta, e atrasaria a resposta ao usuário sem motivo.
+ */
+async function gerarComRetry(
+  client: GoogleGenAI,
+  params: Parameters<GoogleGenAI["models"]["generateContent"]>[0],
+  tentativas = 3,
+) {
+  for (let i = 0; ; i += 1) {
+    try {
+      return await client.models.generateContent(params);
+    } catch (error) {
+      const texto = error instanceof Error ? error.message : String(error);
+      const transitorio =
+        texto.includes("UNAVAILABLE") || texto.includes("503") || texto.includes("429");
+      if (!transitorio || i >= tentativas - 1) throw error;
+      await new Promise((resolve) => setTimeout(resolve, 2000 * (i + 1)));
+    }
+  }
+}
+
 /** Roda a análise e grava o resultado. A linha é criada antes da chamada, para que
  *  uma falha do modelo fique registrada em vez de sumir. */
 export const createProfileAnalysis = createServerFn({ method: "POST" })
@@ -135,7 +161,7 @@ export const createProfileAnalysis = createServerFn({ method: "POST" })
 
     try {
       const client = getGeminiClient();
-      const response = await client.models.generateContent({
+      const response = await gerarComRetry(client, {
         model: ANALYSIS_MODEL,
         contents: buildAnalysisPrompt(promptInput),
         config: {
