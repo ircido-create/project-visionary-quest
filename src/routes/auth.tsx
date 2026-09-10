@@ -33,7 +33,7 @@ function AuthPage() {
     const { to } = await resolveDestination();
     navigate({ to: to === "portal" ? "/portal" : "/dashboard" });
   }, [navigate, resolveDestination]);
-  const [mode, setMode] = useState<"signin" | "signup">("signin");
+  const [mode, setMode] = useState<"signin" | "signup" | "forgot">("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
@@ -47,13 +47,45 @@ function AuthPage() {
     });
   }, [goToLanding]);
 
+  // O Supabase distingue os motivos da recusa por código. Repetir "e-mail ou senha
+  // incorretos" para todos eles esconde justamente o caso mais comum aqui: conta criada
+  // pelo Google, que não tem senha para digitar.
+  function describeAuthError(cause: unknown): string {
+    const code = (cause as { code?: string } | null)?.code;
+    const text = cause instanceof Error ? cause.message.toLowerCase() : "";
+    if (code === "email_not_confirmed" || text.includes("not confirmed")) {
+      return "Seu e-mail ainda não foi confirmado. Procure a mensagem de confirmação que enviamos.";
+    }
+    if (code === "weak_password" || text.includes("weak")) {
+      return "Essa senha é fácil de descobrir. Escolha outra, mais longa e única.";
+    }
+    if (code === "user_already_exists" || text.includes("already registered")) {
+      return "Já existe uma conta com esse e-mail. Entre com sua senha ou use \"Esqueci minha senha\".";
+    }
+    if (code === "over_email_send_rate_limit" || text.includes("rate limit")) {
+      return "Muitas tentativas em pouco tempo. Aguarde alguns minutos e tente de novo.";
+    }
+    if (code === "invalid_credentials" || text.includes("invalid login")) {
+      return "E-mail ou senha incorretos. Se você criou sua conta pelo Google, entre pelo botão \"Continuar com Google\" — ou use \"Esqueci minha senha\" para definir uma senha.";
+    }
+    return "Não foi possível concluir. Verifique os dados e tente novamente.";
+  }
+
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
     setError(null);
     setMessage(null);
     setBusy(true);
     try {
-      if (mode === "signup") {
+      if (mode === "forgot") {
+        const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
+          redirectTo: `${window.location.origin}/reset-password`,
+        });
+        if (resetError) throw resetError;
+        setMessage(
+          "Se existir uma conta com esse e-mail, enviamos um link para criar uma nova senha. Confira também o spam.",
+        );
+      } else if (mode === "signup") {
         const { error: signUpError } = await supabase.auth.signUp({
           email,
           password,
@@ -75,15 +107,12 @@ function AuthPage() {
         await goToLanding();
       }
     } catch (cause) {
-      setError(
-        cause instanceof Error && cause.message.includes("Invalid login")
-          ? "E-mail ou senha incorretos."
-          : "Não foi possível concluir. Verifique os dados e tente novamente.",
-      );
+      setError(describeAuthError(cause));
     } finally {
       setBusy(false);
     }
   }
+
 
   async function handleGoogle() {
     setError(null);
@@ -123,10 +152,16 @@ function AuthPage() {
           MCB
         </Link>
         <h1 className="mt-4 font-serif text-2xl">
-          {mode === "signin" ? "Entrar no seu ambiente" : "Criar sua conta de gestora"}
+          {mode === "signin"
+            ? "Entrar no seu ambiente"
+            : mode === "signup"
+              ? "Criar sua conta de gestora"
+              : "Recuperar o acesso"}
         </h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          Acompanhe candidaturas, evolução e qualificação em um só lugar.
+          {mode === "forgot"
+            ? "Informe seu e-mail e enviamos um link para você criar uma nova senha."
+            : "Acompanhe candidaturas, evolução e qualificação em um só lugar."}
         </p>
 
         <Button type="button" variant="outline" className="mt-6 w-full" onClick={handleGoogle}>
@@ -148,37 +183,59 @@ function AuthPage() {
             <Label htmlFor="email">E-mail</Label>
             <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
           </div>
-          <div className="grid gap-1.5">
-            <Label htmlFor="password">Senha</Label>
-            <Input
-              id="password"
-              type="password"
-              minLength={8}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
+          {mode === "forgot" ? null : (
+            <div className="grid gap-1.5">
+              <Label htmlFor="password">Senha</Label>
+              <Input
+                id="password"
+                type="password"
+                minLength={8}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </div>
+          )}
 
           {error ? <p className="text-sm text-destructive">{error}</p> : null}
           {message ? <p className="text-sm text-muted-foreground">{message}</p> : null}
 
           <Button type="submit" disabled={busy}>
-            {busy ? "Aguarde..." : mode === "signin" ? "Entrar" : "Criar conta"}
+            {busy
+              ? "Aguarde..."
+              : mode === "signin"
+                ? "Entrar"
+                : mode === "signup"
+                  ? "Criar conta"
+                  : "Enviar link"}
           </Button>
         </form>
 
-        <button
-          type="button"
-          className="mt-5 text-sm text-muted-foreground underline underline-offset-4 hover:text-foreground"
-          onClick={() => {
-            setMode(mode === "signin" ? "signup" : "signin");
-            setError(null);
-            setMessage(null);
-          }}
-        >
-          {mode === "signin" ? "Ainda não tenho conta" : "Já tenho conta"}
-        </button>
+        <div className="mt-5 grid gap-2 text-sm">
+          <button
+            type="button"
+            className="justify-self-start text-muted-foreground underline underline-offset-4 hover:text-foreground"
+            onClick={() => {
+              setMode(mode === "signup" ? "signin" : "signup");
+              setError(null);
+              setMessage(null);
+            }}
+          >
+            {mode === "signup" ? "Já tenho conta" : "Ainda não tenho conta"}
+          </button>
+          <button
+            type="button"
+            className="justify-self-start text-muted-foreground underline underline-offset-4 hover:text-foreground"
+            onClick={() => {
+              setMode(mode === "forgot" ? "signin" : "forgot");
+              setError(null);
+              setMessage(null);
+            }}
+          >
+            {mode === "forgot" ? "Voltar para entrar" : "Esqueci minha senha"}
+          </button>
+        </div>
+
       </div>
     </main>
   );
