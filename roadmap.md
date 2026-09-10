@@ -36,8 +36,26 @@
       **Os de integração não rodam no `bun run test`** — precisariam de conexão direta
       ao banco, que a máquina de desenvolvimento não tem. São verificação sob demanda.
       As políticas de Storage seguem sem cobertura: só existem no ambiente Supabase.
-- [ ] Auditoria de acessibilidade
-- [ ] Otimização de desempenho
+- [x] Auditoria de acessibilidade: `lang` do documento corrigido para pt-BR, nome
+      acessível em 4 selects, 6 inputs e 2 checkboxes que eram anunciados sem dizer a
+      que tarefa pertenciam. O `eslint-plugin-jsx-a11y` entrou como rede de proteção,
+      **mas ela tem um furo conhecido**: nenhuma regra pega `<select>` sem nome
+      acessível, porque a regra procura o rótulo dentro do controle e um `<select>`
+      sempre tem `<option>` com texto. Verificado por teste de mutação — removendo o
+      `aria-label` de um checkbox o lint acusa; removendo o de um select, passa. Os
+      `aria-label` dos selects estão corretos e sem cobertura automática.
+      Fora do escopo: teste com leitor de tela de verdade e contraste de cores.
+- [x] Otimização de desempenho na camada de dados. O `QueryClient` estava sem
+      configuração, e o padrão do TanStack Query é `staleTime: 0`: eram 3 chamadas ao
+      servidor por navegação, 2 delas para dados constantes na sessão. Passou a 0 ao
+      voltar a uma página já visitada e 1 ao abrir uma nova. Cachear expôs duas lacunas
+      de invalidação que o `staleTime: 0` mascarava, ambas corrigidas.
+      **Ficou de fora o tamanho do bundle**: 743 KB de JS, 525 KB no chunk principal.
+      A divisão por rota já funciona e o `@google/genai` está corretamente fora do
+      cliente; o peso restante é o supabase-js, que embarca o cliente de Realtime mesmo
+      sem o app assinar nada — mexer nisso é trabalho de biblioteca, não de configuração.
+      Também não foi feito: preload de rota no hover, e `select("*")` nas listagens,
+      que traz colunas a mais mas não foi o que a medição apontou como gargalo.
 
 ## Pendências conhecidas
 - [ ] **Modelos de e-mail com a identidade MCB, ainda não ativos.** O envio de
