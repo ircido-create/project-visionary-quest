@@ -12,7 +12,7 @@
 ## Fase 2 — Evidências e IA auditável
 - [x] Upload de prints com confirmação humana (Storage + tabela `files`)
 - [x] Análise de perfil com IA registrando entrada, saída e versão do prompt
-- [ ] Portal da candidata com tarefas e evolução
+- [x] Portal da candidata com tarefas e evolução
 
 ## Fase 3 — Operação e cobrança
 - [ ] Stripe (checkout, assinatura, limites por plano)
@@ -25,6 +25,11 @@
 - [ ] Otimização de desempenho
 
 ## Pendências conhecidas
+- [ ] **O envio de e-mail não funciona.** O SMTP embutido do Supabase não entrega, e o
+      customizado (Hostinger) ainda não foi configurado. O portal foi validado com uma
+      conta já confirmada à mão: o vínculo, a listagem e a conclusão de tarefa funcionam,
+      mas **uma candidata real não consegue confirmar o e-mail**, então não chega até lá.
+      Configurar SPF e DKIM junto, senão a mensagem sai e cai em spam.
 - [ ] O código ignora o erro dos inserts em `audit_logs`. Foi por isso que a trilha
       passou a fase 1 inteira sem gravar nada sem ninguém notar — a política de INSERT
       não existia. A política foi corrigida, mas o padrão de engolir o erro continua e
