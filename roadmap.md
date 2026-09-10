@@ -17,7 +17,7 @@
 ## Fase 3 — Operação e cobrança
 - [x] Limites por plano aplicados (candidatas, equipe, análises no mês, armazenamento)
 - [x] Painel de superadministração, com troca de plano e suspensão de ambiente
-- [ ] Relatórios e exportações
+- [x] Exportação de candidatas e tarefas em CSV, registrada em `audit_logs`
 - [ ] ~~Stripe (checkout, assinatura)~~ — **adiado por decisão, não por falta de tempo.**
       Os limites já são aplicados e o superadministrador troca o plano à mão, o que
       sustenta a operação com as primeiras gestoras. Automatizar cobrança antes de haver
