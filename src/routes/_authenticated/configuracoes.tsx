@@ -175,15 +175,31 @@ function SettingsPage() {
       return;
     }
     setSavingPassword(true);
-    const { error } = await supabase.auth.updateUser({ password: passwords.next });
+    // Para quem já está logado o servidor exige a senha atual; sem ela a troca falha
+    // com "Current password required".
+    const { error } = await supabase.auth.updateUser({
+      password: passwords.next,
+      current_password: passwords.current,
+    } as Parameters<typeof supabase.auth.updateUser>[0]);
     setSavingPassword(false);
     if (error) {
-      toast.error("Não foi possível alterar a senha.");
+      const code = (error as { code?: string }).code;
+      const text = error.message.toLowerCase();
+      if (code === "weak_password" || text.includes("weak")) {
+        toast.error("Essa senha é fácil de descobrir. Escolha outra, mais longa e única.");
+      } else if (code === "same_password") {
+        toast.error("A nova senha precisa ser diferente da atual.");
+      } else if (text.includes("current password")) {
+        toast.error("A senha atual não confere. Se você entra pelo Google, use \"Esqueci minha senha\" na tela de entrada.");
+      } else {
+        toast.error("Não foi possível alterar a senha.");
+      }
       return;
     }
-    setPasswords({ next: "", confirm: "" });
+    setPasswords({ current: "", next: "", confirm: "" });
     toast.success("Senha alterada.");
   }
+
 
   const settings = query.data;
   const publicUrl = settings?.tenant ? `/g/${settings.tenant.slug}` : null;
