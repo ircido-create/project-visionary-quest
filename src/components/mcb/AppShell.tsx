@@ -35,6 +35,9 @@ export function AppShell({
   const { data: plataforma } = useQuery({
     queryKey: ["mcb", "superadmin"],
     queryFn: () => verificarSuperadmin(),
+    // Quem é superadmin não muda no meio da sessão. Estava sendo consultado a cada
+    // navegação só para decidir se um link aparece.
+    staleTime: Infinity,
   });
 
   const itensDeNavegacao = plataforma?.superadmin

@@ -8,7 +8,15 @@ const STORAGE_KEY = "mcb.activeTenant";
 
 export function useWorkspace() {
   const fetchWorkspaces = useServerFn(getWorkspaces);
-  const query = useQuery({ queryKey: ["mcb", "workspaces"], queryFn: () => fetchWorkspaces() });
+  // A lista de ambientes não muda sozinha durante a sessão, e os dois pontos que a
+  // mudam (criar e renomear ambiente) chamam `refetch()` logo depois — que ignora o
+  // staleTime. Sem isto, esta consulta era refeita a cada navegação, em toda página,
+  // porque o hook vive no AppShell.
+  const query = useQuery({
+    queryKey: ["mcb", "workspaces"],
+    queryFn: () => fetchWorkspaces(),
+    staleTime: Infinity,
+  });
   const [stored, setStored] = useState<string | null>(null);
 
   useEffect(() => {

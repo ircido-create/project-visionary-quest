@@ -43,6 +43,9 @@ function TasksPage() {
   const invalidate = () => {
     queryClient.invalidateQueries({ queryKey: ["mcb", "tasks", tenantId] });
     queryClient.invalidateQueries({ queryKey: ["mcb", "dashboard", tenantId] });
+    // O outro lado do mesmo problema: a tarefa concluída aqui aparece no detalhe da
+    // candidata. A chave é um prefixo, então alcança o detalhe de qualquer candidata.
+    queryClient.invalidateQueries({ queryKey: ["mcb", "influencer", tenantId] });
   };
 
   const guard = () => {

@@ -118,6 +118,10 @@ function CandidateDetail() {
     queryClient.invalidateQueries({ queryKey: ["mcb", "influencer", tenantId, id] });
     queryClient.invalidateQueries({ queryKey: ["mcb", "dashboard", tenantId] });
     queryClient.invalidateQueries({ queryKey: ["mcb", "influencers", tenantId] });
+    // Duas mutações desta página mexem em tarefas. Sem esta linha, a página Tarefas
+    // ficava com o dado velho — hoje isso não aparece porque o staleTime era 0 e tudo
+    // se corrigia na navegação seguinte.
+    queryClient.invalidateQueries({ queryKey: ["mcb", "tasks", tenantId] });
   };
 
   const guard = () => {
