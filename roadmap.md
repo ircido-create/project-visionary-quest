@@ -25,11 +25,11 @@
 - [ ] Otimização de desempenho
 
 ## Pendências conhecidas
-- [ ] **O envio de e-mail não funciona.** O SMTP embutido do Supabase não entrega, e o
-      customizado (Hostinger) ainda não foi configurado. O portal foi validado com uma
-      conta já confirmada à mão: o vínculo, a listagem e a conclusão de tarefa funcionam,
-      mas **uma candidata real não consegue confirmar o e-mail**, então não chega até lá.
-      Configurar SPF e DKIM junto, senão a mensagem sai e cai em spam.
+- [ ] **E-mail de autenticação em ativação.** Os 6 modelos (confirmação, convite, magic
+      link, recuperação, troca de e-mail, código) foram criados com a identidade MCB e
+      enviam pelo domínio `notify.mcblessing.com.br`. Falta concluir a verificação de DNS
+      do domínio (registros NS e TXT no provedor do domínio) para os envios começarem —
+      acompanhar em Cloud → Emails.
 - [ ] O código ignora o erro dos inserts em `audit_logs`. Foi por isso que a trilha
       passou a fase 1 inteira sem gravar nada sem ninguém notar — a política de INSERT
       não existia. A política foi corrigida, mas o padrão de engolir o erro continua e

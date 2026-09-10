@@ -14,6 +14,69 @@ export type Database = {
   }
   public: {
     Tables: {
+      ai_analyses: {
+        Row: {
+          completed_at: string | null
+          confirmed: boolean
+          created_at: string
+          created_by: string | null
+          error: string | null
+          id: string
+          influencer_id: string
+          input: Json
+          model: string
+          output: Json | null
+          prompt_version: string
+          status: Database["public"]["Enums"]["ai_analysis_status"]
+          tenant_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          confirmed?: boolean
+          created_at?: string
+          created_by?: string | null
+          error?: string | null
+          id?: string
+          influencer_id: string
+          input?: Json
+          model: string
+          output?: Json | null
+          prompt_version: string
+          status?: Database["public"]["Enums"]["ai_analysis_status"]
+          tenant_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          confirmed?: boolean
+          created_at?: string
+          created_by?: string | null
+          error?: string | null
+          id?: string
+          influencer_id?: string
+          input?: Json
+          model?: string
+          output?: Json | null
+          prompt_version?: string
+          status?: Database["public"]["Enums"]["ai_analysis_status"]
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_analyses_influencer_id_fkey"
+            columns: ["influencer_id"]
+            isOneToOne: false
+            referencedRelation: "influencers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ai_analyses_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       applications: {
         Row: {
           answers: Json
@@ -981,6 +1044,7 @@ export type Database = {
     }
     Functions: {
       can_read_tenant: { Args: { _tenant: string }; Returns: boolean }
+      get_portal_data: { Args: never; Returns: Json }
       has_platform_role: {
         Args: {
           _role: Database["public"]["Enums"]["platform_role"]
@@ -995,11 +1059,21 @@ export type Database = {
         }
         Returns: boolean
       }
+      influencer_set_task_status: {
+        Args: {
+          _status: Database["public"]["Enums"]["task_status"]
+          _task: string
+        }
+        Returns: boolean
+      }
       is_tenant_member: { Args: { _tenant: string }; Returns: boolean }
+      link_influencer_account: { Args: never; Returns: number }
       shares_tenant_with: { Args: { _user: string }; Returns: boolean }
+      storage_tenant_id: { Args: { _name: string }; Returns: string }
       tenant_is_demo: { Args: { _tenant: string }; Returns: boolean }
     }
     Enums: {
+      ai_analysis_status: "PENDENTE" | "CONCLUIDA" | "ERRO"
       data_source: "META_API" | "MANUAL" | "SCREENSHOT" | "INTERNAL"
       ig_profile_type: "PESSOAL" | "CRIADOR" | "COMERCIAL" | "NAO_SEI"
       influencer_status:
@@ -1157,6 +1231,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      ai_analysis_status: ["PENDENTE", "CONCLUIDA", "ERRO"],
       data_source: ["META_API", "MANUAL", "SCREENSHOT", "INTERNAL"],
       ig_profile_type: ["PESSOAL", "CRIADOR", "COMERCIAL", "NAO_SEI"],
       influencer_status: [
