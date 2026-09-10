@@ -47,7 +47,7 @@ function SettingsPage() {
   const [newTenant, setNewTenant] = useState({ name: "", managerName: "" });
   const [inviteEmail, setInviteEmail] = useState("");
   const [myProfile, setMyProfile] = useState({ fullName: "", email: "", avatarUrl: "" });
-  const [passwords, setPasswords] = useState({ next: "", confirm: "" });
+  const [passwords, setPasswords] = useState({ current: "", next: "", confirm: "" });
   const [savingPassword, setSavingPassword] = useState(false);
   const [branding, setBranding] = useState({
     managerName: "",
