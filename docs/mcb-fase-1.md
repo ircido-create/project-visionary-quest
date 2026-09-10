@@ -38,7 +38,12 @@ O progresso (0–100) soma pesos de dados objetivos e de sinais de estruturaçã
 
 Nesta fase os números são informados manualmente ou por print, com confirmação humana e
 registro da fonte (`data_source`). A estrutura (`metric_snapshots`, `files`) já está pronta
-para a integração oficial da Meta em fase posterior.
+para a integração oficial da Meta.
+
+A integração chegou na fase 4 e usa o mesmo `data_source`, agora com `META_API` — ver
+`docs/integracao-meta.md`. Ela **não substitui** o print: a Meta só informa a divisão de
+público por gênero a partir de 100 seguidores, e abaixo disso o print continua sendo o
+único caminho.
 
 ## LGPD
 

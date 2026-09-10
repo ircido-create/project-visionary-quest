@@ -7,6 +7,7 @@ import { getPortal, setPortalTaskStatus, type PortalApplication } from "@/lib/mc
 import { STATUS_LABELS, type InfluencerStatus } from "@/lib/mcb/labels";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
+import { InstagramSection } from "@/components/mcb/InstagramSection";
 
 export const Route = createFileRoute("/_authenticated/portal")({
   head: () => ({
@@ -171,6 +172,9 @@ function Application({
           </ul>
         </div>
       ) : null}
+
+      {/* A candidata é a dona da conta, então é aqui que ela conecta. */}
+      <InstagramSection influencerId={application.id} podeGerenciar={true} />
     </section>
   );
 }

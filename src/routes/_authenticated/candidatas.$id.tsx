@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { AppShell } from "@/components/mcb/AppShell";
 import { AnalysisSection } from "@/components/mcb/AnalysisSection";
 import { EvidenceSection } from "@/components/mcb/EvidenceSection";
+import { InstagramSection } from "@/components/mcb/InstagramSection";
 import {
   addNote,
   changeInfluencerStatus,
@@ -692,6 +693,9 @@ function CandidateDetail() {
         <EvidenceSection tenantId={tenantId!} influencerId={id} readOnly={readOnly} />
 
         <AnalysisSection tenantId={tenantId!} influencerId={id} readOnly={readOnly} />
+
+        {/* Só leitura: quem conecta e desconecta é a candidata, no portal dela. */}
+        <InstagramSection influencerId={id} podeGerenciar={false} />
 
         <section className="glass rounded-xl border border-border/60 p-6 lg:col-span-3">
           <h2 className="font-serif text-xl">Histórico de status</h2>

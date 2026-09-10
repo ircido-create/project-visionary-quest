@@ -28,7 +28,20 @@
       webhook e assinatura muda conforme a escolha, então ela vem antes do código.
 
 ## Fase 4 — Integrações e qualidade
-- [ ] Integração oficial Meta/Instagram
+- [x] Integração oficial Meta/Instagram, pelo caminho "Instagram API with Instagram
+      Login" — a candidata conecta a própria conta, sem exigir Página do Facebook. O
+      token fica cifrado no Vault e a gestora nunca o lê, o que está verificado em
+      `supabase/tests/instagram.test.sql` com controle embutido no teste.
+      **Chega desligada**: sem `META_APP_ID`/`META_APP_SECRET`/`META_REDIRECT_URI` a
+      seção some da tela. Ligar depende de duas coisas que só o dono da conta faz —
+      criar o app na Meta e passar pela revisão dela. Passo a passo em
+      `docs/integracao-meta.md`.
+      Dois limites que não são contornáveis: a divisão de público por gênero só existe
+      a partir de 100 seguidores (por isso o fluxo de print continua necessário), e o
+      sync é sob demanda, não noturno — agendar exigiria a service role key, que este
+      projeto não usa.
+      **Não exercitado de ponta a ponta**: sem app na Meta, o fluxo de OAuth real nunca
+      rodou. O que está verificado é o banco, o módulo puro (18 testes) e a compilação.
 - [x] Testes automatizados em duas camadas: 41 casos em vitest (motor de qualificação,
       limites por plano, CSV, evidências) e 18 verificações de integração em
       `supabase/tests/rls.test.sql`, cobrindo políticas de RLS e funções
