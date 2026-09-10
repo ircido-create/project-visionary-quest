@@ -15,9 +15,17 @@
 - [x] Portal da candidata com tarefas e evolução
 
 ## Fase 3 — Operação e cobrança
-- [ ] Stripe (checkout, assinatura, limites por plano)
-- [ ] Painel de superadministração
+- [x] Limites por plano aplicados (candidatas, equipe, análises no mês, armazenamento)
+- [x] Painel de superadministração, com troca de plano e suspensão de ambiente
 - [ ] Relatórios e exportações
+- [ ] ~~Stripe (checkout, assinatura)~~ — **adiado por decisão, não por falta de tempo.**
+      Os limites já são aplicados e o superadministrador troca o plano à mão, o que
+      sustenta a operação com as primeiras gestoras. Automatizar cobrança antes de haver
+      volume adicionaria chave secreta, webhook e ambiente de teste sem retorno.
+      Quando voltar ao assunto, decidir o provedor primeiro: cobrança em BRL pelo Stripe
+      exige conta brasileira e tem particularidades de boleto e Pix; alternativas locais
+      (Asaas, Pagar.me) costumam dar menos atrito para público brasileiro. A estrutura de
+      webhook e assinatura muda conforme a escolha, então ela vem antes do código.
 
 ## Fase 4 — Integrações e qualidade
 - [ ] Integração oficial Meta/Instagram
