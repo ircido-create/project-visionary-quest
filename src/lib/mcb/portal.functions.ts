@@ -46,31 +46,16 @@ export type PortalApplication = {
   feedbacks: Array<{ texto: string; data: string }>;
 };
 
-/**
- * As três RPCs foram aplicadas à mão, então o types.ts gerado pelo Lovable ainda não
- * as conhece. Mesmo motivo e mesmo destino do ai-types.ts: quando o Lovable regenerar,
- * trocar por `supabase.rpc` tipado e apagar este helper.
- */
-type RpcCaller = (
-  name: string,
-  args?: Record<string, unknown>,
-) => Promise<{ data: unknown; error: { message: string } | null }>;
-
-const rpc = (client: unknown): RpcCaller =>
-  (client as { rpc: RpcCaller }).rpc.bind(client) as RpcCaller;
-
 /** Vincula a conta pelo e-mail (idempotente) e devolve as candidaturas dela. */
 export const getPortal = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const call = rpc(context.supabase);
-
     // Roda sempre: é barato, idempotente, e cobre o caso de a candidata se cadastrar
     // antes de a gestora registrar a candidatura dela.
-    const { error: linkError } = await call("link_influencer_account");
+    const { error: linkError } = await context.supabase.rpc("link_influencer_account");
     if (linkError) throw new Error(linkError.message);
 
-    const { data, error } = await call("get_portal_data");
+    const { data, error } = await context.supabase.rpc("get_portal_data");
     if (error) throw new Error(error.message);
 
     return { applications: (data ?? []) as PortalApplication[] };
@@ -88,9 +73,7 @@ export const setPortalTaskStatus = createServerFn({ method: "POST" })
       .parse(input),
   )
   .handler(async ({ data, context }) => {
-    const call = rpc(context.supabase);
-
-    const { data: updated, error } = await call("influencer_set_task_status", {
+    const { data: updated, error } = await context.supabase.rpc("influencer_set_task_status", {
       _task: data.taskId,
       _status: data.status,
     });
@@ -113,10 +96,8 @@ export const resolveLanding = createServerFn({ method: "POST" })
     const { userId } = context;
 
     try {
-      const call = rpc(context.supabase);
-
       // Vincula antes de decidir: no primeiro login a candidatura ainda não tem dono.
-      await call("link_influencer_account");
+      await context.supabase.rpc("link_influencer_account");
 
       const { data: memberships } = await context.supabase
         .from("tenant_memberships")
@@ -128,7 +109,7 @@ export const resolveLanding = createServerFn({ method: "POST" })
         return { to: "dashboard" as const };
       }
 
-      const { data } = await call("get_portal_data");
+      const { data } = await context.supabase.rpc("get_portal_data");
       const applications = (data ?? []) as unknown[];
 
       return { to: applications.length > 0 ? ("portal" as const) : ("dashboard" as const) };

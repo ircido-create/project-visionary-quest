@@ -25,11 +25,12 @@
 - [ ] Otimização de desempenho
 
 ## Pendências conhecidas
-- [ ] **E-mail de autenticação em ativação.** Os 6 modelos (confirmação, convite, magic
-      link, recuperação, troca de e-mail, código) foram criados com a identidade MCB e
-      enviam pelo domínio `notify.mcblessing.com.br`. Falta concluir a verificação de DNS
-      do domínio (registros NS e TXT no provedor do domínio) para os envios começarem —
-      acompanhar em Cloud → Emails.
+- [ ] **Modelos de e-mail com a identidade MCB, ainda não ativos.** O envio de
+      autenticação já funciona pelo SMTP da Hostinger — cadastro, confirmação e login
+      foram exercidos de ponta a ponta. O que falta é a camada de marca: os 6 modelos
+      enviam por `notify.mcblessing.com.br`, cuja verificação de DNS (NS e TXT) ainda
+      não concluiu. Até lá as mensagens saem no formato padrão do Supabase, que entrega
+      normalmente. Acompanhar em Cloud → Emails.
 - [ ] O código ignora o erro dos inserts em `audit_logs`. Foi por isso que a trilha
       passou a fase 1 inteira sem gravar nada sem ninguém notar — a política de INSERT
       não existia. A política foi corrigida, mas o padrão de engolir o erro continua e
@@ -40,7 +41,3 @@
 - [ ] Revisar aviso do verificador de segurança sobre funções auxiliares de permissão
       (`is_tenant_member`, `has_tenant_role`, `tenant_is_demo`, `has_platform_role`,
       `can_read_tenant`, `storage_tenant_id`) — hoje necessárias para as políticas de acesso.
-- [ ] As políticas do bucket `evidencias` foram criadas pela UI de Storage, não por
-      migração: o SQL editor não é dono de `storage.objects`. O arquivo
-      `supabase/migrations/20260909190000_fase2_evidencias_storage.sql` guarda a
-      definição, mas recriar o banco do zero exige repetir esse passo à mão.

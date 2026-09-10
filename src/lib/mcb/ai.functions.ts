@@ -14,7 +14,6 @@ import { GoogleGenAI } from "@google/genai";
 import * as z4 from "zod/v4";
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import { withAi, type AiAnalysisStatus } from "@/lib/mcb/ai-types";
 import {
   ANALYSIS_MODEL,
   PROMPT_VERSION,
@@ -73,8 +72,7 @@ export const createProfileAnalysis = createServerFn({ method: "POST" })
     z.object({ tenantId: z.string().uuid(), influencerId: z.string().uuid() }).parse(input),
   )
   .handler(async ({ data, context }) => {
-    const { userId } = context;
-    const supabase = withAi(context.supabase);
+    const { supabase, userId } = context;
 
     const { data: influencer, error: lookupError } = await supabase
       .from("influencers")
@@ -139,7 +137,7 @@ export const createProfileAnalysis = createServerFn({ method: "POST" })
         prompt_version: PROMPT_VERSION,
         model: ANALYSIS_MODEL,
         input: promptInput as unknown as Json,
-        status: "PENDENTE" as AiAnalysisStatus,
+        status: "PENDENTE",
         created_by: userId,
       })
       .select("id")
@@ -148,7 +146,7 @@ export const createProfileAnalysis = createServerFn({ method: "POST" })
     if (!analysis) throw new Error("Não foi possível registrar a análise.");
 
     const finish = async (fields: {
-      status: AiAnalysisStatus;
+      status: "CONCLUIDA" | "ERRO";
       output?: Json | null;
       error?: string | null;
     }) => {
@@ -222,7 +220,7 @@ export const listAnalyses = createServerFn({ method: "POST" })
     z.object({ tenantId: z.string().uuid(), influencerId: z.string().uuid() }).parse(input),
   )
   .handler(async ({ data, context }) => {
-    const supabase = withAi(context.supabase);
+    const { supabase } = context;
 
     const { data: rows, error } = await supabase
       .from("ai_analyses")
@@ -244,8 +242,7 @@ export const confirmAnalysis = createServerFn({ method: "POST" })
     z.object({ tenantId: z.string().uuid(), analysisId: z.string().uuid() }).parse(input),
   )
   .handler(async ({ data, context }) => {
-    const { userId } = context;
-    const supabase = withAi(context.supabase);
+    const { supabase, userId } = context;
 
     const { data: updated, error } = await supabase
       .from("ai_analyses")
