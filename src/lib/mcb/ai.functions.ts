@@ -15,6 +15,7 @@ import * as z4 from "zod/v4";
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { audit } from "@/lib/mcb/audit";
+import { garantirEspacoParaAnalise } from "@/lib/mcb/limits";
 import {
   ANALYSIS_MODEL,
   PROMPT_VERSION,
@@ -74,6 +75,8 @@ export const createProfileAnalysis = createServerFn({ method: "POST" })
   )
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
+
+    await garantirEspacoParaAnalise(supabase, data.tenantId);
 
     const { data: influencer, error: lookupError } = await supabase
       .from("influencers")

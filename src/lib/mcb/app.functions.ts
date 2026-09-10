@@ -3,6 +3,7 @@ import { z } from "zod";
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { audit } from "@/lib/mcb/audit";
+import { garantirEspacoParaMembro } from "@/lib/mcb/limits";
 import { evaluateQualification, type ProgressSignals } from "@/lib/mcb/qualification";
 import type { Database, Json } from "@/integrations/supabase/types";
 
@@ -728,6 +729,8 @@ export const inviteMember = createServerFn({ method: "POST" })
   )
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
+    await garantirEspacoParaMembro(supabase, data.tenantId);
+
     const { error } = await supabase.from("invitations").upsert({
       tenant_id: data.tenantId,
       email: data.email.toLowerCase(),

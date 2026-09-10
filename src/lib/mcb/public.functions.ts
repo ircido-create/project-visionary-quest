@@ -4,6 +4,7 @@ import { z } from "zod";
 
 import type { Database, Json } from "@/integrations/supabase/types";
 import { audit } from "@/lib/mcb/audit";
+import { garantirEspacoParaCandidata } from "@/lib/mcb/limits";
 import { evaluateQualification } from "@/lib/mcb/qualification";
 
 function publicClient() {
@@ -37,7 +38,9 @@ export type ManagerPage = {
 };
 
 export const getManagerPage = createServerFn({ method: "GET" })
-  .inputValidator((input: { slug: string }) => z.object({ slug: z.string().min(1).max(80) }).parse(input))
+  .inputValidator((input: { slug: string }) =>
+    z.object({ slug: z.string().min(1).max(80) }).parse(input),
+  )
   .handler(async ({ data }): Promise<ManagerPage | null> => {
     const supabase = publicClient();
     const { data: tenant } = await supabase
@@ -50,7 +53,9 @@ export const getManagerPage = createServerFn({ method: "GET" })
 
     const { data: branding } = await supabase
       .from("tenant_branding")
-      .select("manager_name, headline, subheadline, authority_quote, bio, instagram_handle, accent_color")
+      .select(
+        "manager_name, headline, subheadline, authority_quote, bio, instagram_handle, accent_color",
+      )
       .eq("tenant_id", tenant.id)
       .maybeSingle();
 
@@ -74,7 +79,9 @@ export const listPlans = createServerFn({ method: "GET" }).handler(async () => {
   const supabase = publicClient();
   const { data } = await supabase
     .from("plans")
-    .select("id, code, name, description, price_cents, max_candidates, max_members, max_ai_analyses, custom_branding")
+    .select(
+      "id, code, name, description, price_cents, max_candidates, max_members, max_ai_analyses, custom_branding",
+    )
     .eq("is_active", true)
     .order("sort_order");
   return data ?? [];
@@ -144,6 +151,19 @@ export const submitApplication = createServerFn({ method: "POST" })
 
     if (existing) {
       return { ok: true as const, duplicated: true as const };
+    }
+
+    // O limite é da gestora, não da candidata. Ela não deve ver o nome do plano nem
+    // quantas vagas restam — é informação comercial de terceiro, e não a ajuda em nada.
+    // Por isso a recusa vira uma mensagem neutra em vez de propagar o erro.
+    try {
+      await garantirEspacoParaCandidata(supabaseAdmin, tenant.id);
+    } catch {
+      return {
+        ok: false as const,
+        reason:
+          "Esta gestora não está recebendo novas candidaturas no momento. Tente novamente mais tarde ou procure outra gestora.",
+      };
     }
 
     const evaluation = evaluateQualification({

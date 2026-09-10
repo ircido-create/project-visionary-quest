@@ -126,7 +126,10 @@ function SettingsPage() {
       toast.success("Convite registrado.");
       queryClient.invalidateQueries({ queryKey: ["mcb", "settings", tenantId] });
     },
-    onError: () => toast.error("Não foi possível registrar o convite."),
+    // Mostra a mensagem do servidor: quando o limite do plano recusa, o motivo é a
+    // informação útil, e um texto genérico esconderia justamente ela.
+    onError: (error: Error) =>
+      toast.error(error.message || "Não foi possível registrar o convite."),
   });
 
   const profileMutation = useMutation({

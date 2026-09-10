@@ -68,7 +68,7 @@ export function EvidenceSection({ tenantId, influencerId, readOnly }: Props) {
       }
 
       const { path, token } = await requestUpload({
-        data: { tenantId, influencerId, mimeType: file.type },
+        data: { tenantId, influencerId, mimeType: file.type, sizeBytes: file.size },
       });
 
       const { error } = await supabase.storage

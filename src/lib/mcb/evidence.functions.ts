@@ -3,6 +3,7 @@ import { z } from "zod";
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { audit } from "@/lib/mcb/audit";
+import { garantirEspacoParaArquivo } from "@/lib/mcb/limits";
 import {
   EVIDENCE_BUCKET,
   EVIDENCE_EXTENSION,
@@ -25,14 +26,22 @@ const evidenceMimeSchema = z.enum(EVIDENCE_MIME_TYPES);
 /** Reserva um caminho no bucket e devolve o token de upload direto do navegador. */
 export const createEvidenceUpload = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { tenantId: string; influencerId: string; mimeType: string }) =>
-    z
-      .object({
-        tenantId: z.string().uuid(),
-        influencerId: z.string().uuid(),
-        mimeType: evidenceMimeSchema,
-      })
-      .parse(input),
+  .inputValidator(
+    (input: {
+      tenantId: string;
+      influencerId: string;
+      mimeType: string;
+      /** Conferido antes do upload, para o arquivo nem chegar a subir se estourar a cota. */
+      sizeBytes: number;
+    }) =>
+      z
+        .object({
+          tenantId: z.string().uuid(),
+          influencerId: z.string().uuid(),
+          mimeType: evidenceMimeSchema,
+          sizeBytes: z.number().int().min(1).max(MAX_EVIDENCE_BYTES),
+        })
+        .parse(input),
   )
   .handler(async ({ data, context }) => {
     const { supabase } = context;
@@ -47,6 +56,8 @@ export const createEvidenceUpload = createServerFn({ method: "POST" })
       .maybeSingle();
     if (lookupError) throw new Error(lookupError.message);
     if (!influencer) throw new Error("Candidata não encontrada neste ambiente.");
+
+    await garantirEspacoParaArquivo(supabase, data.tenantId, data.sizeBytes);
 
     const extension = EVIDENCE_EXTENSION[data.mimeType];
     const path = `${data.tenantId}/${data.influencerId}/${crypto.randomUUID()}.${extension}`;
