@@ -152,10 +152,16 @@ function AuthPage() {
           MCB
         </Link>
         <h1 className="mt-4 font-serif text-2xl">
-          {mode === "signin" ? "Entrar no seu ambiente" : "Criar sua conta de gestora"}
+          {mode === "signin"
+            ? "Entrar no seu ambiente"
+            : mode === "signup"
+              ? "Criar sua conta de gestora"
+              : "Recuperar o acesso"}
         </h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          Acompanhe candidaturas, evolução e qualificação em um só lugar.
+          {mode === "forgot"
+            ? "Informe seu e-mail e enviamos um link para você criar uma nova senha."
+            : "Acompanhe candidaturas, evolução e qualificação em um só lugar."}
         </p>
 
         <Button type="button" variant="outline" className="mt-6 w-full" onClick={handleGoogle}>
@@ -177,37 +183,59 @@ function AuthPage() {
             <Label htmlFor="email">E-mail</Label>
             <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
           </div>
-          <div className="grid gap-1.5">
-            <Label htmlFor="password">Senha</Label>
-            <Input
-              id="password"
-              type="password"
-              minLength={8}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
+          {mode === "forgot" ? null : (
+            <div className="grid gap-1.5">
+              <Label htmlFor="password">Senha</Label>
+              <Input
+                id="password"
+                type="password"
+                minLength={8}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </div>
+          )}
 
           {error ? <p className="text-sm text-destructive">{error}</p> : null}
           {message ? <p className="text-sm text-muted-foreground">{message}</p> : null}
 
           <Button type="submit" disabled={busy}>
-            {busy ? "Aguarde..." : mode === "signin" ? "Entrar" : "Criar conta"}
+            {busy
+              ? "Aguarde..."
+              : mode === "signin"
+                ? "Entrar"
+                : mode === "signup"
+                  ? "Criar conta"
+                  : "Enviar link"}
           </Button>
         </form>
 
-        <button
-          type="button"
-          className="mt-5 text-sm text-muted-foreground underline underline-offset-4 hover:text-foreground"
-          onClick={() => {
-            setMode(mode === "signin" ? "signup" : "signin");
-            setError(null);
-            setMessage(null);
-          }}
-        >
-          {mode === "signin" ? "Ainda não tenho conta" : "Já tenho conta"}
-        </button>
+        <div className="mt-5 grid gap-2 text-sm">
+          <button
+            type="button"
+            className="justify-self-start text-muted-foreground underline underline-offset-4 hover:text-foreground"
+            onClick={() => {
+              setMode(mode === "signup" ? "signin" : "signup");
+              setError(null);
+              setMessage(null);
+            }}
+          >
+            {mode === "signup" ? "Já tenho conta" : "Ainda não tenho conta"}
+          </button>
+          <button
+            type="button"
+            className="justify-self-start text-muted-foreground underline underline-offset-4 hover:text-foreground"
+            onClick={() => {
+              setMode(mode === "forgot" ? "signin" : "forgot");
+              setError(null);
+              setMessage(null);
+            }}
+          >
+            {mode === "forgot" ? "Voltar para entrar" : "Esqueci minha senha"}
+          </button>
+        </div>
+
       </div>
     </main>
   );
