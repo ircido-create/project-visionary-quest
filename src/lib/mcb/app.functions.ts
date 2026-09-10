@@ -27,16 +27,16 @@ export const getWorkspaces = createServerFn({ method: "GET" })
 
     const [{ data: memberships }, { data: demoTenants }, { data: profile }] = await Promise.all([
       supabase.from("tenant_memberships").select("tenant_id, role").eq("user_id", userId),
-      supabase.from("tenants").select("id, name, slug, is_demo, plan_id").eq("is_demo", true).order("created_at"),
+      supabase.from("tenants").select("id, name, slug, is_demo, plan_id, status").eq("is_demo", true).order("created_at"),
       supabase.from("profiles").select("id, full_name, email, avatar_url").eq("id", userId).maybeSingle(),
     ]);
 
     const ownTenantIds = (memberships ?? []).map((m) => m.tenant_id);
-    let ownTenants: Array<{ id: string; name: string; slug: string; is_demo: boolean; plan_id: string | null }> = [];
+    let ownTenants: Array<{ id: string; name: string; slug: string; is_demo: boolean; plan_id: string | null; status: string }> = [];
     if (ownTenantIds.length > 0) {
       const { data } = await supabase
         .from("tenants")
-        .select("id, name, slug, is_demo, plan_id")
+        .select("id, name, slug, is_demo, plan_id, status")
         .in("id", ownTenantIds);
       ownTenants = data ?? [];
     }

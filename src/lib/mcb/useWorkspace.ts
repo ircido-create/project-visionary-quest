@@ -34,6 +34,8 @@ export function useWorkspace() {
     active,
     tenantId: active?.id ?? null,
     readOnly: active?.readOnly ?? false,
+    /** Ambiente suspenso pela administração: leitura continua, escrita não. */
+    suspenso: (active as { status?: string } | null)?.status === "SUSPENDED",
     setActive,
     refetch: query.refetch,
   };

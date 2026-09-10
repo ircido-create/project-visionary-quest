@@ -3,6 +3,9 @@ import type { ReactNode } from "react";
 
 import { supabase } from "@/integrations/supabase/client";
 import { useWorkspace } from "@/lib/mcb/useWorkspace";
+import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { amISuperadmin } from "@/lib/mcb/admin.functions";
 import { cn } from "@/lib/utils";
 
 const NAV = [
@@ -24,7 +27,19 @@ export function AppShell({
   actions?: ReactNode;
 }) {
   const navigate = useNavigate();
-  const { tenants, active, setActive, profile, readOnly } = useWorkspace();
+  const { tenants, active, setActive, profile, readOnly, suspenso } = useWorkspace();
+
+  // O acesso à administração só aparece para quem de fato o tem. A garantia continua
+  // sendo do servidor: esconder o link é conveniência, não segurança.
+  const verificarSuperadmin = useServerFn(amISuperadmin);
+  const { data: plataforma } = useQuery({
+    queryKey: ["mcb", "superadmin"],
+    queryFn: () => verificarSuperadmin(),
+  });
+
+  const itensDeNavegacao = plataforma?.superadmin
+    ? [...NAV, { to: "/admin", label: "Plataforma" } as const]
+    : NAV;
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -57,7 +72,7 @@ export function AppShell({
           </div>
 
           <nav className="mt-6 flex flex-wrap gap-1 lg:flex-col">
-            {NAV.map((item) => (
+            {itensDeNavegacao.map((item) => (
               <Link
                 key={item.to}
                 to={item.to}
@@ -108,6 +123,14 @@ export function AppShell({
             </div>
             {actions}
           </header>
+
+          {suspenso ? (
+            <p className="mt-6 rounded-lg border border-destructive/60 bg-destructive/10 px-4 py-3 text-sm">
+              Este ambiente está suspenso pela administração. Você continua vendo todos os dados,
+              mas não é possível alterá-los nem receber novas candidaturas. Fale com a administração
+              da plataforma para reativar.
+            </p>
+          ) : null}
 
           {readOnly ? (
             <p className="mt-6 rounded-lg border border-border bg-muted/60 px-4 py-3 text-sm text-muted-foreground">

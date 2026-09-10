@@ -45,11 +45,13 @@ export const getManagerPage = createServerFn({ method: "GET" })
     const supabase = publicClient();
     const { data: tenant } = await supabase
       .from("tenants")
-      .select("id, name, slug, is_demo, is_public_page_enabled")
+      .select("id, name, slug, is_demo, is_public_page_enabled, status")
       .eq("slug", data.slug)
       .maybeSingle();
 
-    if (!tenant || !tenant.is_public_page_enabled) return null;
+    // Ambiente suspenso some do público: manter a página no ar convidaria candidaturas
+    // que seriam recusadas no envio.
+    if (!tenant || !tenant.is_public_page_enabled || tenant.status !== "ACTIVE") return null;
 
     const { data: branding } = await supabase
       .from("tenant_branding")
@@ -93,6 +95,7 @@ export const listPublicManagers = createServerFn({ method: "GET" }).handler(asyn
     .from("tenants")
     .select("name, slug, is_demo")
     .eq("is_public_page_enabled", true)
+    .eq("status", "ACTIVE")
     .order("created_at");
   return data ?? [];
 });
@@ -132,12 +135,12 @@ export const submitApplication = createServerFn({ method: "POST" })
     // O tenant é sempre resolvido no servidor a partir do slug da landing page.
     const { data: tenant, error: tenantError } = await supabaseAdmin
       .from("tenants")
-      .select("id, is_public_page_enabled")
+      .select("id, is_public_page_enabled, status")
       .eq("slug", data.slug)
       .maybeSingle();
 
     if (tenantError) throw new Error("Não foi possível registrar sua candidatura agora.");
-    if (!tenant || !tenant.is_public_page_enabled) {
+    if (!tenant || !tenant.is_public_page_enabled || tenant.status !== "ACTIVE") {
       return { ok: false as const, reason: "Página de candidatura indisponível." };
     }
 
