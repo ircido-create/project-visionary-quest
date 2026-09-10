@@ -49,3 +49,20 @@ para a integração oficial da Meta em fase posterior.
 ## Próximas fases
 
 Ver `roadmap.md`.
+
+## Funções auxiliares de permissão
+
+`is_tenant_member`, `has_tenant_role`, `tenant_is_demo`, `has_platform_role`,
+`can_read_tenant` e `shares_tenant_with` são `security definer` por necessidade, não por
+descuido: sem isso, uma política em `tenant_memberships` que consulta
+`tenant_memberships` entraria em recursão infinita. É o padrão recomendado para
+funções usadas dentro de políticas RLS.
+
+Revisadas em 2026-09-10: todas com `search_path=public` fixo, nenhuma executável por
+`anon`, todas concedidas a `authenticated`. As do portal
+(`link_influencer_account`, `get_portal_data`, `influencer_set_task_status`) seguem a
+mesma regra.
+
+Ao criar uma função nova nesse formato, repetir os três cuidados:
+`set search_path = public`, `revoke execute ... from anon, public` e
+`grant execute ... to authenticated`.

@@ -14,6 +14,7 @@ import { GoogleGenAI } from "@google/genai";
 import * as z4 from "zod/v4";
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { audit } from "@/lib/mcb/audit";
 import {
   ANALYSIS_MODEL,
   PROMPT_VERSION,
@@ -191,7 +192,7 @@ export const createProfileAnalysis = createServerFn({ method: "POST" })
 
       await finish({ status: "CONCLUIDA", output: validado.data as unknown as Json, error: null });
 
-      await supabase.from("audit_logs").insert({
+      await audit(supabase, {
         tenant_id: data.tenantId,
         actor_id: userId,
         action: "analysis.created",
@@ -255,7 +256,7 @@ export const confirmAnalysis = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     if (!updated) throw new Error("Análise não encontrada ou ainda não concluída.");
 
-    await supabase.from("audit_logs").insert({
+    await audit(supabase, {
       tenant_id: data.tenantId,
       actor_id: userId,
       action: "analysis.confirmed",

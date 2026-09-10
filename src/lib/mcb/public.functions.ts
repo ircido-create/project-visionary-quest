@@ -3,6 +3,7 @@ import { createClient } from "@supabase/supabase-js";
 import { z } from "zod";
 
 import type { Database, Json } from "@/integrations/supabase/types";
+import { audit } from "@/lib/mcb/audit";
 import { evaluateQualification } from "@/lib/mcb/qualification";
 
 function publicClient() {
@@ -234,7 +235,7 @@ export const submitApplication = createServerFn({ method: "POST" })
         to_status: initialStatus,
         note: "Candidatura recebida pela landing page da gestora.",
       }),
-      supabaseAdmin.from("audit_logs").insert({
+      audit(supabaseAdmin, {
         tenant_id: tenant.id,
         action: "application.submitted",
         entity: "influencers",

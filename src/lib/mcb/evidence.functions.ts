@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { audit } from "@/lib/mcb/audit";
 import {
   EVIDENCE_BUCKET,
   EVIDENCE_EXTENSION,
@@ -105,7 +106,7 @@ export const registerEvidence = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     if (!file) throw new Error("Não foi possível registrar a evidência.");
 
-    await supabase.from("audit_logs").insert({
+    await audit(supabase, {
       tenant_id: data.tenantId,
       actor_id: userId,
       action: "evidence.uploaded",
@@ -235,7 +236,7 @@ export const confirmEvidence = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     if (!file) throw new Error("Evidência não encontrada neste ambiente.");
 
-    await supabase.from("audit_logs").insert({
+    await audit(supabase, {
       tenant_id: data.tenantId,
       actor_id: userId,
       action: "evidence.confirmed",
@@ -279,7 +280,7 @@ export const deleteEvidence = createServerFn({ method: "POST" })
       .eq("id", data.fileId);
     if (deleteError) throw new Error(deleteError.message);
 
-    await supabase.from("audit_logs").insert({
+    await audit(supabase, {
       tenant_id: data.tenantId,
       actor_id: userId,
       action: "evidence.deleted",

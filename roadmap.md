@@ -31,13 +31,6 @@
       enviam por `notify.mcblessing.com.br`, cuja verificação de DNS (NS e TXT) ainda
       não concluiu. Até lá as mensagens saem no formato padrão do Supabase, que entrega
       normalmente. Acompanhar em Cloud → Emails.
-- [ ] O código ignora o erro dos inserts em `audit_logs`. Foi por isso que a trilha
-      passou a fase 1 inteira sem gravar nada sem ninguém notar — a política de INSERT
-      não existia. A política foi corrigida, mas o padrão de engolir o erro continua e
-      esconderia a próxima falha do mesmo tipo.
 - [ ] A camada gratuita do Gemini devolve 503 com frequência. Há retry com espera, mas
       uma análise pode levar mais de um minuto e ainda falhar. Se virar incômodo, o
       caminho é tornar a análise assíncrona em vez de prender a requisição.
-- [ ] Revisar aviso do verificador de segurança sobre funções auxiliares de permissão
-      (`is_tenant_member`, `has_tenant_role`, `tenant_is_demo`, `has_platform_role`,
-      `can_read_tenant`, `storage_tenant_id`) — hoje necessárias para as políticas de acesso.

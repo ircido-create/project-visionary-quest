@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { audit } from "@/lib/mcb/audit";
 import { evaluateQualification, type ProgressSignals } from "@/lib/mcb/qualification";
 import type { Database, Json } from "@/integrations/supabase/types";
 
@@ -442,7 +443,7 @@ export const updateInfluencerMetrics = createServerFn({ method: "POST" })
         requirements: evaluation.requirements as unknown as Json,
         progress: evaluation.progress as unknown as Json,
       }),
-      supabase.from("audit_logs").insert({
+      audit(supabase, {
         tenant_id: data.tenantId,
         actor_id: userId,
         action: "influencer.metrics_updated",
@@ -494,7 +495,7 @@ export const changeInfluencerStatus = createServerFn({ method: "POST" })
         changed_by: userId,
         note: data.note ?? null,
       }),
-      supabase.from("audit_logs").insert({
+      audit(supabase, {
         tenant_id: data.tenantId,
         actor_id: userId,
         action: "influencer.status_changed",
@@ -704,7 +705,7 @@ export const updateBranding = createServerFn({ method: "POST" })
       updated_at: new Date().toISOString(),
     });
     if (error) throw new Error(error.message);
-    await supabase.from("audit_logs").insert({
+    await audit(supabase, {
       tenant_id: data.tenantId,
       actor_id: userId,
       action: "branding.updated",
@@ -777,7 +778,7 @@ export const setMemberRole = createServerFn({ method: "POST" })
       .eq("user_id", data.memberId);
     if (error) throw new Error(error.message);
 
-    await supabase.from("audit_logs").insert({
+    await audit(supabase, {
       tenant_id: data.tenantId,
       actor_id: userId,
       action: "member.role_changed",
@@ -805,7 +806,7 @@ export const removeMember = createServerFn({ method: "POST" })
       .eq("user_id", data.memberId);
     if (error) throw new Error(error.message);
 
-    await supabase.from("audit_logs").insert({
+    await audit(supabase, {
       tenant_id: data.tenantId,
       actor_id: userId,
       action: "member.removed",
@@ -889,7 +890,7 @@ export const updateInfluencerProfile = createServerFn({ method: "POST" })
         .update({ level: evaluation.progress.level, progress_score: evaluation.progress.score })
         .eq("tenant_id", data.tenantId)
         .eq("id", data.influencerId),
-      supabase.from("audit_logs").insert({
+      audit(supabase, {
         tenant_id: data.tenantId,
         actor_id: userId,
         action: "influencer.profile_updated",
