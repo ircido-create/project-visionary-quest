@@ -29,7 +29,11 @@
 
 ## Fase 4 — Integrações e qualidade
 - [ ] Integração oficial Meta/Instagram
-- [ ] Testes ponta a ponta e auditoria de acessibilidade
+- [~] Testes automatizados: 41 casos cobrindo o motor de qualificação, os limites por
+      plano, a geração de CSV e as evidências. **Falta o que depende de banco ou
+      navegador** — políticas de RLS, vínculo do portal, upload e suspensão seguem
+      verificados só à mão. Cobrir isso pede teste de integração com banco de verdade.
+- [ ] Auditoria de acessibilidade
 - [ ] Otimização de desempenho
 
 ## Pendências conhecidas
