@@ -4,7 +4,9 @@ import { useServerFn } from "@tanstack/react-start";
 import { useMemo, useState } from "react";
 
 import { AppShell } from "@/components/mcb/AppShell";
+import { BotaoExportar } from "@/components/mcb/BotaoExportar";
 import { listInfluencers } from "@/lib/mcb/app.functions";
+import { exportarCandidatas } from "@/lib/mcb/export.functions";
 import { useWorkspace } from "@/lib/mcb/useWorkspace";
 import { STATUS_LABELS, STATUS_ORDER } from "@/lib/mcb/labels";
 import { QUALIFICATION_LABELS } from "@/lib/mcb/qualification";
@@ -24,6 +26,7 @@ export const Route = createFileRoute("/_authenticated/candidatas/")({
 function CandidatesPage() {
   const { tenantId } = useWorkspace();
   const fetchList = useServerFn(listInfluencers);
+  const exportar = useServerFn(exportarCandidatas);
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState<string>("TODOS");
   const [view, setView] = useState<"lista" | "pipeline">("lista");
@@ -49,7 +52,17 @@ function CandidatesPage() {
   }, [query.data, search, status]);
 
   return (
-    <AppShell title="Candidatas" description="Filtre, acompanhe e abra o perfil detalhado de cada candidata.">
+    <AppShell
+      title="Candidatas"
+      description="Filtre, acompanhe e abra o perfil detalhado de cada candidata."
+      actions={
+        <BotaoExportar
+          rotulo="Exportar todas (CSV)"
+          desabilitado={!tenantId}
+          buscar={() => exportar({ data: { tenantId: tenantId! } })}
+        />
+      }
+    >
       <div className="flex flex-wrap items-center gap-3">
         <Input
           className="max-w-xs"

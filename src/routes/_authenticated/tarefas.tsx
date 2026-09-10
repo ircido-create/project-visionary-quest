@@ -5,6 +5,8 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 import { AppShell } from "@/components/mcb/AppShell";
+import { BotaoExportar } from "@/components/mcb/BotaoExportar";
+import { exportarTarefas } from "@/lib/mcb/export.functions";
 import { createTask, listTasks, setTaskStatus } from "@/lib/mcb/app.functions";
 import { useWorkspace } from "@/lib/mcb/useWorkspace";
 import { Button } from "@/components/ui/button";
@@ -23,6 +25,7 @@ export const Route = createFileRoute("/_authenticated/tarefas")({
 
 function TasksPage() {
   const { tenantId, readOnly } = useWorkspace();
+  const exportar = useServerFn(exportarTarefas);
   const queryClient = useQueryClient();
   const fetchTasks = useServerFn(listTasks);
   const saveTask = useServerFn(createTask);
@@ -81,7 +84,17 @@ function TasksPage() {
   const tasks = (query.data ?? []).filter((task) => filter === "todas" || task.status !== "CONCLUIDA");
 
   return (
-    <AppShell title="Tarefas" description="O que precisa acontecer para cada candidata avançar de etapa.">
+    <AppShell
+      title="Tarefas"
+      description="O que precisa acontecer para cada candidata avançar de etapa."
+      actions={
+        <BotaoExportar
+          rotulo="Exportar (CSV)"
+          desabilitado={!tenantId}
+          buscar={() => exportar({ data: { tenantId: tenantId! } })}
+        />
+      }
+    >
       <form
         className="flex flex-wrap items-center gap-2"
         onSubmit={(event) => {
