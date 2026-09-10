@@ -212,6 +212,7 @@ export function EvidenceSection({ tenantId, influencerId, readOnly }: Props) {
                   }}
                 >
                   <Input
+                    aria-label="O que você lê neste print"
                     placeholder="O que você lê neste print?"
                     value={captions[file.id] ?? ""}
                     onChange={(event) =>

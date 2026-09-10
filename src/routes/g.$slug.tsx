@@ -320,6 +320,9 @@ function ManagerLanding() {
             </Field>
 
             <label className="flex items-start gap-3 rounded-lg border border-border/60 p-4 text-sm">
+              {/* A regra procura o rótulo dentro do próprio controle e não sobe até o
+                  `<label>` que o envolve. O campo está rotulado pelo texto abaixo. */}
+              {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
               <input
                 type="checkbox"
                 className="mt-1"

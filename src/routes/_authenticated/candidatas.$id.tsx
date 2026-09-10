@@ -237,6 +237,7 @@ function CandidateDetail() {
       actions={
         <div className="flex items-center gap-2">
           <select
+            aria-label="Status da candidata"
             className="h-10 rounded-md border border-input bg-background px-3 text-sm"
             value={influencer.status}
             onChange={(event) => {
@@ -566,6 +567,7 @@ function CandidateDetail() {
             }}
           >
             <Input
+              aria-label="Título da nova tarefa"
               placeholder="Nova tarefa"
               value={taskForm.title}
               onChange={(e) => setTaskForm((prev) => ({ ...prev, title: e.target.value }))}
@@ -574,11 +576,13 @@ function CandidateDetail() {
             />
             <div className="flex gap-2">
               <Input
+                aria-label="Prazo da tarefa"
                 type="date"
                 value={taskForm.dueDate}
                 onChange={(e) => setTaskForm((prev) => ({ ...prev, dueDate: e.target.value }))}
               />
               <select
+                aria-label="Prioridade da tarefa"
                 className="h-10 rounded-md border border-input bg-background px-3 text-sm"
                 value={taskForm.priority}
                 onChange={(e) =>
@@ -600,6 +604,7 @@ function CandidateDetail() {
                 <input
                   type="checkbox"
                   className="mt-1"
+                  aria-label={`Concluir tarefa: ${task.title}`}
                   checked={task.status === "CONCLUIDA"}
                   onChange={(event) => {
                     if (!guard()) return;

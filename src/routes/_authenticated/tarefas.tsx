@@ -104,6 +104,7 @@ function TasksPage() {
         }}
       >
         <Input
+          aria-label="Título da nova tarefa"
           className="max-w-sm"
           placeholder="Nova tarefa do ambiente"
           value={title}
@@ -147,6 +148,7 @@ function TasksPage() {
             >
               <input
                 type="checkbox"
+                aria-label={`Concluir tarefa: ${task.title}`}
                 checked={task.status === "CONCLUIDA"}
                 onChange={(event) => {
                   if (!guard()) return;

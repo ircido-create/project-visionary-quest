@@ -445,6 +445,7 @@ function SettingsPage() {
                       {isOwner && !isMe ? (
                         <div className="flex items-center gap-2">
                           <select
+                            aria-label={`Papel de ${member.fullName ?? member.email ?? "pessoa da equipe"}`}
                             className="h-9 rounded-md border border-input bg-background px-2 text-sm"
                             value={member.role}
                             disabled={readOnly || roleMutation.isPending}
@@ -494,6 +495,7 @@ function SettingsPage() {
               }}
             >
               <Input
+                aria-label="E-mail de quem você quer convidar"
                 type="email"
                 className="max-w-xs"
                 placeholder="email@exemplo.com"

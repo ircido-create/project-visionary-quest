@@ -65,12 +65,14 @@ function CandidatesPage() {
     >
       <div className="flex flex-wrap items-center gap-3">
         <Input
+          aria-label="Buscar candidata"
           className="max-w-xs"
           placeholder="Buscar por nome, @ ou e-mail"
           value={search}
           onChange={(event) => setSearch(event.target.value)}
         />
         <select
+          aria-label="Filtrar por status"
           className="h-10 rounded-md border border-input bg-background px-3 text-sm"
           value={status}
           onChange={(event) => setStatus(event.target.value)}
