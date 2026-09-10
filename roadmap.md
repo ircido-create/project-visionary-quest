@@ -29,10 +29,13 @@
 
 ## Fase 4 — Integrações e qualidade
 - [ ] Integração oficial Meta/Instagram
-- [~] Testes automatizados: 41 casos cobrindo o motor de qualificação, os limites por
-      plano, a geração de CSV e as evidências. **Falta o que depende de banco ou
-      navegador** — políticas de RLS, vínculo do portal, upload e suspensão seguem
-      verificados só à mão. Cobrir isso pede teste de integração com banco de verdade.
+- [x] Testes automatizados em duas camadas: 41 casos em vitest (motor de qualificação,
+      limites por plano, CSV, evidências) e 18 verificações de integração em
+      `supabase/tests/rls.test.sql`, cobrindo políticas de RLS e funções
+      `security definer` contra o banco real, dentro de transação desfeita.
+      **Os de integração não rodam no `bun run test`** — precisariam de conexão direta
+      ao banco, que a máquina de desenvolvimento não tem. São verificação sob demanda.
+      As políticas de Storage seguem sem cobertura: só existem no ambiente Supabase.
 - [ ] Auditoria de acessibilidade
 - [ ] Otimização de desempenho
 
