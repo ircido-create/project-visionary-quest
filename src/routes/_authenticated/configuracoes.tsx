@@ -255,7 +255,16 @@ function SettingsPage() {
             </form>
 
             <form className="grid gap-3" onSubmit={handlePasswordChange}>
+              <Field label="Senha atual">
+                <Input
+                  type="password"
+                  value={passwords.current}
+                  onChange={(e) => setPasswords((prev) => ({ ...prev, current: e.target.value }))}
+                  required
+                />
+              </Field>
               <Field label="Nova senha">
+
                 <Input
                   type="password"
                   minLength={8}
