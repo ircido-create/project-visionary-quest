@@ -28,14 +28,19 @@ Em **Instagram → Configuração da API → Login do negócio**, no campo de UR
 redirecionamento OAuth válidos, cadastre exatamente:
 
 ```
-https://SEU-DOMINIO/instagram/retorno
+https://mcblessing.com.br/instagram/retorno
 ```
 
 Precisa ser idêntico ao valor de `META_REDIRECT_URI`, incluindo `https` e sem barra
 no fim. A Meta compara string por string; qualquer diferença devolve um erro que não
 explica o motivo.
 
-Para testar localmente, cadastre também `http://localhost:3000/instagram/retorno`.
+Use o domínio `.com.br`, não o `mcblessing.lovable.app`: o endereço do Lovable
+redireciona tudo para o `.com.br`, e o login da candidata fica guardado por domínio —
+o retorno da Meta precisa cair onde ela está logada.
+
+Não foi verificado se a Meta aceita URI sem HTTPS (como `http://localhost`). Para
+testar, use o domínio publicado.
 
 ### 3. Variáveis de ambiente
 
@@ -45,10 +50,27 @@ Em produção, cadastre como secrets no Lovable. Localmente, em `.env.local` —
 ```
 META_APP_ID=...
 META_APP_SECRET=...
-META_REDIRECT_URI=https://SEU-DOMINIO/instagram/retorno
+META_REDIRECT_URI=https://mcblessing.com.br/instagram/retorno
 ```
 
-### 4. Revisão da Meta (App Review)
+### 4. Publicar e conferir
+
+Commit na `main` atualiza só o **preview** do Lovable. O site `mcblessing.com.br` só
+muda quando alguém clica em **Publicar** no editor. Os secrets, ao contrário, valem na
+requisição seguinte, sem publicar.
+
+Para conferir a configuração sem acesso ao painel, a função
+`integracaoMetaDisponivel` devolve:
+
+- `disponivel` — se os três nomes existem e têm valor;
+- `faltando` — quais dos três não existem ou estão vazios;
+- `parecidos` — nomes que lembram os esperados mas não batem exatamente
+  (maiúscula trocada, espaço sobrando), a causa mais comum de "cadastrei e não
+  funciona".
+
+Só nomes, nunca valores.
+
+### 5. Revisão da Meta (App Review)
 
 Antes da aprovação, **só contas com papel no app** (administradora, testadora)
 conseguem conectar. Ou seja: dá para testar com a sua própria conta, mas não para
