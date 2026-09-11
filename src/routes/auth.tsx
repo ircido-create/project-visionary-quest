@@ -1,6 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
+import "@lovable.dev/cloud-auth-js/styles.css";
 
 import { supabase } from "@/integrations/supabase/client";
 import { resolveLanding } from "@/lib/mcb/portal.functions";
@@ -27,12 +28,50 @@ function AuthPage() {
   const navigate = useNavigate();
   const resolveDestination = useServerFn(resolveLanding);
 
+  const syncLovableProfile = useCallback(async () => {
+    const { data, error: userError } = await supabase.auth.getUser();
+    const user = data.user;
+    if (userError || !user) return;
+
+    const provider = user.app_metadata.provider;
+    const providers = Array.isArray(user.app_metadata.providers) ? user.app_metadata.providers : [];
+    if (provider !== "lovable" && !providers.includes("lovable")) return;
+
+    const { data: currentProfile } = await supabase
+      .from("profiles")
+      .select("full_name, email, avatar_url")
+      .eq("id", user.id)
+      .maybeSingle();
+
+    const metadata = user.user_metadata;
+    const metadataName =
+      typeof metadata.full_name === "string"
+        ? metadata.full_name
+        : typeof metadata.name === "string"
+          ? metadata.name
+          : null;
+    const metadataAvatar =
+      typeof metadata.avatar_url === "string"
+        ? metadata.avatar_url
+        : typeof metadata.picture === "string"
+          ? metadata.picture
+          : null;
+
+    await supabase.from("profiles").upsert({
+      id: user.id,
+      full_name: metadataName || currentProfile?.full_name || null,
+      email: user.email || currentProfile?.email || null,
+      avatar_url: metadataAvatar || currentProfile?.avatar_url || null,
+    });
+  }, []);
+
   // Candidata vai para o portal, gestora para o painel. A decisão é do servidor: o
   // navegador não consegue consultar a candidatura, que fica atrás de RPC.
   const goToLanding = useCallback(async () => {
+    await syncLovableProfile();
     const { to } = await resolveDestination();
     navigate({ to: to === "portal" ? "/portal" : "/dashboard" });
-  }, [navigate, resolveDestination]);
+  }, [navigate, resolveDestination, syncLovableProfile]);
   const [mode, setMode] = useState<"signin" | "signup" | "forgot">("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -114,7 +153,7 @@ function AuthPage() {
   }
 
 
-  async function handleGoogle() {
+  async function handleSocial(provider: "google" | "lovable") {
     setError(null);
 
     // O endpoint de OAuth (/~oauth/initiate) é servido pela infraestrutura do
@@ -126,7 +165,7 @@ function AuthPage() {
       const probe = await fetch("/~oauth/initiate", { method: "HEAD", redirect: "manual" });
       if (probe.status === 404) {
         setError(
-          "Entrar com Google só funciona no aplicativo publicado. Neste ambiente, use e-mail e senha.",
+          `Entrar com ${provider === "lovable" ? "Lovable" : "Google"} só funciona no aplicativo publicado. Neste ambiente, use e-mail e senha.`,
         );
         return;
       }
@@ -134,11 +173,11 @@ function AuthPage() {
       // Sem rede ou requisição bloqueada: não dá para concluir nada, então segue.
     }
 
-    const result = await lovable.auth.signInWithOAuth("google", {
+    const result = await lovable.auth.signInWithOAuth(provider, {
       redirect_uri: window.location.origin,
     });
     if (result.error) {
-      setError("Não foi possível entrar com o Google agora.");
+      setError(`Não foi possível entrar com ${provider === "lovable" ? "Lovable" : "Google"} agora.`);
       return;
     }
     if (result.redirected) return;
@@ -164,9 +203,18 @@ function AuthPage() {
             : "Acompanhe candidaturas, evolução e qualificação em um só lugar."}
         </p>
 
-        <Button type="button" variant="outline" className="mt-6 w-full" onClick={handleGoogle}>
-          Continuar com Google
-        </Button>
+        <div className="mt-6 grid gap-3">
+          <button
+            type="button"
+            className="lovable-auth-button"
+            onClick={() => void handleSocial("lovable")}
+          >
+            Continuar com Lovable
+          </button>
+          <Button type="button" variant="outline" className="w-full" onClick={() => void handleSocial("google")}>
+            Continuar com Google
+          </Button>
+        </div>
 
         <div className="my-5 flex items-center gap-3 text-xs text-muted-foreground">
           <span className="h-px flex-1 bg-border" /> ou <span className="h-px flex-1 bg-border" />
