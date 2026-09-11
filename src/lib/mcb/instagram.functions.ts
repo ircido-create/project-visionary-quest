@@ -33,6 +33,7 @@ import {
   META_API_VERSION,
   OAUTH_TOKEN_URL,
   SCOPES,
+  diagnosticarConfig,
   lerErroDaMeta,
   lerPerfil,
   lerPublicoFeminino,
@@ -58,16 +59,15 @@ function credenciais() {
   return { appId, appSecret, redirectUri };
 }
 
-/** Diz se a integração está disponível sem estourar erro — a tela usa isto para se esconder. */
-export const integracaoMetaDisponivel = createServerFn({ method: "GET" }).handler(async () => {
-  return {
-    disponivel: Boolean(
-      process.env["META_APP_ID"] &&
-      process.env["META_APP_SECRET"] &&
-      process.env["META_REDIRECT_URI"],
-    ),
-  };
-});
+/**
+ * Diz se a integração está disponível e, quando não está, **quais nomes faltam** —
+ * a tela usa `disponivel` para se esconder; `faltando` e `parecidos` servem para
+ * diagnosticar a configuração no Lovable sem precisar de acesso ao painel.
+ * Devolve só nomes, nunca valores: ver `diagnosticarConfig`.
+ */
+export const integracaoMetaDisponivel = createServerFn({ method: "GET" }).handler(async () =>
+  diagnosticarConfig(process.env),
+);
 
 /**
  * Ponte para as funções da migração 20260910150000.

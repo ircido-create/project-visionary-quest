@@ -141,3 +141,38 @@ export function precisaRenovar(expiraEm: string | null, agora = new Date()): boo
   const limite = new Date(expiraEm).getTime() - DIAS_ANTES_DE_RENOVAR * 24 * 60 * 60 * 1000;
   return agora.getTime() >= limite;
 }
+
+/** Os três nomes que a integração lê do ambiente. */
+export const VARIAVEIS_META = ["META_APP_ID", "META_APP_SECRET", "META_REDIRECT_URI"] as const;
+
+export type DiagnosticoConfig = {
+  disponivel: boolean;
+  /** Nomes esperados que não existem ou estão vazios. */
+  faltando: string[];
+  /**
+   * Nomes que existem no ambiente, lembram os esperados, mas não batem exatamente —
+   * maiúscula trocada, espaço sobrando, erro de digitação. É a causa mais comum de
+   * "cadastrei e não funciona", e `faltando` sozinho não explicaria o motivo.
+   */
+  parecidos: string[];
+};
+
+/**
+ * Diz o que falta na configuração **sem expor valor nenhum**: devolve só nomes, que
+ * já são públicos neste repositório. Nunca incluir aqui o conteúdo de uma variável.
+ */
+export function diagnosticarConfig(env: Record<string, string | undefined>): DiagnosticoConfig {
+  const faltando = VARIAVEIS_META.filter((nome) => !env[nome]?.trim());
+  const normalizar = (nome: string) =>
+    nome
+      .trim()
+      .toUpperCase()
+      .replace(/[^A-Z]/g, "");
+  const alvos = new Set(VARIAVEIS_META.map(normalizar));
+  const parecidos = Object.keys(env).filter(
+    (nome) =>
+      !(VARIAVEIS_META as readonly string[]).includes(nome) &&
+      (alvos.has(normalizar(nome)) || /meta/i.test(nome)),
+  );
+  return { disponivel: faltando.length === 0, faltando, parecidos };
+}

@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   SCOPES,
+  diagnosticarConfig,
   lerErroDaMeta,
   lerPerfil,
   lerPublicoFeminino,
@@ -155,5 +156,47 @@ describe("renovação do token", () => {
 
   it("trata validade desconhecida como precisando renovar", () => {
     expect(precisaRenovar(null, agora)).toBe(true);
+  });
+});
+
+describe("diagnóstico da configuração", () => {
+  const completo = {
+    META_APP_ID: "123",
+    META_APP_SECRET: "segredo",
+    META_REDIRECT_URI: "https://mcblessing.com.br/instagram/retorno",
+  };
+
+  it("fica disponível com os três nomes preenchidos", () => {
+    expect(diagnosticarConfig(completo)).toEqual({ disponivel: true, faltando: [], parecidos: [] });
+  });
+
+  it("lista exatamente o que falta", () => {
+    const { META_REDIRECT_URI: _fora, ...semUri } = completo;
+    const r = diagnosticarConfig(semUri);
+    expect(r.disponivel).toBe(false);
+    expect(r.faltando).toEqual(["META_REDIRECT_URI"]);
+  });
+
+  it("trata valor vazio ou só com espaço como ausente", () => {
+    expect(diagnosticarConfig({ ...completo, META_APP_ID: "   " }).faltando).toEqual([
+      "META_APP_ID",
+    ]);
+  });
+
+  it("aponta nome digitado diferente em vez de só dizer que falta", () => {
+    const { META_APP_ID: _fora, ...resto } = completo;
+    const r = diagnosticarConfig({ ...resto, Meta_App_Id: "123", "META_APP_ID ": "123" });
+    expect(r.faltando).toEqual(["META_APP_ID"]);
+    expect(r.parecidos).toEqual(expect.arrayContaining(["Meta_App_Id", "META_APP_ID "]));
+  });
+
+  it("nunca devolve valores, só nomes", () => {
+    const r = diagnosticarConfig({ ...completo, OUTRA_META_COISA: "valor-secreto" });
+    expect(JSON.stringify(r)).not.toContain("segredo");
+    expect(JSON.stringify(r)).not.toContain("valor-secreto");
+  });
+
+  it("ignora variáveis que não têm nada a ver", () => {
+    expect(diagnosticarConfig({ ...completo, SUPABASE_URL: "x", PATH: "y" }).parecidos).toEqual([]);
   });
 });
