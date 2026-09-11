@@ -1,1 +1,5 @@
 project_id = "ccqwraqotijrnnriganl"
+# Diagnóstico temporário: responde só nomes de secrets, nunca valores. Pública para
+# poder ser chamada sem token de usuário. Ver supabase/functions/diagnostico-segredos.
+[functions.diagnostico-segredos]
+verify_jwt = false
