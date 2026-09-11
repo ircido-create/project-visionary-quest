@@ -155,7 +155,17 @@ export type DiagnosticoConfig = {
    * "cadastrei e não funciona", e `faltando` sozinho não explicaria o motivo.
    */
   parecidos: string[];
+  /**
+   * Controle: quais destes nomes de referência têm valor no servidor. O
+   * `GEMINI_API_KEY` vem de Cloud → Secrets e o `SUPABASE_URL` do `.env` — se o
+   * primeiro aparece e os da Meta não, os secrets do Cloud chegam ao servidor e os da
+   * Meta simplesmente não estão salvos no projeto. Só nomes, como o resto.
+   */
+  referencias: string[];
 };
+
+/** Nomes de controle do diagnóstico. Ver `DiagnosticoConfig.referencias`. */
+export const VARIAVEIS_REFERENCIA = ["GEMINI_API_KEY", "SUPABASE_URL"] as const;
 
 /**
  * Diz o que falta na configuração **sem expor valor nenhum**: devolve só nomes, que
@@ -174,5 +184,6 @@ export function diagnosticarConfig(env: Record<string, string | undefined>): Dia
       !(VARIAVEIS_META as readonly string[]).includes(nome) &&
       (alvos.has(normalizar(nome)) || /meta/i.test(nome)),
   );
-  return { disponivel: faltando.length === 0, faltando, parecidos };
+  const referencias = VARIAVEIS_REFERENCIA.filter((nome) => Boolean(env[nome]?.trim()));
+  return { disponivel: faltando.length === 0, faltando, parecidos, referencias };
 }

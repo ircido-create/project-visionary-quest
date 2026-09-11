@@ -167,7 +167,12 @@ describe("diagnóstico da configuração", () => {
   };
 
   it("fica disponível com os três nomes preenchidos", () => {
-    expect(diagnosticarConfig(completo)).toEqual({ disponivel: true, faltando: [], parecidos: [] });
+    expect(diagnosticarConfig(completo)).toEqual({
+      disponivel: true,
+      faltando: [],
+      parecidos: [],
+      referencias: [],
+    });
   });
 
   it("lista exatamente o que falta", () => {
@@ -198,5 +203,17 @@ describe("diagnóstico da configuração", () => {
 
   it("ignora variáveis que não têm nada a ver", () => {
     expect(diagnosticarConfig({ ...completo, SUPABASE_URL: "x", PATH: "y" }).parecidos).toEqual([]);
+  });
+});
+
+describe("nomes de controle do diagnóstico", () => {
+  it("lista só os nomes de referência que têm valor", () => {
+    const r = diagnosticarConfig({ GEMINI_API_KEY: "chave", SUPABASE_URL: "  " });
+    expect(r.referencias).toEqual(["GEMINI_API_KEY"]);
+  });
+
+  it("não devolve o valor da referência", () => {
+    const r = diagnosticarConfig({ GEMINI_API_KEY: "chave-muito-secreta" });
+    expect(JSON.stringify(r)).not.toContain("chave-muito-secreta");
   });
 });
