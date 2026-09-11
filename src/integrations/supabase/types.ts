@@ -426,6 +426,66 @@ export type Database = {
           },
         ]
       }
+      instagram_connections: {
+        Row: {
+          connected_at: string
+          id: string
+          ig_user_id: string
+          influencer_id: string
+          last_sync_at: string | null
+          last_sync_error: string | null
+          revoked_at: string | null
+          scopes: string | null
+          tenant_id: string
+          token_expires_at: string | null
+          token_secret_id: string
+          username: string | null
+        }
+        Insert: {
+          connected_at?: string
+          id?: string
+          ig_user_id: string
+          influencer_id: string
+          last_sync_at?: string | null
+          last_sync_error?: string | null
+          revoked_at?: string | null
+          scopes?: string | null
+          tenant_id: string
+          token_expires_at?: string | null
+          token_secret_id: string
+          username?: string | null
+        }
+        Update: {
+          connected_at?: string
+          id?: string
+          ig_user_id?: string
+          influencer_id?: string
+          last_sync_at?: string | null
+          last_sync_error?: string | null
+          revoked_at?: string | null
+          scopes?: string | null
+          tenant_id?: string
+          token_expires_at?: string | null
+          token_secret_id?: string
+          username?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "instagram_connections_influencer_id_fkey"
+            columns: ["influencer_id"]
+            isOneToOne: true
+            referencedRelation: "influencers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "instagram_connections_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       invitations: {
         Row: {
           accepted_at: string | null
@@ -1066,7 +1126,52 @@ export type Database = {
         }
         Returns: boolean
       }
+      instagram_connect: {
+        Args: {
+          p_expires_at: string
+          p_ig_user_id: string
+          p_influencer_id: string
+          p_scopes: string
+          p_token: string
+          p_username: string
+        }
+        Returns: undefined
+      }
+      instagram_disconnect: {
+        Args: { p_influencer_id: string }
+        Returns: undefined
+      }
+      instagram_qualification_input: {
+        Args: { p_influencer_id: string }
+        Returns: Json
+      }
+      instagram_record_error: {
+        Args: { p_error: string; p_influencer_id: string }
+        Returns: undefined
+      }
+      instagram_record_sync: {
+        Args: {
+          p_female: number
+          p_followers: number
+          p_influencer_id: string
+          p_level: string
+          p_posts: number
+          p_progress: Json
+          p_requirements: Json
+          p_rule_set_version: string
+          p_score: number
+          p_status: string
+        }
+        Returns: undefined
+      }
+      instagram_status: { Args: { p_influencer_id: string }; Returns: Json }
+      instagram_token: { Args: { p_influencer_id: string }; Returns: string }
+      is_influencer_owner: {
+        Args: { p_influencer_id: string }
+        Returns: boolean
+      }
       is_tenant_member: { Args: { _tenant: string }; Returns: boolean }
+      is_tenant_member_raw: { Args: { _tenant: string }; Returns: boolean }
       link_influencer_account: { Args: never; Returns: number }
       shares_tenant_with: { Args: { _user: string }; Returns: boolean }
       storage_tenant_id: { Args: { _name: string }; Returns: string }
