@@ -45,16 +45,16 @@ function AuthPage() {
 
     const metadata = user.user_metadata;
     const metadataName =
-      typeof metadata.full_name === "string"
-        ? metadata.full_name
-        : typeof metadata.name === "string"
-          ? metadata.name
+      typeof metadata["full_name"] === "string"
+        ? metadata["full_name"]
+        : typeof metadata["name"] === "string"
+          ? metadata["name"]
           : null;
     const metadataAvatar =
-      typeof metadata.avatar_url === "string"
-        ? metadata.avatar_url
-        : typeof metadata.picture === "string"
-          ? metadata.picture
+      typeof metadata["avatar_url"] === "string"
+        ? metadata["avatar_url"]
+        : typeof metadata["picture"] === "string"
+          ? metadata["picture"]
           : null;
 
     await supabase.from("profiles").upsert({
