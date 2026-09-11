@@ -15,6 +15,7 @@ import * as z4 from "zod/v4";
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { audit } from "@/lib/mcb/audit";
+import { lerEnv } from "@/lib/mcb/env";
 import { garantirEspacoParaAnalise } from "@/lib/mcb/limits";
 import {
   ANALYSIS_MODEL,
@@ -30,7 +31,7 @@ import type { Json } from "@/integrations/supabase/types";
  * `.env.local` no desenvolvimento — nunca no `.env`, que é versionado num repo público.
  */
 function getGeminiClient() {
-  const apiKey = process.env["GEMINI_API_KEY"];
+  const apiKey = lerEnv("GEMINI_API_KEY");
   if (!apiKey) {
     throw new Error(
       "GEMINI_API_KEY não configurada. Em produção, cadastre o secret no Lovable; " +

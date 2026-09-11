@@ -28,11 +28,14 @@ import { z } from "zod";
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { evaluateInfluencer } from "@/lib/mcb/app.functions";
+import { ambienteServidor, lerEnv, nomesPresentes } from "@/lib/mcb/env";
 import {
   GRAPH_HOST,
   META_API_VERSION,
   OAUTH_TOKEN_URL,
   SCOPES,
+  VARIAVEIS_META,
+  VARIAVEIS_REFERENCIA,
   diagnosticarConfig,
   lerErroDaMeta,
   lerPerfil,
@@ -47,9 +50,9 @@ import type { Json } from "@/integrations/supabase/types";
  * `.env.local` — nunca no `.env`, que é versionado num repositório público.
  */
 function credenciais() {
-  const appId = process.env["META_APP_ID"];
-  const appSecret = process.env["META_APP_SECRET"];
-  const redirectUri = process.env["META_REDIRECT_URI"];
+  const appId = lerEnv("META_APP_ID");
+  const appSecret = lerEnv("META_APP_SECRET");
+  const redirectUri = lerEnv("META_REDIRECT_URI");
   if (!appId || !appSecret || !redirectUri) {
     throw new Error(
       "Integração com o Instagram não configurada. Faltam META_APP_ID, META_APP_SECRET " +
@@ -65,9 +68,19 @@ function credenciais() {
  * diagnosticar a configuração no Lovable sem precisar de acesso ao painel.
  * Devolve só nomes, nunca valores: ver `diagnosticarConfig`.
  */
-export const integracaoMetaDisponivel = createServerFn({ method: "GET" }).handler(async () =>
-  diagnosticarConfig(process.env),
-);
+export const integracaoMetaDisponivel = createServerFn({ method: "GET" }).handler(async () => {
+  const { doProcesso, dosBindings, mesclado } = ambienteServidor();
+  const nomes = [...VARIAVEIS_META, ...VARIAVEIS_REFERENCIA];
+  return {
+    ...diagnosticarConfig(mesclado),
+    // De onde cada nome veio. Separa "o secret existe mas mora nos bindings" de
+    // "o secret não chega ao Worker de jeito nenhum". Só nomes.
+    origem: {
+      processEnv: nomesPresentes(doProcesso, nomes),
+      bindings: nomesPresentes(dosBindings, nomes),
+    },
+  };
+});
 
 /**
  * Ponte para as funções da migração 20260910150000.
