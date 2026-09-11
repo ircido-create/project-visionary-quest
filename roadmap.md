@@ -71,12 +71,24 @@
       que traz colunas a mais mas não foi o que a medição apontou como gargalo.
 
 ## Pendências conhecidas
+- [ ] **Secrets não gravam no Lovable — integração da Meta e análise de IA sem
+      funcionar em produção.** Em 2026-09-11, `META_APP_ID`, `META_APP_SECRET`,
+      `META_REDIRECT_URI` e `GEMINI_API_KEY` foram cadastrados pela tela do Lovable três
+      vezes (More → Cloud → Secrets; Project Settings → Secrets; apagados e regravados).
+      A tela lista os nomes, mas o cofre do projeto não os tem: o agente do Lovable só
+      lista `LOVABLE_API_KEY` e `LOVABLE_CRON_SECRET`, e nem as server functions nem uma
+      Edge Function os enxergam, mesmo depois de republicar. **A análise de IA nunca
+      funcionou em produção** pelo mesmo motivo — as análises bem-sucedidas foram todas
+      locais, com a chave no `.env.local`. Chamado aberto no suporte do Lovable. O código
+      não precisa mudar: quando os secrets existirem, a leitura por `process.env` já
+      funciona. Como conferir e o que remover depois: `docs/integracao-meta.md`.
 - [ ] **Modelos de e-mail com a identidade MCB, ainda não ativos.** O envio de
       autenticação já funciona pelo SMTP da Hostinger — cadastro, confirmação e login
       foram exercidos de ponta a ponta. O que falta é a camada de marca: os 6 modelos
       enviam por `notify.mcblessing.com.br`, cuja verificação de DNS (NS e TXT) ainda
       não concluiu. Até lá as mensagens saem no formato padrão do Supabase, que entrega
       normalmente. Acompanhar em Cloud → Emails.
-- [ ] A camada gratuita do Gemini devolve 503 com frequência. Há retry com espera, mas
+- [ ] Só depois que a IA funcionar em produção (item acima): a camada gratuita do
+      Gemini devolve 503 com frequência. Há retry com espera, mas
       uma análise pode levar mais de um minuto e ainda falhar. Se virar incômodo, o
       caminho é tornar a análise assíncrona em vez de prender a requisição.

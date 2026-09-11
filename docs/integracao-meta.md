@@ -4,6 +4,54 @@ O código está pronto e desligado. Ele só aparece na tela quando as três vari
 abaixo existirem — sem elas, `InstagramSection` devolve `null` e nada muda para
 ninguém. Isso é de propósito: botão que só dá erro é pior que botão nenhum.
 
+## Situação em 2026-09-11: bloqueada por secrets que não gravam
+
+O app da Meta foi criado e os secrets foram cadastrados pela tela do Lovable — primeiro
+em More → Cloud → Secrets, depois em **Project Settings → Secrets** (o lugar certo,
+segundo o próprio agente do Lovable), e por fim apagados e regravados. A tela lista os
+nomes, mas **eles não estão gravados no cofre do projeto**:
+
+- o agente do Lovable (`secrets--fetch_secrets`) lista só `LOVABLE_API_KEY` e
+  `LOVABLE_CRON_SECRET`;
+- em produção, as server functions não os veem em `process.env` nem nos bindings do
+  Worker (`globalThis.__env__`) — o `SUPABASE_URL`, que vem do `.env`, aparece nos
+  dois, o que prova que a leitura funciona;
+- a Edge Function de diagnóstico também não os vê (só `SUPABASE_URL` e
+  `SUPABASE_SERVICE_ROLE_KEY`);
+- republicar não muda nada.
+
+O mesmo vale para o `GEMINI_API_KEY`: **a análise de IA não funciona em produção.**
+Chamado aberto no suporte do Lovable. **O código não precisa mudar** quando isso se
+resolver.
+
+### Como conferir, sem login
+
+Servidor do app — a checagem `integracaoMetaDisponivel`. O TanStack recusa com 403
+chamada sem os cabeçalhos de mesma origem:
+
+```bash
+curl -s "https://mcblessing.com.br/_serverFn/8716d8550808ba0c3df1f6064af7b62a9b9ceb89a3dc4b2e1ddc1d232587759c"   -H "x-tsr-serverFn: true" -H "Origin: https://mcblessing.com.br"   -H "Referer: https://mcblessing.com.br/" -H "Sec-Fetch-Site: same-origin"   -H "Sec-Fetch-Mode: cors" -H "Sec-Fetch-Dest: empty"
+```
+
+A resposta vem no formato seroval; `{"t":2,"s":2}` é `true` e `{"t":2,"s":3}` é
+`false`. Resolvido quando `disponivel` for `true`, `faltando` vier vazio e
+`referencias` incluir `GEMINI_API_KEY`.
+
+Edge Function — deve passar a listar os quatro nomes:
+
+```bash
+curl -s https://ccqwraqotijrnnriganl.supabase.co/functions/v1/diagnostico-segredos
+```
+
+Ambas devolvem só nomes, nunca valores.
+
+### O que remover quando resolver
+
+- a Edge Function `supabase/functions/diagnostico-segredos` e a entrada dela em
+  `supabase/config.toml` (e a função publicada, pelo agente do Lovable);
+- os campos temporários `referencias` e `origem` da checagem, em
+  `src/lib/mcb/instagram.ts` e `src/lib/mcb/instagram.functions.ts`.
+
 ## O que já funciona sem você fazer nada
 
 Nada. Esta é a parte honesta: a integração depende de um app da Meta, que só você
@@ -139,3 +187,5 @@ agendada com a service role key, decidindo antes se vale abrir essa porta.
 | `src/lib/mcb/instagram.functions.ts` | OAuth, chamadas à Meta, gravação |
 | `src/components/mcb/InstagramSection.tsx` | a tela, nos dois modos |
 | `src/routes/_authenticated/instagram.retorno.tsx` | retorno do OAuth |
+| `src/lib/mcb/env.ts` | leitura de variáveis: `process.env` e, na falta, os bindings do Worker |
+| `supabase/functions/diagnostico-segredos/index.ts` | diagnóstico temporário: quais secrets uma Edge Function enxerga |
