@@ -8,6 +8,7 @@
 - [x] Visão geral, candidatas, detalhe, tarefas e configurações
 - [x] Consentimento LGPD, histórico e auditoria
 - [x] Documentação da fase 1
+- [x] Acesso com Lovable, preservando nome, e-mail e foto no perfil existente
 
 ## Fase 2 — Evidências e IA auditável
 - [x] Upload de prints com confirmação humana (Storage + tabela `files`)
