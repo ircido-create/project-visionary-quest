@@ -3,6 +3,8 @@ import { describe, expect, it } from "vitest";
 import {
   ETAPA_DEVOLUCAO_PADRAO,
   NOTA_MINIMA,
+  etapasPermitidasNoSeletor,
+  motivoBloqueioSeletor,
   tituloTarefaDevolucao,
   validarDecisao,
 } from "./auditoria";
@@ -134,5 +136,43 @@ describe("tarefa gerada pela devolução", () => {
     const t = tituloTarefaDevolucao("x".repeat(300));
     expect(t.length).toBe(120);
     expect(t.endsWith("...")).toBe(true);
+  });
+});
+
+describe("seletor comum de etapa", () => {
+  it("não leva a Qualificada sem auditoria", () => {
+    expect(motivoBloqueioSeletor("PRONTA_AUDITORIA", "QUALIFICADA")).toMatch(/auditoria/);
+    expect(motivoBloqueioSeletor("EM_ESTRUTURACAO", "QUALIFICADA")).not.toBeNull();
+  });
+
+  it("não leva a Aprovada, Não aprovada ou Enviada antes da auditoria", () => {
+    expect(motivoBloqueioSeletor("EM_CRESCIMENTO", "APROVADA")).not.toBeNull();
+    expect(motivoBloqueioSeletor("EM_CRESCIMENTO", "NAO_APROVADA")).not.toBeNull();
+    expect(motivoBloqueioSeletor("PRONTA_AUDITORIA", "ENVIADA_ANALISE")).not.toBeNull();
+  });
+
+  it("segue livre depois da auditoria", () => {
+    expect(motivoBloqueioSeletor("QUALIFICADA", "ENVIADA_ANALISE")).toBeNull();
+    expect(motivoBloqueioSeletor("ENVIADA_ANALISE", "APROVADA")).toBeNull();
+    expect(motivoBloqueioSeletor("APROVADA", "NAO_APROVADA")).toBeNull();
+  });
+
+  it("deixa voltar para etapas de antes, pausar e arquivar", () => {
+    expect(motivoBloqueioSeletor("QUALIFICADA", "EM_CRESCIMENTO")).toBeNull();
+    expect(motivoBloqueioSeletor("EM_CRESCIMENTO", "PAUSADA")).toBeNull();
+    expect(motivoBloqueioSeletor("APROVADA", "ARQUIVADA")).toBeNull();
+    expect(motivoBloqueioSeletor("EM_CRESCIMENTO", "EM_CRESCIMENTO")).toBeNull();
+  });
+
+  it("não usa Pausada como atalho para Qualificada", () => {
+    expect(motivoBloqueioSeletor("PAUSADA", "QUALIFICADA")).not.toBeNull();
+  });
+
+  it("oferece no seletor só o que é permitido", () => {
+    const opcoes = etapasPermitidasNoSeletor("PRONTA_AUDITORIA");
+    expect(opcoes).toContain("EM_CRESCIMENTO");
+    expect(opcoes).toContain("PRONTA_AUDITORIA");
+    expect(opcoes).not.toContain("QUALIFICADA");
+    expect(opcoes).not.toContain("APROVADA");
   });
 });

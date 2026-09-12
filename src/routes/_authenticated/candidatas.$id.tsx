@@ -20,6 +20,7 @@ import {
 } from "@/lib/mcb/app.functions";
 import { useWorkspace } from "@/lib/mcb/useWorkspace";
 import { STATUS_LABELS, STATUS_ORDER, type InfluencerStatus } from "@/lib/mcb/labels";
+import { motivoBloqueioSeletor } from "@/lib/mcb/auditoria";
 import { QUALIFICATION_LABELS } from "@/lib/mcb/qualification";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -172,7 +173,8 @@ function CandidateDetail() {
       toast.success("Status atualizado.");
       invalidate();
     },
-    onError: () => toast.error("Não foi possível alterar o status."),
+    // A mensagem do servidor explica a recusa, como a de etapa que só a auditoria alcança.
+    onError: (erro: Error) => toast.error(erro.message || "Não foi possível alterar o status."),
   });
 
   const noteMutation = useMutation({
@@ -251,11 +253,20 @@ function CandidateDetail() {
               statusMutation.mutate(event.target.value as InfluencerStatus);
             }}
           >
-            {STATUS_ORDER.map((value) => (
-              <option key={value} value={value}>
-                {STATUS_LABELS[value]}
-              </option>
-            ))}
+            {STATUS_ORDER.map((value) => {
+              // Fase 5: "Qualificada" só pela auditoria; as etapas seguintes só depois dela.
+              const bloqueada = motivoBloqueioSeletor(influencer.status, value) !== null;
+              return (
+                <option key={value} value={value} disabled={bloqueada}>
+                  {STATUS_LABELS[value]}
+                  {bloqueada
+                    ? value === "QUALIFICADA"
+                      ? " (pela auditoria)"
+                      : " (após a auditoria)"
+                    : ""}
+                </option>
+              );
+            })}
           </select>
         </div>
       }

@@ -1,3 +1,4 @@
+import { motivoBloqueioSeletor } from "@/lib/mcb/auditoria";
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
@@ -485,6 +486,9 @@ export const changeInfluencerStatus = createServerFn({ method: "POST" })
     if (!current) throw new Error("Candidata não encontrada neste ambiente.");
 
     const nextStatus = data.status as InfluencerStatus;
+    // Fase 5: "Qualificada" só pela auditoria, e as etapas seguintes só depois dela.
+    const bloqueio = motivoBloqueioSeletor(current.status, nextStatus);
+    if (bloqueio) throw new Error(bloqueio);
     const { error } = await supabase
       .from("influencers")
       .update({ status: nextStatus })

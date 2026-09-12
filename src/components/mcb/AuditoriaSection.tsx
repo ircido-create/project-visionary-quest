@@ -103,6 +103,9 @@ export function AuditoriaSection({
       toast.success(
         `Auditoria registrada: ${REGISTRO_LABELS[r.registro]}. Etapa agora: ${r.proximaEtapaLabel}.`,
       );
+      if (r.avisos.length > 0) {
+        toast.warning(`Decisão registrada, mas não foi possível gravar ${r.avisos.join(" e ")}.`);
+      }
       // A decisão muda a etapa, a fila do painel e, na devolução, as tarefas.
       queryClient.invalidateQueries({ queryKey: chaveDecisoes });
       queryClient.invalidateQueries({ queryKey: ["mcb", "influencer", tenantId] });

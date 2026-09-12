@@ -123,18 +123,33 @@ export const decidirAuditoria = createServerFn({ method: "POST" })
     const nota = data.nota.trim();
     const prazo = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
 
-    const gravacoes: Array<PromiseLike<unknown>> = [
-      supabase.from("qualification_results").insert({
-        tenant_id: data.tenantId,
-        influencer_id: data.influencerId,
-        rule_set_version: avaliacao.ruleSetVersion,
-        status: avaliacao.status,
-        requirements: avaliacao.requirements as unknown as Json,
-        progress: avaliacao.progress as unknown as Json,
-        manual_decision: resultado.registro,
-        manual_decision_by: userId,
-        manual_decision_note: nota || null,
-      }),
+    // O cliente do Supabase não lança exceção quando uma escrita falha: devolve `error`.
+    // Por isso cada gravação é conferida. Sem o registro da decisão, a mudança de etapa
+    // não pode ficar — desfaz e avisa, em vez de mostrar sucesso sem deixar rastro.
+    const { error: erroDecisao } = await supabase.from("qualification_results").insert({
+      tenant_id: data.tenantId,
+      influencer_id: data.influencerId,
+      rule_set_version: avaliacao.ruleSetVersion,
+      status: avaliacao.status,
+      requirements: avaliacao.requirements as unknown as Json,
+      progress: avaliacao.progress as unknown as Json,
+      manual_decision: resultado.registro,
+      manual_decision_by: userId,
+      manual_decision_note: nota || null,
+    });
+    if (erroDecisao) {
+      await supabase
+        .from("influencers")
+        .update({ status: ETAPA_EM_AUDITORIA })
+        .eq("tenant_id", data.tenantId)
+        .eq("id", data.influencerId)
+        .eq("status", resultado.proximaEtapa);
+      throw new Error(
+        `A decisão não foi registrada (${erroDecisao.message}). A candidata continua em auditoria.`,
+      );
+    }
+
+    const [historico, tarefa] = await Promise.all([
       supabase.from("status_history").insert({
         tenant_id: data.tenantId,
         influencer_id: data.influencerId,
@@ -143,37 +158,41 @@ export const decidirAuditoria = createServerFn({ method: "POST" })
         changed_by: userId,
         note: `Auditoria: ${REGISTRO_LABELS[resultado.registro]}${nota ? ` — ${nota}` : ""}`,
       }),
-      audit(supabase, {
-        tenant_id: data.tenantId,
-        actor_id: userId,
-        action: "influencer.auditoria_decidida",
-        entity: "influencers",
-        entity_id: data.influencerId,
-        meta: {
-          decisao: resultado.registro,
-          para: resultado.proximaEtapa,
-          pendentes: resultado.pendentes.map((p) => p.key),
-        },
-      }),
-    ];
-    if (resultado.registro === "DEVOLVIDA") {
-      gravacoes.push(
-        supabase.from("tasks").insert({
-          tenant_id: data.tenantId,
-          influencer_id: data.influencerId,
-          title: tituloTarefaDevolucao(nota),
-          status: "PENDENTE",
-          priority: "ALTA",
-          due_date: prazo,
-        }),
-      );
-    }
-    await Promise.all(gravacoes);
+      resultado.registro === "DEVOLVIDA"
+        ? supabase.from("tasks").insert({
+            tenant_id: data.tenantId,
+            influencer_id: data.influencerId,
+            title: tituloTarefaDevolucao(nota),
+            status: "PENDENTE",
+            priority: "ALTA",
+            due_date: prazo,
+          })
+        : Promise.resolve({ error: null }),
+    ]);
+    await audit(supabase, {
+      tenant_id: data.tenantId,
+      actor_id: userId,
+      action: "influencer.auditoria_decidida",
+      entity: "influencers",
+      entity_id: data.influencerId,
+      meta: {
+        decisao: resultado.registro,
+        para: resultado.proximaEtapa,
+        pendentes: resultado.pendentes.map((p) => p.key),
+      },
+    });
+
+    // A decisão já está gravada; o que faltou aqui é secundário e não justifica desfazer
+    // a etapa. Vai para a tela como aviso, para a gestora saber o que conferir.
+    const avisos: string[] = [];
+    if (historico.error) avisos.push("o histórico de etapas");
+    if (tarefa.error) avisos.push("a tarefa da devolução");
 
     return {
       registro: resultado.registro,
       proximaEtapa: resultado.proximaEtapa,
       proximaEtapaLabel: STATUS_LABELS[resultado.proximaEtapa],
+      avisos,
     };
   });
 

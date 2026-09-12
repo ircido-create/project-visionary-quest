@@ -14,7 +14,7 @@
  * não pode é uma exceção silenciosa.
  */
 
-import { STATUS_LABELS, type InfluencerStatus } from "./labels";
+import { STATUS_LABELS, STATUS_ORDER, type InfluencerStatus } from "./labels";
 import type { RequirementResult } from "./qualification";
 
 export type DecisaoAuditoria = "APROVAR" | "DEVOLVER";
@@ -103,4 +103,43 @@ export function validarDecisao(entrada: {
 export function tituloTarefaDevolucao(nota: string): string {
   const base = `Pendências da auditoria: ${nota.trim().replace(/\s+/g, " ")}`;
   return base.length > 120 ? `${base.slice(0, 117)}...` : base;
+}
+
+/**
+ * Etapas que só se alcançam pela auditoria, ou depois dela. Decisão de produto de
+ * 2026-09-12: sem isto, o seletor comum de etapa levava uma candidata direto para
+ * "Qualificada" ou "Aprovada" sem auditoria e sem justificativa — e a auditoria virava
+ * um caminho opcional, sem garantia de que o registro de "quem aprovou" exista.
+ */
+export const ETAPAS_DEPOIS_DA_AUDITORIA: InfluencerStatus[] = [
+  "QUALIFICADA",
+  "ENVIADA_ANALISE",
+  "APROVADA",
+  "NAO_APROVADA",
+];
+
+/**
+ * Por que o seletor comum não pode fazer esta mudança, ou `null` se pode.
+ *
+ * - "Qualificada" só pelo formulário de auditoria.
+ * - "Enviada para análise", "Aprovada" e "Não aprovada" só para quem já está em
+ *   "Qualificada" ou depois.
+ * - Todo o resto continua livre: as etapas de antes (inclusive voltar para elas),
+ *   "Pausada" e "Arquivada".
+ */
+export function motivoBloqueioSeletor(de: InfluencerStatus, para: InfluencerStatus): string | null {
+  if (de === para) return null;
+  const jaAuditada = ETAPAS_DEPOIS_DA_AUDITORIA.includes(de);
+  if (para === ETAPA_APROVADA && !jaAuditada) {
+    return `Para chegar a "${STATUS_LABELS[ETAPA_APROVADA]}", use a auditoria na página da candidata: é ela que registra quem aprovou e com base em quê.`;
+  }
+  if (ETAPAS_DEPOIS_DA_AUDITORIA.includes(para) && !jaAuditada) {
+    return `"${STATUS_LABELS[para]}" só vale para candidatas que já passaram pela auditoria.`;
+  }
+  return null;
+}
+
+/** As etapas que o seletor comum oferece a partir da etapa atual. */
+export function etapasPermitidasNoSeletor(de: InfluencerStatus): InfluencerStatus[] {
+  return STATUS_ORDER.filter((para) => motivoBloqueioSeletor(de, para) === null);
 }
