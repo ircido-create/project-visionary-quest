@@ -1,4 +1,5 @@
 import { motivoBloqueioSeletor } from "@/lib/mcb/auditoria";
+import { numeroWhatsApp } from "@/lib/mcb/whatsapp";
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
@@ -201,7 +202,8 @@ export const getDashboard = createServerFn({ method: "POST" })
         .from("tasks")
         .select("id, title, due_date, status, influencer_id, priority")
         .eq("tenant_id", data.tenantId)
-        .neq("status", "CONCLUIDA"),
+        // Cancelada não é tarefa aberta: contava como atrasada e entraria no lembrete.
+        .in("status", ["PENDENTE", "EM_ANDAMENTO"]),
     ]);
 
     const rows = influencers ?? [];
@@ -261,7 +263,19 @@ export const getDashboard = createServerFn({ method: "POST" })
       lateTasks: (tasks ?? [])
         .filter((t) => t.due_date !== null && t.due_date < today)
         .slice(0, 6)
-        .map((t) => ({ id: t.id, title: t.title, dueDate: t.due_date, influencerId: t.influencer_id })),
+        .map((t) => {
+          // Nome e WhatsApp da candidata, para o lembrete sair do próprio painel.
+          const candidata = rows.find((r) => r.id === t.influencer_id);
+          return {
+            id: t.id,
+            title: t.title,
+            dueDate: t.due_date,
+            influencerId: t.influencer_id,
+            influencerName: candidata?.full_name ?? null,
+            whatsapp: numeroWhatsApp(candidata?.whatsapp),
+            temPortal: Boolean(candidata?.user_id),
+          };
+        }),
       evolution: rows
         .slice(0, 30)
         .map((r) => ({ name: r.full_name.split(" ")[0], seguidores: r.followers ?? 0, meta: 500 })),

@@ -5,6 +5,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { AppShell, StatCard } from "@/components/mcb/AppShell";
 import { getDashboard } from "@/lib/mcb/app.functions";
 import { useWorkspace } from "@/lib/mcb/useWorkspace";
+import { linkWhatsApp, mensagemLembrete } from "@/lib/mcb/whatsapp";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
@@ -19,7 +20,7 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
 });
 
 function DashboardPage() {
-  const { tenantId, isLoading, tenants } = useWorkspace();
+  const { tenantId, isLoading, tenants, profile } = useWorkspace();
   const fetchDashboard = useServerFn(getDashboard);
   const query = useQuery({
     queryKey: ["mcb", "dashboard", tenantId],
@@ -142,9 +143,38 @@ function DashboardPage() {
               ) : (
                 <ul className="mt-4 grid gap-3 text-sm">
                   {data.lateTasks.map((task) => (
-                    <li key={task.id} className="flex items-center justify-between gap-3">
-                      <span>{task.title}</span>
-                      <span className="text-destructive">{task.dueDate}</span>
+                    <li key={task.id} className="grid gap-1">
+                      <div className="flex items-center justify-between gap-3">
+                        <span>{task.title}</span>
+                        <span className="text-destructive">{task.dueDate}</span>
+                      </div>
+                      {task.influencerName ? (
+                        <div className="flex items-center justify-between gap-3 text-xs text-muted-foreground">
+                          <span>{task.influencerName}</span>
+                          {task.whatsapp ? (
+                            <a
+                              href={linkWhatsApp(
+                                task.whatsapp,
+                                mensagemLembrete({
+                                  nome: task.influencerName,
+                                  tarefas: [{ title: task.title, due_date: task.dueDate }],
+                                  gestora: profile?.full_name ?? null,
+                                  linkPortal: task.temPortal
+                                    ? `${window.location.origin}/portal`
+                                    : null,
+                                }),
+                              )}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="underline underline-offset-4"
+                            >
+                              Lembrar no WhatsApp
+                            </a>
+                          ) : (
+                            <span>sem WhatsApp</span>
+                          )}
+                        </div>
+                      ) : null}
                     </li>
                   ))}
                 </ul>

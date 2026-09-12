@@ -10,6 +10,7 @@ import { AuditoriaSection } from "@/components/mcb/AuditoriaSection";
 import { EvidenceSection } from "@/components/mcb/EvidenceSection";
 import { InstagramSection } from "@/components/mcb/InstagramSection";
 import { SugestoesTarefa } from "@/components/mcb/SugestoesTarefa";
+import { WhatsAppCandidata } from "@/components/mcb/WhatsAppCandidata";
 import {
   addNote,
   changeInfluencerStatus,
@@ -48,7 +49,7 @@ const REQUIREMENT_TONE: Record<string, string> = {
 
 function CandidateDetail() {
   const { id } = Route.useParams();
-  const { tenantId, readOnly } = useWorkspace();
+  const { tenantId, readOnly, profile } = useWorkspace();
   const queryClient = useQueryClient();
 
   const fetchDetail = useServerFn(getInfluencer);
@@ -244,7 +245,15 @@ function CandidateDetail() {
       title={influencer.full_name}
       description={`@${influencer.instagram_handle ?? "—"} · ${influencer.city ?? ""}${influencer.state ? `, ${influencer.state}` : ""}`}
       actions={
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center justify-end gap-2">
+          <WhatsAppCandidata
+            nome={influencer.full_name}
+            email={influencer.email}
+            whatsapp={influencer.whatsapp}
+            temPortal={influencer.user_id !== null}
+            tarefas={detail.tasks}
+            gestora={profile?.full_name ?? null}
+          />
           <select
             aria-label="Status da candidata"
             className="h-10 rounded-md border border-input bg-background px-3 text-sm"

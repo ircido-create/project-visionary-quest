@@ -12,6 +12,9 @@ import { Label } from "@/components/ui/label";
 
 export const Route = createFileRoute("/auth")({
   ssr: false,
+  // Convite da gestora pelo WhatsApp: `/auth?modo=cadastro` já abre em "criar conta".
+  validateSearch: (search: Record<string, unknown>): { modo?: "cadastro" } =>
+    search["modo"] === "cadastro" ? { modo: "cadastro" } : {},
   head: () => ({
     meta: [
       { title: "Entrar — MCB Método Criadora Blessing" },
@@ -72,7 +75,10 @@ function AuthPage() {
     const { to } = await resolveDestination();
     navigate({ to: to === "portal" ? "/portal" : "/dashboard" });
   }, [navigate, resolveDestination, syncLovableProfile]);
-  const [mode, setMode] = useState<"signin" | "signup" | "forgot">("signin");
+  const { modo } = Route.useSearch();
+  const [mode, setMode] = useState<"signin" | "signup" | "forgot">(
+    modo === "cadastro" ? "signup" : "signin",
+  );
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
@@ -129,7 +135,10 @@ function AuthPage() {
           email,
           password,
           options: {
-            emailRedirectTo: `${window.location.origin}/dashboard`,
+            // Volta para esta tela, que vincula a candidatura e manda a candidata ao
+            // portal e a gestora ao painel. Em /dashboard a candidata caía na tela de
+            // "crie seu ambiente", sem a candidatura vinculada.
+            emailRedirectTo: `${window.location.origin}/auth`,
             data: { full_name: fullName },
           },
         });
