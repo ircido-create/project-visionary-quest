@@ -86,9 +86,17 @@
 - [ ] **Modelos de e-mail com a identidade MCB, ainda não ativos.** O envio de
       autenticação já funciona pelo SMTP da Hostinger — cadastro, confirmação e login
       foram exercidos de ponta a ponta. O que falta é a camada de marca: os 6 modelos
-      enviam por `notify.mcblessing.com.br`, cuja verificação de DNS (NS e TXT) ainda
-      não concluiu. Até lá as mensagens saem no formato padrão do Supabase, que entrega
-      normalmente. Acompanhar em Cloud → Emails.
+      enviam por `notify.mcblessing.com.br`, e **não dá para ativá-los com o DNS na
+      Hostinger**: o Lovable exige delegar o subdomínio `notify` por `NS` para
+      `ns5`/`ns6.lovable.cloud` (TXT, CNAME ou MX não substituem), e a Hostinger não aceita
+      `NS` em subdomínio — as duas limitações confirmadas na documentação de cada um, em
+      2026-09-11. **Decisão: deixar como está.** As mensagens seguem no formato padrão do
+      Supabase, que entrega normalmente, e os modelos ficam prontos no código. Se um dia
+      valer a pena, o caminho é mover o DNS de `mcblessing.com.br` para um provedor que
+      aceite `NS` em subdomínio (Cloudflare, por exemplo): recriar antes os registros
+      atuais a partir da exportação da zona na Hostinger, conferir cada um nos servidores
+      novos, só então trocar os nameservers no registro do domínio, e por fim adicionar o
+      `NS notify` e o `TXT _lovable-email` pedidos em Cloud → Emails.
 - [ ] Só depois que a IA funcionar em produção (item acima): a camada gratuita do
       Gemini devolve 503 com frequência. Há retry com espera, mas
       uma análise pode levar mais de um minuto e ainda falhar. Se virar incômodo, o
