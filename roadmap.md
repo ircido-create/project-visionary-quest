@@ -71,6 +71,46 @@
       Também não foi feito: preload de rota no hover, e `select("*")` nas listagens,
       que traz colunas a mais mas não foi o que a medição apontou como gargalo.
 
+## Fase 5 — Rotina da gestora
+
+Montada em 2026-09-12 a partir do que o produto faz hoje e do que está parado no banco,
+não de pedidos das gestoras — **as prioridades são premissas a confirmar com quem usa**.
+O retrato que as orientou (inclui os ambientes de demonstração): 15 candidatas, só 2 com
+login no portal; 15 tarefas abertas, 4 atrasadas; 5 candidatas paradas em "Pronta para
+auditoria". Os quatro primeiros itens não dependem de secret nenhum — de propósito,
+porque tudo que depende de secret está travado em produção (ver Pendências).
+
+- [ ] **Fluxo de auditoria.** Hoje a etapa "Pronta para auditoria" só tem um contador no
+      painel: não há tela para auditar, e é por isso que as candidatas param ali. O banco
+      já tem `qualification_results.manual_decision`, `manual_decision_by` e
+      `manual_decision_note`, sem uso. A tela mostra cada requisito com o valor atual, a
+      meta e as evidências confirmadas, e registra a decisão — aprovar (Qualificada ou
+      Enviada para análise oficial) ou devolver com motivo, criando a tarefa do que
+      falta —, com autor, data e entrada em `audit_logs`.
+- [ ] **Modelos de tarefa por nível.** A tabela `task_templates` (nível, título,
+      descrição; `tenant_id` opcional, para modelos gerais do método e da gestora) existe
+      e está vazia, sem tela — hoje cada tarefa é criada à mão, candidata por candidata.
+      Biblioteca de modelos em Configurações e, quando a candidata muda de nível, a
+      sugestão das tarefas do modelo para a gestora confirmar (não criar sozinho). Falta
+      uma coluna de prazo padrão em dias — migração pequena.
+- [ ] **Convite e lembrete pelo WhatsApp, sem API.** O telefone da candidata já é
+      coletado na Porta de Entrada. Botões que abrem `wa.me/<número>?text=` com a
+      mensagem pronta — convite para o portal, com o link, e lembrete de tarefa
+      atrasada — para a gestora enviar do próprio WhatsApp. Sem secret e sem custo por
+      mensagem; o envio continua sendo um gesto da gestora.
+- [ ] **Relatório de evolução para compartilhar.** Uma página por candidata com a
+      evolução dos números (`metric_snapshots`), os requisitos e as tarefas concluídas,
+      para a gestora mandar à candidata ou a quem avalia. Os dados já existem; é
+      apresentação e controle de quem pode ver.
+
+**Depois que os secrets funcionarem em produção:**
+
+- [ ] Avisos automáticos por e-mail ou WhatsApp com API — resumo semanal para a
+      gestora, lembrete de prazo para a candidata. Exigem credencial do provedor de
+      envio e um job agendado (`pg_cron`, disponível no banco mas não instalado; ligar é
+      configuração da plataforma).
+- [ ] Análise de IA em produção (Fase 2), hoje sem a chave do Gemini no servidor.
+
 ## Pendências conhecidas
 - [ ] **Secrets não gravam no Lovable — integração da Meta e análise de IA sem
       funcionar em produção.** Em 2026-09-11, `META_APP_ID`, `META_APP_SECRET`,
