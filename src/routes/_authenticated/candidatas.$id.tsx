@@ -246,6 +246,11 @@ function CandidateDetail() {
       description={`@${influencer.instagram_handle ?? "—"} · ${influencer.city ?? ""}${influencer.state ? `, ${influencer.state}` : ""}`}
       actions={
         <div className="flex flex-wrap items-center justify-end gap-2">
+          <Button asChild variant="outline" size="sm">
+            <Link to="/relatorio/$id" params={{ id }}>
+              Relatório
+            </Link>
+          </Button>
           <WhatsAppCandidata
             nome={influencer.full_name}
             email={influencer.email}

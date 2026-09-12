@@ -22,6 +22,7 @@ import { Route as GSlugRouteImport } from './routes/g.$slug'
 import { Route as AuthenticatedCandidatasIndexRouteImport } from './routes/_authenticated/candidatas.index'
 import { Route as AuthenticatedCandidatasIdRouteImport } from './routes/_authenticated/candidatas.$id'
 import { Route as AuthenticatedInstagramRetornoRouteImport } from './routes/_authenticated/instagram.retorno'
+import { Route as AuthenticatedRelatorioIdRouteImport } from './routes/_authenticated/relatorio.$id'
 import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
 import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
 
@@ -93,6 +94,12 @@ const AuthenticatedInstagramRetornoRoute =
     path: '/instagram/retorno',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedRelatorioIdRoute =
+  AuthenticatedRelatorioIdRouteImport.update({
+    id: '/relatorio/$id',
+    path: '/relatorio/$id',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const LovableEmailAuthPreviewRoute = LovableEmailAuthPreviewRouteImport.update({
   id: '/lovable/email/auth/preview',
   path: '/lovable/email/auth/preview',
@@ -116,6 +123,7 @@ export interface FileRoutesByFullPath {
   '/g/$slug': typeof GSlugRoute
   '/candidatas/$id': typeof AuthenticatedCandidatasIdRoute
   '/instagram/retorno': typeof AuthenticatedInstagramRetornoRoute
+  '/relatorio/$id': typeof AuthenticatedRelatorioIdRoute
   '/candidatas/': typeof AuthenticatedCandidatasIndexRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
@@ -132,6 +140,7 @@ export interface FileRoutesByTo {
   '/g/$slug': typeof GSlugRoute
   '/candidatas/$id': typeof AuthenticatedCandidatasIdRoute
   '/instagram/retorno': typeof AuthenticatedInstagramRetornoRoute
+  '/relatorio/$id': typeof AuthenticatedRelatorioIdRoute
   '/candidatas': typeof AuthenticatedCandidatasIndexRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
@@ -150,6 +159,7 @@ export interface FileRoutesById {
   '/g/$slug': typeof GSlugRoute
   '/_authenticated/candidatas/$id': typeof AuthenticatedCandidatasIdRoute
   '/_authenticated/instagram/retorno': typeof AuthenticatedInstagramRetornoRoute
+  '/_authenticated/relatorio/$id': typeof AuthenticatedRelatorioIdRoute
   '/_authenticated/candidatas/': typeof AuthenticatedCandidatasIndexRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
@@ -168,6 +178,7 @@ export interface FileRouteTypes {
     | '/g/$slug'
     | '/candidatas/$id'
     | '/instagram/retorno'
+    | '/relatorio/$id'
     | '/candidatas/'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
@@ -184,6 +195,7 @@ export interface FileRouteTypes {
     | '/g/$slug'
     | '/candidatas/$id'
     | '/instagram/retorno'
+    | '/relatorio/$id'
     | '/candidatas'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
@@ -201,6 +213,7 @@ export interface FileRouteTypes {
     | '/g/$slug'
     | '/_authenticated/candidatas/$id'
     | '/_authenticated/instagram/retorno'
+    | '/_authenticated/relatorio/$id'
     | '/_authenticated/candidatas/'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
@@ -309,6 +322,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedInstagramRetornoRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/relatorio/$id': {
+      id: '/_authenticated/relatorio/$id'
+      path: '/relatorio/$id'
+      fullPath: '/relatorio/$id'
+      preLoaderRoute: typeof AuthenticatedRelatorioIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/lovable/email/auth/preview': {
       id: '/lovable/email/auth/preview'
       path: '/lovable/email/auth/preview'
@@ -334,6 +354,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedTarefasRoute: typeof AuthenticatedTarefasRoute
   AuthenticatedCandidatasIdRoute: typeof AuthenticatedCandidatasIdRoute
   AuthenticatedInstagramRetornoRoute: typeof AuthenticatedInstagramRetornoRoute
+  AuthenticatedRelatorioIdRoute: typeof AuthenticatedRelatorioIdRoute
   AuthenticatedCandidatasIndexRoute: typeof AuthenticatedCandidatasIndexRoute
 }
 
@@ -345,6 +366,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedTarefasRoute: AuthenticatedTarefasRoute,
   AuthenticatedCandidatasIdRoute: AuthenticatedCandidatasIdRoute,
   AuthenticatedInstagramRetornoRoute: AuthenticatedInstagramRetornoRoute,
+  AuthenticatedRelatorioIdRoute: AuthenticatedRelatorioIdRoute,
   AuthenticatedCandidatasIndexRoute: AuthenticatedCandidatasIndexRoute,
 }
 
