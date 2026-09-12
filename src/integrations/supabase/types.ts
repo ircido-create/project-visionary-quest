@@ -869,24 +869,33 @@ export type Database = {
         Row: {
           created_at: string
           description: string | null
+          due_in_days: number | null
           id: string
           level: string
+          priority: Database["public"]["Enums"]["task_priority"]
+          sort_order: number
           tenant_id: string | null
           title: string
         }
         Insert: {
           created_at?: string
           description?: string | null
+          due_in_days?: number | null
           id?: string
           level: string
+          priority?: Database["public"]["Enums"]["task_priority"]
+          sort_order?: number
           tenant_id?: string | null
           title: string
         }
         Update: {
           created_at?: string
           description?: string | null
+          due_in_days?: number | null
           id?: string
           level?: string
+          priority?: Database["public"]["Enums"]["task_priority"]
+          sort_order?: number
           tenant_id?: string | null
           title?: string
         }
@@ -913,6 +922,7 @@ export type Database = {
           level: string | null
           priority: Database["public"]["Enums"]["task_priority"]
           status: Database["public"]["Enums"]["task_status"]
+          template_id: string | null
           tenant_id: string
           title: string
           updated_at: string
@@ -929,6 +939,7 @@ export type Database = {
           level?: string | null
           priority?: Database["public"]["Enums"]["task_priority"]
           status?: Database["public"]["Enums"]["task_status"]
+          template_id?: string | null
           tenant_id: string
           title: string
           updated_at?: string
@@ -945,6 +956,7 @@ export type Database = {
           level?: string | null
           priority?: Database["public"]["Enums"]["task_priority"]
           status?: Database["public"]["Enums"]["task_status"]
+          template_id?: string | null
           tenant_id?: string
           title?: string
           updated_at?: string

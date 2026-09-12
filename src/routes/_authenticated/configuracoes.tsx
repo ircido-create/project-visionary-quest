@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import { AppShell } from "@/components/mcb/AppShell";
+import { ModelosTarefaSection } from "@/components/mcb/ModelosTarefaSection";
 import {
   createTenant,
   getSettings,
@@ -529,6 +530,8 @@ function SettingsPage() {
             </p>
           </section>
         </div>
+
+        {tenantId ? <ModelosTarefaSection tenantId={tenantId} readOnly={readOnly} /> : null}
       </div>
     </AppShell>
   );

@@ -9,6 +9,7 @@ import { AnalysisSection } from "@/components/mcb/AnalysisSection";
 import { AuditoriaSection } from "@/components/mcb/AuditoriaSection";
 import { EvidenceSection } from "@/components/mcb/EvidenceSection";
 import { InstagramSection } from "@/components/mcb/InstagramSection";
+import { SugestoesTarefa } from "@/components/mcb/SugestoesTarefa";
 import {
   addNote,
   changeInfluencerStatus,
@@ -575,6 +576,13 @@ function CandidateDetail() {
 
         <section className="glass rounded-xl border border-border/60 p-6">
           <h2 className="font-serif text-xl">Tarefas</h2>
+          <SugestoesTarefa
+            tenantId={tenantId!}
+            influencerId={id}
+            nivel={evaluation.progress.level}
+            tarefas={detail.tasks}
+            readOnly={readOnly}
+          />
           <form
             className="mt-3 grid gap-2"
             onSubmit={(event) => {
