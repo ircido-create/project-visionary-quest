@@ -116,10 +116,17 @@ porque tudo que depende de secret está travado em produção (ver Pendências).
       2026-09-12, nos ambientes de demonstração: botões, mensagens e lembretes do
       painel. Falta ver um convite real de ponta a ponta — cadastro, confirmação e
       chegada ao portal —, que confirma se o Supabase aceita `/auth` como retorno.
-- [ ] **Relatório de evolução para compartilhar.** Uma página por candidata com a
-      evolução dos números (`metric_snapshots`), os requisitos e as tarefas concluídas,
-      para a gestora mandar à candidata ou a quem avalia. Os dados já existem; é
-      apresentação e controle de quem pode ver.
+- [x] **Relatório de evolução para compartilhar.** Botão "Relatório" na página da
+      candidata abre `/relatorio/<id>`, um documento em A4 para salvar em PDF pela
+      impressão do navegador: nível, índice, requisitos cumpridos, números de início e de
+      agora com a variação, gráfico de seguidores, situação de cada requisito e tarefas
+      concluídas. Controle de quem vê: sem link público (decisão de 2026-09-12) — só a
+      gestora logada abre a página, e o PDF sai quando ela decide mandar. O documento
+      mostra uma lista fechada; contato, notas internas, leitura da IA e prints de
+      evidência ficam de fora. Conferido em produção no mesmo dia com os números de uma
+      candidata. Ajuste pendente, cosmético: o valor atual dos requisitos sai sem o
+      formato brasileiro ("12400", "72.5%"), como na página da candidata.
+      Fica para depois, se as gestoras pedirem: link público com prazo e revogação.
 
 **Depois que os secrets funcionarem em produção:**
 
