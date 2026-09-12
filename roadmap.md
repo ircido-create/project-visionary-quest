@@ -124,8 +124,8 @@ porque tudo que depende de secret está travado em produção (ver Pendências).
       gestora logada abre a página, e o PDF sai quando ela decide mandar. O documento
       mostra uma lista fechada; contato, notas internas, leitura da IA e prints de
       evidência ficam de fora. Conferido em produção no mesmo dia com os números de uma
-      candidata. Ajuste pendente, cosmético: o valor atual dos requisitos sai sem o
-      formato brasileiro ("12400", "72.5%"), como na página da candidata.
+      candidata. O valor atual dos requisitos sai no formato brasileiro ("12.400",
+      "72,5%") desde o mesmo dia, também na página da candidata.
       Fica para depois, se as gestoras pedirem: link público com prazo e revogação.
 
 **Depois que os secrets funcionarem em produção:**
