@@ -5,6 +5,7 @@ import { z } from "zod";
 import type { Database, Json } from "@/integrations/supabase/types";
 import { audit } from "@/lib/mcb/audit";
 import { garantirEspacoParaCandidata } from "@/lib/mcb/limits";
+import { MENSAGEM_DEMONSTRACAO } from "@/lib/mcb/paginasPublicas";
 import { evaluateQualification } from "@/lib/mcb/qualification";
 
 function publicClient() {
@@ -135,13 +136,19 @@ export const submitApplication = createServerFn({ method: "POST" })
     // O tenant é sempre resolvido no servidor a partir do slug da landing page.
     const { data: tenant, error: tenantError } = await supabaseAdmin
       .from("tenants")
-      .select("id, is_public_page_enabled, status")
+      .select("id, is_demo, is_public_page_enabled, status")
       .eq("slug", data.slug)
       .maybeSingle();
 
     if (tenantError) throw new Error("Não foi possível registrar sua candidatura agora.");
     if (!tenant || !tenant.is_public_page_enabled || tenant.status !== "ACTIVE") {
       return { ok: false as const, reason: "Página de candidatura indisponível." };
+    }
+
+    // Ambiente de demonstração é legível por qualquer conta logada: inscrição real ali
+    // ficaria exposta. A página avisa e desativa o envio; esta é a trava de verdade.
+    if (tenant.is_demo) {
+      return { ok: false as const, reason: MENSAGEM_DEMONSTRACAO };
     }
 
     // Proteção simples contra envios duplicados da mesma candidata.

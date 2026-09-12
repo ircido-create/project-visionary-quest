@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { METHOD_STAGES } from "@/lib/mcb/labels";
+import { AVISO_PAGINA_DEMONSTRACAO } from "@/lib/mcb/paginasPublicas";
 
 export const Route = createFileRoute("/g/$slug")({
   loader: async ({ params }) => {
@@ -105,6 +106,10 @@ function ManagerLanding() {
     setForm((prev) => ({ ...prev, [key]: value }));
 
   const numberValue = (value: string) => (value.trim() === "" ? null : Number(value));
+  const demonstracao = page.tenant.isDemo;
+  // O servidor pode recusar sem erro (página indisponível, demonstração): o motivo
+  // aparece para a pessoa em vez de o botão simplesmente não fazer nada.
+  const recusa = mutation.data && !mutation.data.ok ? mutation.data.reason : null;
 
   if (mutation.data?.ok) {
     return (
@@ -166,12 +171,18 @@ function ManagerLanding() {
             Responda com sinceridade. Se não souber um número agora, deixe em branco — vamos tratar como
             pendência, e não como falha.
           </p>
+          {demonstracao ? (
+            <p className="mt-4 rounded-lg border border-destructive/40 bg-destructive/5 p-3 text-sm">
+              {AVISO_PAGINA_DEMONSTRACAO}
+            </p>
+          ) : null}
 
           <form
             className="mt-6 grid gap-4"
             onSubmit={(event) => {
               event.preventDefault();
               setError(null);
+              if (demonstracao) return;
               if (!form.consent) {
                 setError("É necessário autorizar o uso dos seus dados para o acompanhamento.");
                 return;
@@ -335,10 +346,14 @@ function ManagerLanding() {
               </span>
             </label>
 
-            {error ? <p className="text-sm text-destructive">{error}</p> : null}
+            {error || recusa ? <p className="text-sm text-destructive">{error ?? recusa}</p> : null}
 
-            <Button type="submit" size="lg" disabled={mutation.isPending}>
-              {mutation.isPending ? "Enviando..." : "Enviar candidatura"}
+            <Button type="submit" size="lg" disabled={mutation.isPending || demonstracao}>
+              {demonstracao
+                ? "Envio desativado na demonstração"
+                : mutation.isPending
+                  ? "Enviando..."
+                  : "Enviar candidatura"}
             </Button>
             <p className="text-xs text-muted-foreground">
               O envio não garante aprovação em nenhum programa de terceiros.

@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useSuspenseQuery, queryOptions } from "@tanstack/react-query";
 
 import { listPlans, listPublicManagers } from "@/lib/mcb/public.functions";
+import { ordenarPaginas, paginaPrincipal } from "@/lib/mcb/paginasPublicas";
 import { METHOD_STAGES, PILLARS } from "@/lib/mcb/labels";
 import { Button } from "@/components/ui/button";
 
@@ -43,6 +44,10 @@ export const Route = createFileRoute("/")({
 
 function Landing() {
   const { data } = useSuspenseQuery(landingQuery);
+  // O botão abre a primeira página real; antes abria a primeira criada, que era de
+  // demonstração, e inscrições reais caíam num ambiente legível por qualquer conta.
+  const principal = paginaPrincipal(data.managers);
+  const paginas = ordenarPaginas(data.managers);
 
   return (
     <div className="grain-overlay min-h-screen bg-background text-foreground">
@@ -76,14 +81,14 @@ function Landing() {
             <Button asChild size="lg" variant="secondary">
               <Link to="/auth">Criar meu ambiente</Link>
             </Button>
-            {data.managers[0] ? (
+            {principal ? (
               <Button
                 asChild
                 size="lg"
                 variant="outline"
                 className="border-primary-foreground/40 bg-transparent text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground"
               >
-                <Link to="/g/$slug" params={{ slug: data.managers[0].slug }}>
+                <Link to="/g/$slug" params={{ slug: principal.slug }}>
                   Ver página de candidatura
                 </Link>
               </Button>
@@ -166,11 +171,11 @@ function Landing() {
         </div>
       </section>
 
-      {data.managers.length > 0 ? (
+      {paginas.length > 0 ? (
         <section className="mx-auto max-w-6xl px-6 pb-20">
           <h2 className="font-serif text-2xl">Páginas de candidatura</h2>
           <ul className="mt-4 flex flex-wrap gap-3 text-sm">
-            {data.managers.map((manager) => (
+            {paginas.map((manager) => (
               <li key={manager.slug}>
                 <Link
                   to="/g/$slug"
@@ -178,6 +183,7 @@ function Landing() {
                   className="rounded-full border border-border px-4 py-2 hover:bg-accent"
                 >
                   {manager.name}
+                  {manager.is_demo ? " (demonstração)" : ""}
                 </Link>
               </li>
             ))}
