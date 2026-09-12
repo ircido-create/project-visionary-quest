@@ -92,12 +92,17 @@ porque tudo que depende de secret está travado em produção (ver Pendências).
       2026-09-12: uma aprovação, uma devolução e a recusa do seletor.
       Atenção ao testar publicações novas: uma aba aberta antes da publicação pode
       continuar falando com o servidor anterior. Testar em aba nova.
-- [ ] **Modelos de tarefa por nível.** A tabela `task_templates` (nível, título,
-      descrição; `tenant_id` opcional, para modelos gerais do método e da gestora) existe
-      e está vazia, sem tela — hoje cada tarefa é criada à mão, candidata por candidata.
-      Biblioteca de modelos em Configurações e, quando a candidata muda de nível, a
-      sugestão das tarefas do modelo para a gestora confirmar (não criar sozinho). Falta
-      uma coluna de prazo padrão em dias — migração pequena.
+- [x] **Modelos de tarefa por nível.** Biblioteca por ambiente em Configurações: nível,
+      título, orientação, prazo em dias e prioridade; dona e administradora editam
+      (regra conferida no servidor). Na página da candidata, as tarefas do nível dela que
+      ainda faltam aparecem como sugestão, todas marcadas; a gestora desmarca o que não
+      servir e confirma — nada é criado sozinho. Cada tarefa guarda o modelo de origem
+      (`tasks.template_id`), o que evita sugerir de novo e duplicar. Conjunto inicial de
+      18 tarefas do método, aprovado, carregado por botão quando a biblioteca está
+      vazia. Migração aditiva aplicada em 2026-09-12. Testado em produção no mesmo dia:
+      conjunto carregado e duas tarefas criadas a partir das sugestões.
+      Fica para depois: modelos gerais do método (`tenant_id` nulo), válidos para todos
+      os ambientes — exigem mudar as regras de acesso de leitura.
 - [ ] **Convite e lembrete pelo WhatsApp, sem API.** O telefone da candidata já é
       coletado na Porta de Entrada. Botões que abrem `wa.me/<número>?text=` com a
       mensagem pronta — convite para o portal, com o link, e lembrete de tarefa
