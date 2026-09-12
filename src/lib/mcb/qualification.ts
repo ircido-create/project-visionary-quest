@@ -73,6 +73,17 @@ export const PROGRESS_WEIGHTS: Array<{ key: string; label: string; weight: numbe
   { key: "posts_recentes", label: "12 publicações recentes", weight: 5 },
 ];
 
+/** Números no padrão brasileiro (12.400; 72,5). Muda só a exibição, não a regra. */
+export function numeroBR(valor: number): string {
+  return valor.toLocaleString("pt-BR", { maximumFractionDigits: 2 });
+}
+
+/** O valor atual de um requisito para exibir: número formatado, texto como está. */
+export function formatarValorAtual(valor: RequirementResult["currentValue"]): string | null {
+  if (valor === null) return null;
+  return typeof valor === "number" ? numeroBR(valor) : valor;
+}
+
 export const LEVELS = {
   ONE: "Nível 1 — Estruturar",
   TWO: "Nível 2 — Produzir",
@@ -118,7 +129,7 @@ export function evaluateQualification(
         ? "aguardando dado"
         : followers >= TARGETS.followers
           ? null
-          : `faltam ${TARGETS.followers - followers}`,
+          : `faltam ${numeroBR(TARGETS.followers - followers)}`,
     source,
     updatedAt,
   });
@@ -136,7 +147,7 @@ export function evaluateQualification(
         ? "aguardando dado"
         : posts > TARGETS.posts
           ? null
-          : `faltam ${TARGETS.posts + 1 - posts}`,
+          : `faltam ${numeroBR(TARGETS.posts + 1 - posts)}`,
     source,
     updatedAt,
   });
@@ -189,7 +200,7 @@ export function evaluateQualification(
     key: "female_audience",
     label: "Público feminino",
     status: female === null ? "UNKNOWN" : female > TARGETS.femaleAudience ? "PASS" : "FAIL",
-    currentValue: female === null ? null : `${female}%`,
+    currentValue: female === null ? null : `${numeroBR(female)}%`,
     targetValue: "acima de 50%",
     targetLabel: "estritamente acima de 50%",
     gap:
@@ -197,7 +208,7 @@ export function evaluateQualification(
         ? "aguardando dado"
         : female > TARGETS.femaleAudience
           ? null
-          : `precisa ultrapassar 50% (hoje ${female}%)`,
+          : `precisa ultrapassar 50% (hoje ${numeroBR(female)}%)`,
     source,
     updatedAt,
   });

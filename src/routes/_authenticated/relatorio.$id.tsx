@@ -22,7 +22,7 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { getInfluencer } from "@/lib/mcb/app.functions";
-import { QUALIFICATION_LABELS } from "@/lib/mcb/qualification";
+import { QUALIFICATION_LABELS, formatarValorAtual } from "@/lib/mcb/qualification";
 import {
   SITUACAO_REQUISITO,
   contarAbertas,
@@ -235,7 +235,7 @@ function RelatorioPage() {
               <span>
                 {r.label}
                 <span className="ml-2 text-xs text-muted-foreground">
-                  atual: {r.currentValue ?? "sem dado"} · meta: {r.targetLabel}
+                  atual: {formatarValorAtual(r.currentValue) ?? "sem dado"} · meta: {r.targetLabel}
                 </span>
               </span>
               <span className={TOM[r.status] ?? ""}>{SITUACAO_REQUISITO[r.status]}</span>

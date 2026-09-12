@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { evaluateQualification } from "./qualification";
+import { evaluateQualification, formatarValorAtual } from "./qualification";
 
 const qualified = {
   followers: 1200,
@@ -58,5 +58,31 @@ describe("motor determinístico de qualificação", () => {
     });
     expect(low.progress.score).toBeGreaterThanOrEqual(0);
     expect(evaluateQualification(qualified).progress.score).toBeLessThanOrEqual(100);
+  });
+});
+
+describe("exibição dos valores dos requisitos", () => {
+  const valor = (key: string, entrada: Parameters<typeof evaluateQualification>[0]) =>
+    evaluateQualification(entrada).requirements.find((r) => r.key === key);
+
+  it("mostra o público feminino no formato brasileiro", () => {
+    expect(valor("female_audience", { ...qualified, femaleAudiencePct: 72.5 })?.currentValue).toBe(
+      "72,5%",
+    );
+    expect(valor("female_audience", { ...qualified, femaleAudiencePct: 48.5 })?.gap).toBe(
+      "precisa ultrapassar 50% (hoje 48,5%)",
+    );
+  });
+
+  it("formata números com separador de milhar e deixa texto como está", () => {
+    expect(formatarValorAtual(12400)).toBe("12.400");
+    expect(formatarValorAtual("Sim")).toBe("Sim");
+    expect(formatarValorAtual(null)).toBeNull();
+  });
+
+  it("não muda a regra: 50,1% continua qualificando", () => {
+    expect(evaluateQualification({ ...qualified, femaleAudiencePct: 50.1 }).status).toBe(
+      "QUALIFIED",
+    );
   });
 });

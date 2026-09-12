@@ -23,7 +23,7 @@ import {
 import { useWorkspace } from "@/lib/mcb/useWorkspace";
 import { STATUS_LABELS, STATUS_ORDER, type InfluencerStatus } from "@/lib/mcb/labels";
 import { motivoBloqueioSeletor } from "@/lib/mcb/auditoria";
-import { QUALIFICATION_LABELS } from "@/lib/mcb/qualification";
+import { QUALIFICATION_LABELS, formatarValorAtual } from "@/lib/mcb/qualification";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -308,7 +308,8 @@ function CandidateDetail() {
                   </span>
                 </div>
                 <p className="mt-1 text-xs text-muted-foreground">
-                  Atual: {requirement.currentValue ?? "sem dado"} · Meta: {requirement.targetLabel}
+                  Atual: {formatarValorAtual(requirement.currentValue) ?? "sem dado"} · Meta:{" "}
+                  {requirement.targetLabel}
                   {requirement.gap ? ` · ${requirement.gap}` : ""}
                 </p>
                 <p className="mt-1 text-xs text-muted-foreground">
