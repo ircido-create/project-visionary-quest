@@ -137,6 +137,17 @@ porque tudo que depende de secret está travado em produção (ver Pendências).
 - [ ] Análise de IA em produção (Fase 2), hoje sem a chave do Gemini no servidor.
 
 ## Pendências conhecidas
+- [x] **Inscrições reais em ambiente de demonstração — corrigido em 2026-09-12.**
+      Ambiente de demonstração é legível por qualquer conta logada (`can_read_tenant`), e
+      o botão "Ver página de candidatura" da página inicial abria a primeira página
+      criada, "Equipe Blessing", que era de demonstração. Duas inscrições reais chegaram
+      lá em 2026-09-09, com nome, e-mail, WhatsApp e respostas. Na hora da correção só
+      existiam a conta da dona da plataforma e duas contas de candidata. No banco:
+      "Equipe Blessing" virou ambiente real (plano Premium, dona Ircido), com registro
+      `platform.demo_virou_real` em `audit_logs`. No site: o servidor recusa inscrição em
+      ambiente de demonstração; a página de demonstração avisa e desativa o envio; o
+      botão principal abre a primeira página real e a lista marca as demonstrações
+      (`paginasPublicas.ts`). Conferido em produção no mesmo dia.
 - [ ] **Secrets não gravam no Lovable — integração da Meta e análise de IA sem
       funcionar em produção.** Em 2026-09-11, `META_APP_ID`, `META_APP_SECRET`,
       `META_REDIRECT_URI` e `GEMINI_API_KEY` foram cadastrados pela tela do Lovable três
