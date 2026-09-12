@@ -148,6 +148,16 @@ porque tudo que depende de secret está travado em produção (ver Pendências).
       ambiente de demonstração; a página de demonstração avisa e desativa o envio; o
       botão principal abre a primeira página real e a lista marca as demonstrações
       (`paginasPublicas.ts`). Conferido em produção no mesmo dia.
+- [x] **Revisão do que um visitante sem login alcança — 2026-09-12.** Todas as tabelas
+      com RLS; bucket de evidências privado; nenhuma view. Dois pontos endurecidos, nenhum
+      explorável no dia (`20260912230000_endurece_acesso_publico.sql`): as oito funções
+      do Instagram, que conferem a dona da candidatura, deixaram de aceitar chamada de
+      visitante (a migração da fase 4 não tinha retirado o EXECUTE padrão); e a marca dos
+      ambientes, que era legível por inteiro e de todos os ambientes, passou a mostrar a
+      visitante só as colunas da página pública (sem o WhatsApp da gestora) e só de
+      ambiente com página ligada e ativo. Conferido pela API como visitante e na página
+      pública. Fica como está, de propósito: visitante lê as colunas de `tenants` de
+      páginas públicas (nome, slug, plano, situação) — nada sensível.
 - [ ] **Secrets não gravam no Lovable — integração da Meta e análise de IA sem
       funcionar em produção.** Em 2026-09-11, `META_APP_ID`, `META_APP_SECRET`,
       `META_REDIRECT_URI` e `GEMINI_API_KEY` foram cadastrados pela tela do Lovable três
