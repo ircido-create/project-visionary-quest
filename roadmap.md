@@ -103,11 +103,19 @@ porque tudo que depende de secret está travado em produção (ver Pendências).
       conjunto carregado e duas tarefas criadas a partir das sugestões.
       Fica para depois: modelos gerais do método (`tenant_id` nulo), válidos para todos
       os ambientes — exigem mudar as regras de acesso de leitura.
-- [ ] **Convite e lembrete pelo WhatsApp, sem API.** O telefone da candidata já é
-      coletado na Porta de Entrada. Botões que abrem `wa.me/<número>?text=` com a
-      mensagem pronta — convite para o portal, com o link, e lembrete de tarefa
-      atrasada — para a gestora enviar do próprio WhatsApp. Sem secret e sem custo por
-      mensagem; o envio continua sendo um gesto da gestora.
+- [x] **Convite e lembrete pelo WhatsApp, sem API.** Na página da candidata, botões
+      que abrem o WhatsApp da gestora com a mensagem pronta: "Convidar para o portal"
+      (só para quem ainda não tem acesso; diz o e-mail da inscrição, que é o que
+      vincula a conta) e "Lembrar tarefas atrasadas". No painel, cada tarefa atrasada
+      ganha o lembrete. O número é normalizado para o formato do `wa.me` (55 + DDD);
+      sem número confiável, não há botão. O sistema não registra envio — quem envia é
+      a gestora. Junto: `/auth?modo=cadastro` abre direto em "criar conta"; a
+      confirmação de e-mail volta para `/auth`, que vincula a candidatura e leva ao
+      portal (antes caía em `/dashboard`, na tela de criar ambiente); tarefas
+      canceladas saem das abertas e atrasadas do painel. Conferido em produção em
+      2026-09-12, nos ambientes de demonstração: botões, mensagens e lembretes do
+      painel. Falta ver um convite real de ponta a ponta — cadastro, confirmação e
+      chegada ao portal —, que confirma se o Supabase aceita `/auth` como retorno.
 - [ ] **Relatório de evolução para compartilhar.** Uma página por candidata com a
       evolução dos números (`metric_snapshots`), os requisitos e as tarefas concluídas,
       para a gestora mandar à candidata ou a quem avalia. Os dados já existem; é
