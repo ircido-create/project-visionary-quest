@@ -6,6 +6,7 @@ import { toast } from "sonner";
 
 import { AppShell } from "@/components/mcb/AppShell";
 import { AnalysisSection } from "@/components/mcb/AnalysisSection";
+import { AuditoriaSection } from "@/components/mcb/AuditoriaSection";
 import { EvidenceSection } from "@/components/mcb/EvidenceSection";
 import { InstagramSection } from "@/components/mcb/InstagramSection";
 import {
@@ -689,6 +690,14 @@ function CandidateDetail() {
             ))}
           </ul>
         </section>
+
+        <AuditoriaSection
+          tenantId={tenantId!}
+          influencerId={id}
+          status={detail.influencer.status}
+          requisitos={detail.evaluation.requirements}
+          readOnly={readOnly}
+        />
 
         <EvidenceSection tenantId={tenantId!} influencerId={id} readOnly={readOnly} />
 

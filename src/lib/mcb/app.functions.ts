@@ -252,6 +252,11 @@ export const getDashboard = createServerFn({ method: "POST" })
       },
       funnel,
       nearGoal,
+      // Fila da Fase 5: candidatas esperando a decisão de auditoria.
+      awaitingAudit: rows
+        .filter((r) => r.status === "PRONTA_AUDITORIA")
+        .slice(0, 6)
+        .map((r) => ({ id: r.id, name: r.full_name })),
       lateTasks: (tasks ?? [])
         .filter((t) => t.due_date !== null && t.due_date < today)
         .slice(0, 6)

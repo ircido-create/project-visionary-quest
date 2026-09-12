@@ -113,6 +113,29 @@ function DashboardPage() {
             </section>
 
             <section className="glass rounded-xl border border-border/60 p-6">
+              <h2 className="font-serif text-xl">Aguardando auditoria</h2>
+              {data.awaitingAudit.length === 0 ? (
+                <p className="mt-3 text-sm text-muted-foreground">
+                  Nenhuma candidata esperando auditoria.
+                </p>
+              ) : (
+                <ul className="mt-4 grid gap-3 text-sm">
+                  {data.awaitingAudit.map((item) => (
+                    <li key={item.id}>
+                      <Link
+                        to="/candidatas/$id"
+                        params={{ id: item.id }}
+                        className="underline-offset-4 hover:underline"
+                      >
+                        {item.name}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </section>
+
+            <section className="glass rounded-xl border border-border/60 p-6">
               <h2 className="font-serif text-xl">Tarefas atrasadas</h2>
               {data.lateTasks.length === 0 ? (
                 <p className="mt-3 text-sm text-muted-foreground">Nada atrasado. Ótimo trabalho.</p>
