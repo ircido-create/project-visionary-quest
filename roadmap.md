@@ -80,13 +80,18 @@ login no portal; 15 tarefas abertas, 4 atrasadas; 5 candidatas paradas em "Pront
 auditoria". Os quatro primeiros itens não dependem de secret nenhum — de propósito,
 porque tudo que depende de secret está travado em produção (ver Pendências).
 
-- [ ] **Fluxo de auditoria.** Hoje a etapa "Pronta para auditoria" só tem um contador no
-      painel: não há tela para auditar, e é por isso que as candidatas param ali. O banco
-      já tem `qualification_results.manual_decision`, `manual_decision_by` e
-      `manual_decision_note`, sem uso. A tela mostra cada requisito com o valor atual, a
-      meta e as evidências confirmadas, e registra a decisão — aprovar (Qualificada ou
-      Enviada para análise oficial) ou devolver com motivo, criando a tarefa do que
-      falta —, com autor, data e entrada em `audit_logs`.
+- [x] **Fluxo de auditoria.** A página da candidata em "Pronta para auditoria" mostra
+      cada requisito (valor atual, meta, situação, origem do dado) e registra a decisão
+      em `qualification_results.manual_decision`, com autor, nota e entrada em
+      `audit_logs`. Aprovar leva a "Qualificada para análise"; com requisito pendente,
+      exige justificativa e fica gravado como "Aprovada com exceção". Devolver exige
+      motivo, volta para uma etapa anterior e cria a tarefa do que falta (prioridade
+      alta, 7 dias). O painel lista quem aguarda auditoria. Só dona e administradora
+      decidem. O seletor comum de etapa não leva mais a "Qualificada" nem às etapas
+      seguintes sem a auditoria — regra conferida no servidor. Testado em produção em
+      2026-09-12: uma aprovação, uma devolução e a recusa do seletor.
+      Atenção ao testar publicações novas: uma aba aberta antes da publicação pode
+      continuar falando com o servidor anterior. Testar em aba nova.
 - [ ] **Modelos de tarefa por nível.** A tabela `task_templates` (nível, título,
       descrição; `tenant_id` opcional, para modelos gerais do método e da gestora) existe
       e está vazia, sem tela — hoje cada tarefa é criada à mão, candidata por candidata.
