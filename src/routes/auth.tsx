@@ -6,6 +6,7 @@ import "@lovable.dev/cloud-auth-js/styles.css";
 import { supabase } from "@/integrations/supabase/client";
 import { resolveLanding } from "@/lib/mcb/portal.functions";
 import { lovable } from "@/integrations/lovable/index";
+import { VERSAO_POLITICA, VERSAO_TERMOS } from "@/lib/mcb/documentosLegais";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -18,7 +19,10 @@ export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
       { title: "Entrar — MCB Método Criadora Blessing" },
-      { name: "description", content: "Acesse seu ambiente de gestora para acompanhar candidatas e a jornada." },
+      {
+        name: "description",
+        content: "Acesse seu ambiente de gestora para acompanhar candidatas e a jornada.",
+      },
       { property: "og:title", content: "Entrar — MCB" },
       { property: "og:description", content: "Acesse seu ambiente de gestora no MCB." },
       { name: "robots", content: "noindex" },
@@ -85,6 +89,7 @@ function AuthPage() {
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [aceite, setAceite] = useState(false);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -105,13 +110,13 @@ function AuthPage() {
       return "Essa senha é fácil de descobrir. Escolha outra, mais longa e única.";
     }
     if (code === "user_already_exists" || text.includes("already registered")) {
-      return "Já existe uma conta com esse e-mail. Entre com sua senha ou use \"Esqueci minha senha\".";
+      return 'Já existe uma conta com esse e-mail. Entre com sua senha ou use "Esqueci minha senha".';
     }
     if (code === "over_email_send_rate_limit" || text.includes("rate limit")) {
       return "Muitas tentativas em pouco tempo. Aguarde alguns minutos e tente de novo.";
     }
     if (code === "invalid_credentials" || text.includes("invalid login")) {
-      return "E-mail ou senha incorretos. Se você criou sua conta pelo Google, entre pelo botão \"Continuar com Google\" — ou use \"Esqueci minha senha\" para definir uma senha.";
+      return 'E-mail ou senha incorretos. Se você criou sua conta pelo Google, entre pelo botão "Continuar com Google" — ou use "Esqueci minha senha" para definir uma senha.';
     }
     return "Não foi possível concluir. Verifique os dados e tente novamente.";
   }
@@ -131,6 +136,12 @@ function AuthPage() {
           "Se existir uma conta com esse e-mail, enviamos um link para criar uma nova senha. Confira também o spam.",
         );
       } else if (mode === "signup") {
+        if (!aceite) {
+          setError(
+            "Para criar a conta, marque que leu e aceita os Termos de Uso e a Política de Privacidade.",
+          );
+          return;
+        }
         const { error: signUpError } = await supabase.auth.signUp({
           email,
           password,
@@ -139,7 +150,12 @@ function AuthPage() {
             // portal e a gestora ao painel. Em /dashboard a candidata caía na tela de
             // "crie seu ambiente", sem a candidatura vinculada.
             emailRedirectTo: `${window.location.origin}/auth`,
-            data: { full_name: fullName },
+            // O banco grava o aceite na criação da conta (`aceites_de_termos`).
+            data: {
+              full_name: fullName,
+              aceite_termos: VERSAO_TERMOS,
+              aceite_politica: VERSAO_POLITICA,
+            },
           },
         });
         if (signUpError) throw signUpError;
@@ -160,7 +176,6 @@ function AuthPage() {
       setBusy(false);
     }
   }
-
 
   async function handleSocial(provider: "google" | "lovable") {
     setError(null);
@@ -186,7 +201,9 @@ function AuthPage() {
       redirect_uri: window.location.origin,
     });
     if (result.error) {
-      setError(`Não foi possível entrar com ${provider === "lovable" ? "Lovable" : "Google"} agora.`);
+      setError(
+        `Não foi possível entrar com ${provider === "lovable" ? "Lovable" : "Google"} agora.`,
+      );
       return;
     }
     if (result.redirected) return;
@@ -220,7 +237,12 @@ function AuthPage() {
           >
             Continuar com Lovable
           </button>
-          <Button type="button" variant="outline" className="w-full" onClick={() => void handleSocial("google")}>
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full"
+            onClick={() => void handleSocial("google")}
+          >
             Continuar com Google
           </Button>
         </div>
@@ -233,12 +255,23 @@ function AuthPage() {
           {mode === "signup" ? (
             <div className="grid gap-1.5">
               <Label htmlFor="name">Seu nome</Label>
-              <Input id="name" value={fullName} onChange={(e) => setFullName(e.target.value)} required />
+              <Input
+                id="name"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                required
+              />
             </div>
           ) : null}
           <div className="grid gap-1.5">
             <Label htmlFor="email">E-mail</Label>
-            <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+            <Input
+              id="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
           </div>
           {mode === "forgot" ? null : (
             <div className="grid gap-1.5">
@@ -254,6 +287,39 @@ function AuthPage() {
             </div>
           )}
 
+          {mode === "signup" ? (
+            <label className="flex items-start gap-3 text-sm text-muted-foreground">
+              {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
+              <input
+                type="checkbox"
+                className="mt-1"
+                checked={aceite}
+                onChange={(e) => setAceite(e.target.checked)}
+              />
+              <span>
+                Li e aceito os{" "}
+                <a
+                  href="/termos"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline underline-offset-4"
+                >
+                  Termos de Uso
+                </a>{" "}
+                e a{" "}
+                <a
+                  href="/privacidade"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline underline-offset-4"
+                >
+                  Política de Privacidade
+                </a>
+                .
+              </span>
+            </label>
+          ) : null}
+
           {error ? <p className="text-sm text-destructive">{error}</p> : null}
           {message ? <p className="text-sm text-muted-foreground">{message}</p> : null}
 
@@ -266,29 +332,6 @@ function AuthPage() {
                   ? "Criar conta"
                   : "Enviar link"}
           </Button>
-          {mode === "signup" ? (
-            <p className="text-xs text-muted-foreground">
-              Ao criar a conta, você concorda com os{" "}
-              <a
-                href="/termos"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="underline underline-offset-4"
-              >
-                Termos de Uso
-              </a>{" "}
-              e a{" "}
-              <a
-                href="/privacidade"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="underline underline-offset-4"
-              >
-                Política de Privacidade
-              </a>
-              .
-            </p>
-          ) : null}
         </form>
 
         <div className="mt-5 grid gap-2 text-sm">
@@ -315,7 +358,6 @@ function AuthPage() {
             {mode === "forgot" ? "Voltar para entrar" : "Esqueci minha senha"}
           </button>
         </div>
-
       </div>
     </main>
   );

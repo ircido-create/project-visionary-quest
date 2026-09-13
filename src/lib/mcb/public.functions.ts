@@ -127,6 +127,7 @@ const applicationSchema = z.object({
   dailyTime: z.string().max(40),
   instagramGoal: z.string().trim().max(600),
   consent: z.literal(true),
+  maiorDeIdade: z.literal(true),
 });
 
 export type ApplicationInput = z.infer<typeof applicationSchema>;
@@ -259,7 +260,8 @@ export const submitApplication = createServerFn({ method: "POST" })
       supabaseAdmin.from("consent_logs").insert({
         tenant_id: tenant.id,
         influencer_id: influencer.id,
-        purpose: "Análise de perfil e acompanhamento do Método Criadora Blessing",
+        purpose:
+          "Análise de perfil e acompanhamento no Método Criadora Blessing pela gestora e pela MCB, inclusive com análise assistida por IA",
         // Prova de qual texto da Política de Privacidade a candidata aceitou.
         version: VERSAO_POLITICA,
         source: `landing:${data.slug}`,

@@ -4,7 +4,9 @@ import {
   CONTROLADOR,
   IDADE_MINIMA,
   VERSAO_POLITICA,
+  VERSAO_ACEITE_EXIGIDO,
   VERSAO_TERMOS,
+  aceiteEmDia,
   cnpjValido,
   dataPorExtenso,
   descreverVersao,
@@ -108,5 +110,39 @@ describe("conteúdo", () => {
     expect(textoDe(politicaDePrivacidade())).toMatch(
       /Não são enviados nome, e-mail, WhatsApp, cidade, estado nem o @/,
     );
+  });
+});
+
+describe("aceite dos termos", () => {
+  it("vale a versão exigida ou uma posterior", () => {
+    expect(aceiteEmDia(["2026-09-13.4"], "2026-09-13.4")).toBe(true);
+    expect(aceiteEmDia(["2026-09-13.10"], "2026-09-13.4")).toBe(true);
+    expect(aceiteEmDia(["2026-10-01"], "2026-09-13.4")).toBe(true);
+    expect(aceiteEmDia(["2026-09-13.3", "2026-09-13"], "2026-09-13.4")).toBe(false);
+    expect(aceiteEmDia([], "2026-09-13.4")).toBe(false);
+  });
+
+  it("quem aceita a versão atual no cadastro não é barrado na entrada", () => {
+    expect(aceiteEmDia([VERSAO_TERMOS], VERSAO_ACEITE_EXIGIDO)).toBe(true);
+  });
+});
+
+describe("pontos validados na revisão jurídica", () => {
+  it("a política traz encarregado, transferência, prazos e dados sensíveis", () => {
+    const texto = textoDe(politicaDePrivacidade());
+    expect(texto).toContain("agente de tratamento de pequeno porte");
+    expect(texto).toContain("art. 33, II");
+    expect(texto).toContain("Supabase — banco de dados, autenticação e arquivos: Estados Unidos.");
+    expect(texto).toContain("declaração completa em até 15 dias");
+    expect(texto).toContain("no prazo definido pela autoridade");
+    expect(texto).toContain("Não pedimos dados sensíveis");
+    expect(texto).toContain("15 dias de antecedência");
+  });
+
+  it("os termos avisam antes de suspender e antes de mudar, e registram o aceite", () => {
+    const texto = textoDe(termosDeUso());
+    expect(texto).toContain("Antes de suspender, a MCB avisa a gestora");
+    expect(texto).toContain("15 dias de antecedência");
+    expect(texto).toContain("registra a versão e a data do aceite");
   });
 });

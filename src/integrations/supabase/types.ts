@@ -160,6 +160,33 @@ export type Database = {
           },
         ]
       }
+      aceites_de_termos: {
+        Row: {
+          aceito_em: string
+          id: string
+          origem: string
+          user_id: string
+          versao_politica: string
+          versao_termos: string
+        }
+        Insert: {
+          aceito_em?: string
+          id?: string
+          origem: string
+          user_id: string
+          versao_politica: string
+          versao_termos: string
+        }
+        Update: {
+          aceito_em?: string
+          id?: string
+          origem?: string
+          user_id?: string
+          versao_politica?: string
+          versao_termos?: string
+        }
+        Relationships: []
+      }
       consent_logs: {
         Row: {
           accepted_at: string
@@ -1136,6 +1163,10 @@ export type Database = {
           nome: string
           ultima_atividade: string
         }[]
+      }
+      aceitar_termos: {
+        Args: { p_versao_politica: string; p_versao_termos: string }
+        Returns: undefined
       }
       candidatas_perto_da_exclusao: {
         Args: { p_dias_aviso?: number; p_tenant: string }

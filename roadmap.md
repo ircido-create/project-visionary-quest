@@ -184,9 +184,28 @@ de verdade com segurança. Recursos novos ficam para quando houver uso para orie
       configurações do projeto em 2026-09-13 (o `/~flock.js` sumiu das páginas); na
       revisão `2026-09-13.3` saíram da política o cookie session-id, a Tinybird e a
       menção às estatísticas em P1. Religar exige consentimento antes e nova versão da
-      política. **Falta a validação jurídica** do conjunto e dos
-      pontos ainda abertos (P3, P6–P11, T1, T4–T6; comentários `REVISAR` no código).
-      Texto e versão mudam juntos: ao alterar, subir `VERSAO_POLITICA`/`VERSAO_TERMOS`.
+      política. **Validação jurídica concluída em 2026-09-13** para os pontos restantes,
+      aplicados na revisão `2026-09-13.4`: **P3** transferência por cláusulas contratuais
+      (art. 33, II), com a lista de onde cada prestador processa — o banco fica nos EUA
+      (AWS us-west-2, conferido pelo endereço do servidor); Lovable e Hostinger estão
+      descritos sem região exata, a confirmar nos contratos deles; **P6** o art. 15 do
+      Marco Civil não se aplica, nada muda; **P7** agente de pequeno porte, sem
+      encarregado; **P8** aviso de dados sensíveis no formulário e frase na política;
+      **P9** duas caixas obrigatórias (idade e consentimento, que agora cita a gestora, a
+      MCB e a IA), exigidas também pelo servidor; **P10** prazo de incidente pela
+      referência à ANPD; **P11** confirmação imediata e declaração completa em 15 dias;
+      **T4** mantido; **T5** aviso de mudanças relevantes por e-mail com 15 dias de
+      antecedência (envio manual, pela dona); **T6** aviso antes de suspender. Texto e
+      versão mudam juntos: ao alterar, subir `VERSAO_POLITICA`/`VERSAO_TERMOS`.
+- [x] **Aceite dos Termos registrado (T1).** Migração
+      `20260913160000_fase6_aceite_dos_termos`, aplicada em 2026-09-13: tabela
+      `aceites_de_termos` (versão dos termos e da política, origem e data). O cadastro por
+      e-mail tem a caixa obrigatória "Li e aceito", e o gatilho em `auth.users` grava o
+      aceite na criação da conta, a partir dos metadados. Quem entra pelo Google ou pelo
+      Lovable, ou tinha conta antes, vê uma vez na área logada o pedido de aceite
+      (`aceitar_termos`, com a hora do banco). A exigência segue `VERSAO_ACEITE_EXIGIDO`,
+      que só sobe quando uma mudança pede novo aceite; se a consulta falhar, a área logada
+      não trava.
 - [x] **Exclusão por inatividade (90 dias).** Migração
       `20260913140000_fase6_inatividade_90_dias`, aplicada em 2026-09-13: `pg_cron`
       ligado e a tarefa `mcb-limpeza-inatividade` roda todo dia às 06h UTC

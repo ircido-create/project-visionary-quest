@@ -6,7 +6,9 @@
  * compartilha ou como exclui, mude aqui e suba a versão: cada inscrição grava a versão da
  * política aceita em `consent_logs.version`.
  *
- * Pontos que pedem revisão de quem cuida da parte legal estão marcados com REVISAR.
+ * Revisão jurídica validada em 2026-09-13 (P1 a P11 e T1 a T6). Ao mudar o texto, suba a
+ * versão; se a mudança pedir novo aceite de quem já tem conta, suba também
+ * `VERSAO_ACEITE_EXIGIDO`.
  */
 
 import { DIAS_PARA_EXCLUSAO } from "./inatividade";
@@ -21,8 +23,14 @@ export const CONTROLADOR = {
   foro: "Osasco/SP" as string | null,
 };
 
-export const VERSAO_POLITICA = "2026-09-13.3";
-export const VERSAO_TERMOS = "2026-09-13.3";
+export const VERSAO_POLITICA = "2026-09-13.4";
+export const VERSAO_TERMOS = "2026-09-13.4";
+
+/**
+ * Aceite mínimo para usar a área logada (T1). Só sobe quando a mudança pede novo aceite de
+ * quem já tem conta; correção de texto não.
+ */
+export const VERSAO_ACEITE_EXIGIDO = "2026-09-13.4";
 export const IDADE_MINIMA = 18;
 
 export function nomeDoControlador(): string {
@@ -92,6 +100,27 @@ export type Secao = { id: string; titulo: string; blocos: Bloco[] };
 const p = (texto: string): Bloco => ({ tipo: "p", texto });
 const lista = (...itens: string[]): Bloco => ({ tipo: "lista", itens });
 
+function partesDaVersao(versao: string): [string, number] {
+  const [data = "", revisao] = versao.split(".");
+  return [data, revisao ? Number(revisao) : 1];
+}
+
+/** Se alguma das versões aceitas é igual ou posterior à exigida. */
+export function aceiteEmDia(versoesAceitas: string[], exigida: string): boolean {
+  const [dataExigida, revisaoExigida] = partesDaVersao(exigida);
+  return versoesAceitas.some((versao) => {
+    const [data, revisao] = partesDaVersao(versao);
+    return data > dataExigida || (data === dataExigida && revisao >= revisaoExigida);
+  });
+}
+
+/** Aviso do formulário de candidatura sobre as respostas abertas (P8). */
+export const AVISO_DADOS_SENSIVEIS =
+  "Não inclua nas respostas informações sobre saúde, religião, opinião política, vida sexual, origem racial ou outros dados sensíveis.";
+
+const AVISO_DE_MUDANCAS =
+  "Mudanças relevantes serão avisadas por e-mail com 15 dias de antecedência. Se mudarmos a finalidade do uso dos dados de candidatas, pediremos um novo consentimento.";
+
 export function politicaDePrivacidade(): Secao[] {
   const { cnpj, email } = CONTROLADOR;
   const nome = nomeDoControlador();
@@ -101,7 +130,7 @@ export function politicaDePrivacidade(): Secao[] {
       titulo: "Quem é o responsável",
       blocos: [
         p(
-          `${nome}, CNPJ ${cnpj}, é a responsável pela plataforma MCB. Pedidos sobre seus dados — dúvidas, acesso, correção ou exclusão — podem ser feitos à sua gestora ou à MCB, pelo e-mail ${email}; a MCB encaminha e apoia a resposta. Esse é também o canal do encarregado pelo tratamento de dados.`,
+          `${nome}, CNPJ ${cnpj}, é a responsável pela plataforma MCB. Pedidos sobre seus dados — dúvidas, acesso, correção ou exclusão — podem ser feitos à sua gestora ou à MCB, pelo e-mail ${email}; a MCB encaminha e apoia a resposta. Por se enquadrar como agente de tratamento de pequeno porte (Resolução CD/ANPD nº 2/2022), a MCB não indicou encarregado; esse é o canal para assuntos de dados pessoais.`,
         ),
         p(
           "Cada gestora é a controladora dos dados das candidatas que se inscrevem pela página dela: é ela quem decide como acompanhar cada candidata. A MCB opera a plataforma para as gestoras e trata esses dados em nome delas, conforme as instruções delas e esta política. A MCB é controladora dos dados das contas das gestoras e não usa os dados das candidatas para fins próprios.",
@@ -128,13 +157,16 @@ export function politicaDePrivacidade(): Secao[] {
           "Identificação e contato: nome, e-mail, WhatsApp, cidade e estado.",
           "Perfil do Instagram: @, link do perfil, número de seguidores e de publicações, se as 12 últimas publicações são dos últimos 6 meses, tipo de conta, percentual de público feminino e frequência de stories e reels.",
           "Respostas da inscrição: temas de que gosta de falar, o que costumam perguntar a você, o que você busca com o perfil, a principal dificuldade, o tempo disponível e o objetivo com o Instagram.",
-          "Registro do consentimento: data, finalidade, página de origem e a versão desta política que foi aceita.",
+          "Registro do consentimento e da declaração de idade: data, finalidade, página de origem e a versão desta política que foi aceita.",
           "Ao longo do acompanhamento: números atualizados, prints enviados como comprovação, tarefas, avaliações dos requisitos, notas e retornos da gestora e o histórico de etapas.",
           "Se você criar conta no portal: e-mail e dados de acesso.",
           "Se você conectar seu Instagram: identificador e nome de usuário da conta, os números lidos pela API da Meta e o token de acesso, que fica guardado cifrado e não é visto pela gestora.",
         ),
         p(
-          "De gestoras e equipe: nome, e-mail, foto (se informada), dados de acesso, os textos e contatos da página de candidatura e o registro das ações feitas na plataforma.",
+          "Não pedimos dados sensíveis. Se algum chegar pelas respostas abertas, ele é usado só para o acompanhamento e pode ser excluído a pedido.",
+        ),
+        p(
+          "De gestoras e equipe: nome, e-mail, foto (se informada), dados de acesso, os textos e contatos da página de candidatura, o registro das ações feitas na plataforma e o do aceite dos Termos de Uso e desta política (versão e data).",
         ),
         p(
           "De quem visita o site: só o necessário para o site funcionar, descrito em “Cookies e armazenamento no navegador”. Não coletamos estatísticas de visita.",
@@ -186,9 +218,15 @@ export function politicaDePrivacidade(): Secao[] {
       id: "transferencia",
       titulo: "Transferência para fora do Brasil",
       blocos: [
-        // REVISAR: hipótese de transferência internacional aplicável a cada prestador.
         p(
-          "Alguns desses prestadores processam dados em servidores fora do Brasil. Nesses casos, a transferência se apoia nas hipóteses previstas na LGPD, como as garantias contratuais oferecidas por eles.",
+          "Alguns prestadores processam dados em servidores fora do Brasil. Nesses casos, a transferência se apoia em cláusulas contratuais firmadas com cada prestador, como prevê a LGPD (art. 33, II):",
+        ),
+        lista(
+          "Supabase — banco de dados, autenticação e arquivos: Estados Unidos.",
+          "Lovable e Cloudflare — hospedagem e entrega do site: rede de servidores em vários países, inclusive no Brasil.",
+          "Hostinger — envio dos e-mails de acesso: servidores que podem ficar fora do Brasil.",
+          "Google — entrada com a conta Google e análise assistida: Estados Unidos e outros países.",
+          "Meta — conexão com o Instagram: Estados Unidos e outros países.",
         ),
       ],
     },
@@ -219,7 +257,7 @@ export function politicaDePrivacidade(): Secao[] {
           "saber que pode não consentir e quais são as consequências disso.",
         ),
         p(
-          `Para exercer esses direitos, escreva para ${email} a partir do e-mail que você usou na inscrição. Respondemos em até 15 dias.`,
+          `Para exercer esses direitos, escreva para ${email} a partir do e-mail que você usou na inscrição. Confirmamos se tratamos seus dados assim que possível e enviamos a declaração completa em até 15 dias.`,
         ),
         p(
           "A exclusão apaga de vez o cadastro, a inscrição, os consentimentos, as tarefas, as notas, os números, as avaliações, as análises e os arquivos enviados e, se você pedir, a conta de acesso ao portal. Planilhas que a gestora tenha exportado antes do pedido ficam sob a responsabilidade dela.",
@@ -246,7 +284,7 @@ export function politicaDePrivacidade(): Secao[] {
           "Os dados de cada ambiente ficam isolados, o acesso depende do papel de cada pessoa, os arquivos ficam em armazenamento privado, o token do Instagram fica cifrado e as ações ficam registradas.",
         ),
         p(
-          "Nenhum sistema é totalmente imune a falhas. Se houver um incidente de segurança que possa trazer risco ou dano relevante, avisaremos as pessoas afetadas e a ANPD, como manda a lei.",
+          "Nenhum sistema é totalmente imune a falhas. Se houver um incidente de segurança que possa trazer risco ou dano relevante, avisaremos as pessoas afetadas e a ANPD no prazo definido pela autoridade.",
         ),
       ],
     },
@@ -266,6 +304,7 @@ export function politicaDePrivacidade(): Secao[] {
         p(
           `Esta é a versão de ${descreverVersao(VERSAO_POLITICA)}. Quando mudarmos algo relevante, a nova versão será publicada nesta página, com a data, e as inscrições passarão a registrar a versão aceita.`,
         ),
+        p(AVISO_DE_MUDANCAS),
       ],
     },
   ];
@@ -303,7 +342,7 @@ export function termosDeUso(): Secao[] {
       titulo: "Contas",
       blocos: [
         p(
-          "Para usar a área de gestora ou o portal da candidata, é preciso criar uma conta com dados verdadeiros. A senha é pessoal, e você responde pelo que for feito com a sua conta. A dona do ambiente decide quem entra na equipe e com qual papel.",
+          "Para usar a área de gestora ou o portal da candidata, é preciso criar uma conta com dados verdadeiros e aceitar estes termos e a Política de Privacidade; a plataforma registra a versão e a data do aceite. A senha é pessoal, e você responde pelo que for feito com a sua conta. A dona do ambiente decide quem entra na equipe e com qual papel.",
         ),
       ],
     },
@@ -351,7 +390,7 @@ export function termosDeUso(): Secao[] {
       titulo: "Suspensão e encerramento",
       blocos: [
         p(
-          "A MCB pode suspender um ambiente por falta de pagamento, uso indevido ou violação destes termos. Um ambiente suspenso continua disponível só para leitura. A gestora pode encerrar o uso a qualquer momento; a exclusão de dados segue a Política de Privacidade.",
+          "A MCB pode suspender um ambiente por falta de pagamento, uso indevido ou violação destes termos. Antes de suspender, a MCB avisa a gestora por e-mail e dá prazo para regularizar, salvo quando houver risco para candidatas ou uso ilícito. Um ambiente suspenso continua disponível só para leitura. A gestora pode encerrar o uso a qualquer momento; a exclusão de dados segue a Política de Privacidade.",
         ),
       ],
     },
@@ -368,7 +407,6 @@ export function termosDeUso(): Secao[] {
       id: "responsabilidade",
       titulo: "Disponibilidade e responsabilidade",
       blocos: [
-        // REVISAR: limites de responsabilidade.
         p(
           "Trabalhamos para manter a plataforma no ar e segura, mas ela pode ter interrupções. Recursos que dependem de terceiros, como a conexão com o Instagram e a análise assistida por IA, podem mudar ou ficar indisponíveis por decisão desses terceiros.",
         ),
@@ -384,6 +422,7 @@ export function termosDeUso(): Secao[] {
         p(
           `Podemos atualizar estes termos. A versão vigente fica nesta página; esta é a de ${descreverVersao(VERSAO_TERMOS)}.`,
         ),
+        p(AVISO_DE_MUDANCAS),
       ],
     },
     {

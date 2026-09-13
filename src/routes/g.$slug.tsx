@@ -3,12 +3,17 @@ import { useMutation } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 
-import { getManagerPage, submitApplication, type ApplicationInput } from "@/lib/mcb/public.functions";
+import {
+  getManagerPage,
+  submitApplication,
+  type ApplicationInput,
+} from "@/lib/mcb/public.functions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { METHOD_STAGES } from "@/lib/mcb/labels";
 import { AVISO_PAGINA_DEMONSTRACAO } from "@/lib/mcb/paginasPublicas";
+import { AVISO_DADOS_SENSIVEIS, IDADE_MINIMA } from "@/lib/mcb/documentosLegais";
 
 export const Route = createFileRoute("/g/$slug")({
   loader: async ({ params }) => {
@@ -18,7 +23,9 @@ export const Route = createFileRoute("/g/$slug")({
   },
   head: ({ loaderData }) => {
     if (!loaderData) {
-      return { meta: [{ title: "Página indisponível — MCB" }, { name: "robots", content: "noindex" }] };
+      return {
+        meta: [{ title: "Página indisponível — MCB" }, { name: "robots", content: "noindex" }],
+      };
     }
     const title = `Candidatura — ${loaderData.branding?.managerName ?? loaderData.tenant.name} | MCB`;
     const description =
@@ -38,7 +45,9 @@ export const Route = createFileRoute("/g/$slug")({
     <main className="flex min-h-screen items-center justify-center px-6 text-center">
       <div>
         <h1 className="font-serif text-2xl">Página não encontrada</h1>
-        <p className="mt-2 text-sm text-muted-foreground">Confira o link com a gestora que te convidou.</p>
+        <p className="mt-2 text-sm text-muted-foreground">
+          Confira o link com a gestora que te convidou.
+        </p>
         <Link to="/" className="mt-4 inline-block text-sm underline underline-offset-4">
           Voltar ao início
         </Link>
@@ -52,7 +61,10 @@ export const Route = createFileRoute("/g/$slug")({
   ),
 });
 
-type FormState = Omit<ApplicationInput, "slug" | "consent"> & { consent: boolean };
+type FormState = Omit<ApplicationInput, "slug" | "consent" | "maiorDeIdade"> & {
+  consent: boolean;
+  maiorDeIdade: boolean;
+};
 
 const initialState: FormState = {
   fullName: "",
@@ -75,6 +87,7 @@ const initialState: FormState = {
   mainDifficulty: "",
   dailyTime: "30 a 60 minutos",
   instagramGoal: "",
+  maiorDeIdade: false,
   consent: false,
 };
 
@@ -94,12 +107,15 @@ function ManagerLanding() {
           slug: params.slug,
           instagramHandle: handle,
           instagramUrl: form.instagramUrl.trim() || `https://instagram.com/${handle}`,
+          maiorDeIdade: true,
           consent: true,
         } as ApplicationInput,
       });
     },
     onError: () =>
-      setError("Não foi possível enviar sua candidatura. Revise os campos obrigatórios e tente novamente."),
+      setError(
+        "Não foi possível enviar sua candidatura. Revise os campos obrigatórios e tente novamente.",
+      ),
   });
 
   const set = <K extends keyof FormState>(key: K, value: FormState[K]) =>
@@ -122,8 +138,8 @@ function ManagerLanding() {
               : `${page.branding?.managerName ?? page.tenant.name} vai analisar o seu perfil e retornar com o próximo passo da jornada.`}
           </p>
           <p className="mt-4 text-xs text-muted-foreground">
-            Esta candidatura não garante aprovação em nenhum programa. O foco é preparar o seu perfil com
-            critérios claros.
+            Esta candidatura não garante aprovação em nenhum programa. O foco é preparar o seu
+            perfil com critérios claros.
           </p>
           <Link to="/" className="mt-6 inline-block text-sm underline underline-offset-4">
             Voltar ao início
@@ -141,14 +157,17 @@ function ManagerLanding() {
             {page.branding?.managerName ?? page.tenant.name}
           </p>
           <h1 className="mt-4 font-serif text-4xl leading-tight">
-            {page.branding?.headline ?? "Do perfil pessoal à criadora de conteúdo pronta para análise."}
+            {page.branding?.headline ??
+              "Do perfil pessoal à criadora de conteúdo pronta para análise."}
           </h1>
           <p className="mt-4 max-w-2xl text-sm opacity-90">
             {page.branding?.subheadline ??
               "Uma jornada prática para estruturar seu perfil, criar presença e alcançar os requisitos com autenticidade."}
           </p>
           {page.branding?.authorityQuote ? (
-            <p className="mt-6 font-serif text-lg italic opacity-90">“{page.branding.authorityQuote}”</p>
+            <p className="mt-6 font-serif text-lg italic opacity-90">
+              “{page.branding.authorityQuote}”
+            </p>
           ) : null}
         </div>
       </section>
@@ -168,8 +187,8 @@ function ManagerLanding() {
         <div className="glass rounded-2xl border border-border/60 p-6 sm:p-8">
           <h2 className="font-serif text-2xl">Porta de entrada</h2>
           <p className="mt-2 text-sm text-muted-foreground">
-            Responda com sinceridade. Se não souber um número agora, deixe em branco — vamos tratar como
-            pendência, e não como falha.
+            Responda com sinceridade. Se não souber um número agora, deixe em branco — vamos tratar
+            como pendência, e não como falha.
           </p>
           {demonstracao ? (
             <p className="mt-4 rounded-lg border border-destructive/40 bg-destructive/5 p-3 text-sm">
@@ -183,6 +202,10 @@ function ManagerLanding() {
               event.preventDefault();
               setError(null);
               if (demonstracao) return;
+              if (!form.maiorDeIdade) {
+                setError(`A inscrição é só para quem tem ${IDADE_MINIMA} anos ou mais.`);
+                return;
+              }
               if (!form.consent) {
                 setError("É necessário autorizar o uso dos seus dados para o acompanhamento.");
                 return;
@@ -191,20 +214,45 @@ function ManagerLanding() {
             }}
           >
             <Field label="Nome completo" required>
-              <Input value={form.fullName} onChange={(e) => set("fullName", e.target.value)} required minLength={3} />
+              <Input
+                value={form.fullName}
+                onChange={(e) => set("fullName", e.target.value)}
+                required
+                minLength={3}
+              />
             </Field>
             <div className="grid gap-4 sm:grid-cols-2">
               <Field label="E-mail" required>
-                <Input type="email" value={form.email} onChange={(e) => set("email", e.target.value)} required />
+                <Input
+                  type="email"
+                  value={form.email}
+                  onChange={(e) => set("email", e.target.value)}
+                  required
+                />
               </Field>
               <Field label="WhatsApp" required>
-                <Input value={form.whatsapp} onChange={(e) => set("whatsapp", e.target.value)} required minLength={8} />
+                <Input
+                  value={form.whatsapp}
+                  onChange={(e) => set("whatsapp", e.target.value)}
+                  required
+                  minLength={8}
+                />
               </Field>
               <Field label="Cidade" required>
-                <Input value={form.city} onChange={(e) => set("city", e.target.value)} required minLength={2} />
+                <Input
+                  value={form.city}
+                  onChange={(e) => set("city", e.target.value)}
+                  required
+                  minLength={2}
+                />
               </Field>
               <Field label="Estado" required>
-                <Input value={form.state} onChange={(e) => set("state", e.target.value)} required minLength={2} />
+                <Input
+                  value={form.state}
+                  onChange={(e) => set("state", e.target.value)}
+                  required
+                  minLength={2}
+                />
               </Field>
               <Field label="@ do Instagram" required>
                 <Input
@@ -306,14 +354,27 @@ function ManagerLanding() {
               </Field>
             </div>
 
+            <p className="text-xs text-muted-foreground">{AVISO_DADOS_SENSIVEIS}</p>
             <Field label="Sobre o que você mais gosta de falar?">
-              <Textarea value={form.topics} onChange={(e) => set("topics", e.target.value)} rows={3} />
+              <Textarea
+                value={form.topics}
+                onChange={(e) => set("topics", e.target.value)}
+                rows={3}
+              />
             </Field>
             <Field label="O que as pessoas mais te perguntam?">
-              <Textarea value={form.askedAbout} onChange={(e) => set("askedAbout", e.target.value)} rows={3} />
+              <Textarea
+                value={form.askedAbout}
+                onChange={(e) => set("askedAbout", e.target.value)}
+                rows={3}
+              />
             </Field>
             <Field label="Hoje seu perfil é mais pessoal ou já fala com um público?">
-              <Textarea value={form.profileGoal} onChange={(e) => set("profileGoal", e.target.value)} rows={3} />
+              <Textarea
+                value={form.profileGoal}
+                onChange={(e) => set("profileGoal", e.target.value)}
+                rows={3}
+              />
             </Field>
             <Field label="Qual sua maior dificuldade ao aparecer?">
               <Textarea
@@ -331,6 +392,17 @@ function ManagerLanding() {
             </Field>
 
             <label className="flex items-start gap-3 rounded-lg border border-border/60 p-4 text-sm">
+              {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
+              <input
+                type="checkbox"
+                className="mt-1"
+                checked={form.maiorDeIdade}
+                onChange={(e) => set("maiorDeIdade", e.target.checked)}
+              />
+              <span className="text-muted-foreground">Tenho {IDADE_MINIMA} anos ou mais.</span>
+            </label>
+
+            <label className="flex items-start gap-3 rounded-lg border border-border/60 p-4 text-sm">
               {/* A regra procura o rótulo dentro do próprio controle e não sobe até o
                   `<label>` que o envolve. O campo está rotulado pelo texto abaixo. */}
               {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
@@ -341,9 +413,9 @@ function ManagerLanding() {
                 onChange={(e) => set("consent", e.target.checked)}
               />
               <span className="text-muted-foreground">
-                Autorizo o uso dos meus dados para análise do meu perfil e acompanhamento na jornada
-                do Método Criadora Blessing. Tenho 18 anos ou mais. Posso pedir a exclusão a
-                qualquer momento, como explica a{" "}
+                Autorizo a gestora desta página e a MCB a usar meus dados para analisar meu perfil e
+                acompanhar minha jornada no Método Criadora Blessing, inclusive com análise
+                assistida por inteligência artificial, como explica a{" "}
                 <a
                   href="/privacidade"
                   target="_blank"
