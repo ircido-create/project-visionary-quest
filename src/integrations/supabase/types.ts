@@ -970,6 +970,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "tasks_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "task_templates"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "tasks_tenant_id_fkey"
             columns: ["tenant_id"]
             isOneToOne: false
