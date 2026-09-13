@@ -1116,6 +1116,10 @@ export type Database = {
     }
     Functions: {
       can_read_tenant: { Args: { _tenant: string }; Returns: boolean }
+      excluir_candidata: {
+        Args: { p_actor: string; p_influencer_id: string }
+        Returns: Json
+      }
       get_portal_data: { Args: never; Returns: Json }
       has_platform_role: {
         Args: {

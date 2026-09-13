@@ -19,7 +19,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 
 type Db = SupabaseClient<Database>;
 
-async function exigirSuperadmin(supabase: Db, userId: string) {
+export async function exigirSuperadmin(supabase: Db, userId: string) {
   const { data } = await supabase
     .from("platform_roles")
     .select("role")

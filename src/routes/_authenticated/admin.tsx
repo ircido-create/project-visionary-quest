@@ -4,6 +4,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 
 import { AppShell } from "@/components/mcb/AppShell";
+import { ExclusaoDeDadosSection } from "@/components/mcb/ExclusaoDeDadosSection";
 import {
   getPlatformOverview,
   setTenantPlan,
@@ -213,6 +214,10 @@ function AdminPage() {
           ))}
         </ul>
       )}
+
+      <div className="mt-10">
+        <ExclusaoDeDadosSection />
+      </div>
     </AppShell>
   );
 }
