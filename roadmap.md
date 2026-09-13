@@ -136,6 +136,34 @@ porque tudo que depende de secret está travado em produção (ver Pendências).
       configuração da plataforma).
 - [ ] Análise de IA em produção (Fase 2), hoje sem a chave do Gemini no servidor.
 
+## Fase 6 — Pronta para as primeiras gestoras
+
+Montada em 2026-09-13. Diferente da Fase 5, não há uso real para orientar: a única
+gestora é a dona da plataforma, as 8 candidatas de "Gestora Ircido" são dados de teste
+(`seed`), as únicas inscrições reais são 2, e todos os números foram digitados à mão. O
+gargalo não é funcionalidade — é a plataforma ainda não estar pronta para receber gente
+de verdade com segurança. Recursos novos ficam para quando houver uso para orientar.
+
+- [ ] **Exclusão de dados a pedido.** O formulário de candidatura promete "posso pedir a
+      exclusão a qualquer momento", e não existe como cumprir: Configurações manda pedir
+      ao suporte, que não tem ferramenta. Uma ação na administração que apaga de vez a
+      candidata — cadastro, inscrição, tarefas, notas, números, arquivos — e deixa no log
+      só o registro da exclusão, sem dado pessoal.
+- [ ] **Política de privacidade e termos de uso.** Não existem. Páginas públicas com o
+      que o sistema faz de fato (dados coletados, finalidade, prazo, direitos, como pedir
+      exclusão), com link no formulário de candidatura e no rodapé. Depende dos dados de
+      quem responde pelos dados e de revisão por quem cuida da parte legal.
+- [ ] **Primeiros passos da gestora nova.** Ao criar o ambiente, a página de candidatura
+      já nasce no ar e entra sozinha na lista pública do MCB. Roteiro no painel (ajustar
+      a página, carregar os modelos de tarefa, copiar o link, convidar a equipe) e
+      página listada no MCB só quando a gestora escolher.
+- [ ] **Jornada real de ponta a ponta.** Inscrição, gestora, convite pelo WhatsApp,
+      cadastro, confirmação de e-mail e portal, com um e-mail e um telefone de verdade.
+      Confirma também se o Supabase aceita `/auth` como retorno da confirmação.
+- [ ] **Separar os dados de teste.** "Gestora Ircido" é teste dentro da conta real da
+      dona da plataforma; decidir o destino antes de o uso real começar, para não
+      misturar.
+
 ## Pendências conhecidas
 - [x] **Inscrições reais em ambiente de demonstração — corrigido em 2026-09-12.**
       Ambiente de demonstração é legível por qualquer conta logada (`can_read_tenant`), e
