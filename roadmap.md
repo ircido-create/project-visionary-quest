@@ -168,10 +168,13 @@ de verdade com segurança. Recursos novos ficam para quando houver uso para orie
       Osasco/SP. Links no rodapé, no consentimento do formulário (que passou a dizer
       "Tenho 18 anos ou mais") e no cadastro, cujo título ficou "Criar sua conta", neutro
       para gestora e candidata. Cada consentimento grava a versão aceita em
-      `consent_logs.version`. Conferido em produção em 2026-09-13. **Falta a revisão
-      jurídica** dos pontos marcados com REVISAR em `documentosLegais.ts`: papéis de
-      controladora e operadora entre a MCB e cada gestora, bases legais, transferência
-      internacional e limites de responsabilidade. Texto e versão mudam juntos: ao
+      `consent_logs.version`. Conferido em produção em 2026-09-13. Revisão técnica feita
+      no mesmo dia (não é parecer jurídico): 17 pontos — P1 a P11 na política, T1 a T6
+      nos termos; 3 de risco alto (papéis de controladora e operadora, cookie de
+      estatística sem escolha, transferência internacional sem hipótese por prestador),
+      5 pedindo decisão de negócio —, entregue à dona como página privada para levar ao
+      jurídico. **Falta a validação jurídica**; depois dela, o texto muda em
+      `documentosLegais.ts` e as mudanças de sistema (T1, P2, P5, P8, P9) viram tarefas. Texto e versão mudam juntos: ao
       alterar, subir `VERSAO_POLITICA`/`VERSAO_TERMOS`.
 - [x] **Primeiros passos da gestora nova.** Cartão "Primeiros passos" no painel da dona
       e da administradora de um ambiente real: ajustar a página, carregar os modelos de
