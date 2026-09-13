@@ -96,6 +96,8 @@ export const listPublicManagers = createServerFn({ method: "GET" }).handler(asyn
     .from("tenants")
     .select("name, slug, is_demo")
     .eq("is_public_page_enabled", true)
+    // A página fica no ar para quem tem o link; aparecer aqui é escolha da gestora.
+    .eq("is_listed_on_home", true)
     .eq("status", "ACTIVE")
     .order("created_at");
   return data ?? [];

@@ -6,6 +6,7 @@ import { toast } from "sonner";
 
 import { AppShell } from "@/components/mcb/AppShell";
 import { ModelosTarefaSection } from "@/components/mcb/ModelosTarefaSection";
+import { definirListagemNoMcb } from "@/lib/mcb/primeirosPassos.functions";
 import {
   createTenant,
   getSettings,
@@ -157,6 +158,22 @@ function SettingsPage() {
       queryClient.invalidateQueries({ queryKey: ["mcb", "settings", tenantId] });
     },
     onError: () => toast.error("Não foi possível alterar o papel."),
+  });
+
+  const saveListing = useServerFn(definirListagemNoMcb);
+  const listingMutation = useMutation({
+    mutationFn: (listar: boolean) => saveListing({ data: { tenantId: tenantId!, listar } }),
+    onSuccess: (_resultado, listar) => {
+      toast.success(
+        listar
+          ? "Sua página agora aparece na lista do MCB."
+          : "Sua página saiu da lista do MCB. O link continua funcionando.",
+      );
+      queryClient.invalidateQueries({ queryKey: ["mcb", "settings", tenantId] });
+      queryClient.invalidateQueries({ queryKey: ["mcb", "primeiros-passos", tenantId] });
+    },
+    onError: (error: Error) =>
+      toast.error(error.message || "Não foi possível alterar a lista do MCB."),
   });
 
   const removeMutation = useMutation({
@@ -336,9 +353,41 @@ function SettingsPage() {
         <section className="glass rounded-xl border border-border/60 p-6">
           <h2 className="font-serif text-xl">Página de candidatura</h2>
           {publicUrl ? (
-            <p className="mt-1 text-sm text-muted-foreground">
-              Link público: <span className="font-medium">{publicUrl}</span>
-            </p>
+            <div className="mt-1 grid gap-2 text-sm text-muted-foreground">
+              <p className="flex flex-wrap items-center gap-2">
+                Link público: <span className="font-medium">{publicUrl}</span>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  onClick={() =>
+                    navigator.clipboard.writeText(`${window.location.origin}${publicUrl}`).then(
+                      () => toast.success("Link copiado."),
+                      () => toast.error("Não foi possível copiar. Selecione o link e copie."),
+                    )
+                  }
+                >
+                  Copiar link
+                </Button>
+              </p>
+              <label className="flex items-start gap-2">
+                <input
+                  type="checkbox"
+                  className="mt-1"
+                  checked={Boolean(settings?.tenant?.is_listed_on_home)}
+                  disabled={readOnly || !canSeeTeamAdmin || listingMutation.isPending}
+                  onChange={(event) => {
+                    if (!guard()) return;
+                    listingMutation.mutate(event.target.checked);
+                  }}
+                  aria-labelledby="lista-do-mcb"
+                />
+                <span id="lista-do-mcb">
+                  Mostrar minha página na lista de páginas de candidatura do MCB. Desmarcada, ela
+                  continua no ar para quem tem o link.
+                </span>
+              </label>
+            </div>
           ) : null}
           <form
             className="mt-4 grid gap-3"

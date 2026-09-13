@@ -1069,6 +1069,7 @@ export type Database = {
           created_by: string | null
           id: string
           is_demo: boolean
+          is_listed_on_home: boolean
           is_public_page_enabled: boolean
           name: string
           plan_id: string | null
@@ -1081,6 +1082,7 @@ export type Database = {
           created_by?: string | null
           id?: string
           is_demo?: boolean
+          is_listed_on_home?: boolean
           is_public_page_enabled?: boolean
           name: string
           plan_id?: string | null
@@ -1093,6 +1095,7 @@ export type Database = {
           created_by?: string | null
           id?: string
           is_demo?: boolean
+          is_listed_on_home?: boolean
           is_public_page_enabled?: boolean
           name?: string
           plan_id?: string | null

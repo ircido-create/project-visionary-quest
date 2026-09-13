@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 
 import { AppShell, StatCard } from "@/components/mcb/AppShell";
+import { PrimeirosPassosCard } from "@/components/mcb/PrimeirosPassosCard";
 import { getDashboard } from "@/lib/mcb/app.functions";
 import { useWorkspace } from "@/lib/mcb/useWorkspace";
 import { linkWhatsApp, mensagemLembrete } from "@/lib/mcb/whatsapp";
@@ -20,7 +21,7 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
 });
 
 function DashboardPage() {
-  const { tenantId, isLoading, tenants, profile } = useWorkspace();
+  const { tenantId, isLoading, tenants, profile, readOnly } = useWorkspace();
   const fetchDashboard = useServerFn(getDashboard);
   const query = useQuery({
     queryKey: ["mcb", "dashboard", tenantId],
@@ -54,6 +55,7 @@ function DashboardPage() {
         <p className="text-sm text-muted-foreground">Carregando indicadores...</p>
       ) : (
         <div className="grid gap-6">
+          {tenantId && !readOnly ? <PrimeirosPassosCard tenantId={tenantId} /> : null}
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <StatCard label="Candidatas" value={data.totals.candidates} hint="total no ambiente" />
             <StatCard label="Novas (14 dias)" value={data.totals.newApplications} />
