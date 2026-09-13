@@ -21,8 +21,8 @@ export const CONTROLADOR = {
   foro: "Osasco/SP" as string | null,
 };
 
-export const VERSAO_POLITICA = "2026-09-13.2";
-export const VERSAO_TERMOS = "2026-09-13.2";
+export const VERSAO_POLITICA = "2026-09-13.3";
+export const VERSAO_TERMOS = "2026-09-13.3";
 export const IDADE_MINIMA = 18;
 
 export function nomeDoControlador(): string {
@@ -78,7 +78,7 @@ export function dataPorExtenso(iso: string): string {
 }
 
 /**
- * "2026-09-13.2" → "13 de setembro de 2026, revisão 2". Mudou o texto no mesmo dia, sobe a
+ * "2026-09-13.3" → "13 de setembro de 2026, revisão 2". Mudou o texto no mesmo dia, sobe a
  * revisão: cada consentimento guarda a versão exata que foi aceita.
  */
 export function descreverVersao(versao: string): string {
@@ -104,7 +104,7 @@ export function politicaDePrivacidade(): Secao[] {
           `${nome}, CNPJ ${cnpj}, é a responsável pela plataforma MCB. Pedidos sobre seus dados — dúvidas, acesso, correção ou exclusão — podem ser feitos à sua gestora ou à MCB, pelo e-mail ${email}; a MCB encaminha e apoia a resposta. Esse é também o canal do encarregado pelo tratamento de dados.`,
         ),
         p(
-          "Cada gestora é a controladora dos dados das candidatas que se inscrevem pela página dela: é ela quem decide como acompanhar cada candidata. A MCB opera a plataforma para as gestoras e trata esses dados em nome delas, conforme as instruções delas e esta política. A MCB é controladora dos dados das contas das gestoras e das estatísticas de acesso ao site, e não usa os dados das candidatas para fins próprios.",
+          "Cada gestora é a controladora dos dados das candidatas que se inscrevem pela página dela: é ela quem decide como acompanhar cada candidata. A MCB opera a plataforma para as gestoras e trata esses dados em nome delas, conforme as instruções delas e esta política. A MCB é controladora dos dados das contas das gestoras e não usa os dados das candidatas para fins próprios.",
         ),
       ],
     },
@@ -137,7 +137,7 @@ export function politicaDePrivacidade(): Secao[] {
           "De gestoras e equipe: nome, e-mail, foto (se informada), dados de acesso, os textos e contatos da página de candidatura e o registro das ações feitas na plataforma.",
         ),
         p(
-          "De quem visita o site: os dados de navegação descritos em “Cookies e armazenamento no navegador”.",
+          "De quem visita o site: só o necessário para o site funcionar, descrito em “Cookies e armazenamento no navegador”. Não coletamos estatísticas de visita.",
         ),
       ],
     },
@@ -175,7 +175,7 @@ export function politicaDePrivacidade(): Secao[] {
         p("Não vendemos dados. Eles são acessados por:"),
         lista(
           "A gestora da página em que você se inscreveu e a equipe dela.",
-          "Prestadores que operam a plataforma: Supabase (banco de dados, autenticação e armazenamento de arquivos), Lovable e Cloudflare (hospedagem e entrega do site), Tinybird (estatísticas de acesso, pela hospedagem) e Hostinger (envio dos e-mails de acesso).",
+          "Prestadores que operam a plataforma: Supabase (banco de dados, autenticação e armazenamento de arquivos), Lovable e Cloudflare (hospedagem e entrega do site) e Hostinger (envio dos e-mails de acesso).",
           "Google, quando você entra com a conta Google ou quando a gestora usa a análise assistida.",
           "Meta, quando você conecta o seu Instagram.",
           "Autoridades públicas, quando a lei exigir.",
@@ -234,9 +234,8 @@ export function politicaDePrivacidade(): Secao[] {
         lista(
           "Essenciais: a sessão de acesso, guardada no armazenamento do navegador; o cookie __cf_bm, da Cloudflare, que protege o site contra robôs; e o cookie __dpl, que mantém a mesma versão do site durante a visita.",
           "Preferências: o ambiente escolhido e se o roteiro de primeiros passos foi ocultado, guardados no seu navegador.",
-          "Estatísticas: o cookie session-id, da hospedagem (Lovable), com envio à Tinybird das páginas visitadas, de métricas de desempenho e do país estimado pelo fuso horário do navegador.",
         ),
-        p("Não usamos cookies de publicidade."),
+        p("Não usamos cookies de estatística nem de publicidade."),
       ],
     },
     {

@@ -93,6 +93,13 @@ describe("conteúdo", () => {
     expect(texto).toContain("desistir em até 7 dias");
   });
 
+  it("a política não fala mais de estatísticas de visita (desligadas na hospedagem)", () => {
+    const texto = textoDe(politicaDePrivacidade());
+    expect(texto).not.toContain("Tinybird");
+    expect(texto).not.toContain("session-id");
+    expect(texto).toContain("Não coletamos estatísticas de visita");
+  });
+
   it("os termos trazem a cláusula de operação de dados", () => {
     expect(termosDeUso().map((sec) => sec.id)).toContain("operacao");
   });

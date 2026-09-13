@@ -180,9 +180,11 @@ de verdade com segurança. Recursos novos ficam para quando houver uso para orie
       sem atividade (item abaixo); **T3** preços na página inicial, cobrança mensal com
       renovação automática, cancelamento sem multa valendo até o fim do mês pago e 7 dias
       de arrependimento (CDC art. 49). **P2**: o Lovable não deixa condicionar o script
-      de estatísticas a consentimento; a decisão é desligar "Visitor analytics" nas
-      configurações do projeto — quando sumir do site, sai o trecho de cookies da política
-      e a menção às estatísticas em P1. **Falta a validação jurídica** do conjunto e dos
+      de estatísticas a consentimento, então "Visitor analytics" foi desligado nas
+      configurações do projeto em 2026-09-13 (o `/~flock.js` sumiu das páginas); na
+      revisão `2026-09-13.3` saíram da política o cookie session-id, a Tinybird e a
+      menção às estatísticas em P1. Religar exige consentimento antes e nova versão da
+      política. **Falta a validação jurídica** do conjunto e dos
       pontos ainda abertos (P3, P6–P11, T1, T4–T6; comentários `REVISAR` no código).
       Texto e versão mudam juntos: ao alterar, subir `VERSAO_POLITICA`/`VERSAO_TERMOS`.
 - [x] **Exclusão por inatividade (90 dias).** Migração
