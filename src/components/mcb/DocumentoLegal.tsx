@@ -7,7 +7,7 @@ import { Link } from "@tanstack/react-router";
 
 import {
   CONTROLADOR,
-  dataPorExtenso,
+  descreverVersao,
   nomeDoControlador,
   type Secao,
 } from "@/lib/mcb/documentosLegais";
@@ -39,7 +39,7 @@ export function DocumentoLegal({
       <main className="mx-auto max-w-3xl px-6 pb-20">
         <h1 className="font-serif text-4xl">{titulo}</h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          Versão de {dataPorExtenso(versao)} · {nomeDoControlador()} · CNPJ {CONTROLADOR.cnpj} ·{" "}
+          Versão de {descreverVersao(versao)} · {nomeDoControlador()} · CNPJ {CONTROLADOR.cnpj} ·{" "}
           <a href={`mailto:${CONTROLADOR.email}`} className="underline underline-offset-4">
             {CONTROLADOR.email}
           </a>

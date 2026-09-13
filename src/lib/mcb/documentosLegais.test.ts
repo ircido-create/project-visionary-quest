@@ -7,6 +7,7 @@ import {
   VERSAO_TERMOS,
   cnpjValido,
   dataPorExtenso,
+  descreverVersao,
   pendenciasDosDocumentos,
   politicaDePrivacidade,
   termosDeUso,
@@ -40,12 +41,14 @@ describe("dados do responsável", () => {
 
 describe("versões", () => {
   it("são datas no formato ano-mês-dia", () => {
-    expect(VERSAO_POLITICA).toMatch(/^\d{4}-\d{2}-\d{2}$/);
-    expect(VERSAO_TERMOS).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+    expect(VERSAO_POLITICA).toMatch(/^\d{4}-\d{2}-\d{2}(\.\d+)?$/);
+    expect(VERSAO_TERMOS).toMatch(/^\d{4}-\d{2}-\d{2}(\.\d+)?$/);
   });
 
   it("aparecem por extenso no texto", () => {
     expect(dataPorExtenso("2026-09-13")).toBe("13 de setembro de 2026");
+    expect(descreverVersao("2026-09-13")).toBe("13 de setembro de 2026");
+    expect(descreverVersao("2026-09-13.2")).toBe("13 de setembro de 2026, revisão 2");
   });
 });
 
@@ -74,6 +77,25 @@ describe("conteúdo", () => {
       expect(texto).toContain(`${IDADE_MINIMA} anos`);
     });
   }
+
+  it("a política traz os papéis, as bases legais e o prazo de inatividade", () => {
+    const texto = textoDe(politicaDePrivacidade());
+    expect(texto).toContain("Cada gestora é a controladora");
+    expect(texto).toContain("art. 7º, I");
+    expect(texto).toContain("90 dias sem nenhuma atividade");
+    expect(texto).not.toContain("REVISAR");
+  });
+
+  it("os termos trazem renovação, cancelamento e os 7 dias de arrependimento", () => {
+    const texto = textoDe(termosDeUso());
+    expect(texto).toContain("cobrança é mensal");
+    expect(texto).toContain("cancelar a qualquer momento, sem multa");
+    expect(texto).toContain("desistir em até 7 dias");
+  });
+
+  it("os termos trazem a cláusula de operação de dados", () => {
+    expect(termosDeUso().map((sec) => sec.id)).toContain("operacao");
+  });
 
   it("a política diz o que não vai para a IA", () => {
     expect(textoDe(politicaDePrivacidade())).toMatch(

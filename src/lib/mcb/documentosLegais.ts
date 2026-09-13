@@ -9,6 +9,8 @@
  * Pontos que pedem revisão de quem cuida da parte legal estão marcados com REVISAR.
  */
 
+import { DIAS_PARA_EXCLUSAO } from "./inatividade";
+
 export const CONTROLADOR = {
   /** Como consta no CNPJ. */
   razaoSocial: "MONIQUE ANNELINE DA SILVA KALLAGIAN" as string | null,
@@ -19,8 +21,8 @@ export const CONTROLADOR = {
   foro: "Osasco/SP" as string | null,
 };
 
-export const VERSAO_POLITICA = "2026-09-13";
-export const VERSAO_TERMOS = "2026-09-13";
+export const VERSAO_POLITICA = "2026-09-13.2";
+export const VERSAO_TERMOS = "2026-09-13.2";
 export const IDADE_MINIMA = 18;
 
 export function nomeDoControlador(): string {
@@ -75,6 +77,15 @@ export function dataPorExtenso(iso: string): string {
   return `${dia} de ${MESES[(mes ?? 1) - 1]} de ${ano}`;
 }
 
+/**
+ * "2026-09-13.2" → "13 de setembro de 2026, revisão 2". Mudou o texto no mesmo dia, sobe a
+ * revisão: cada consentimento guarda a versão exata que foi aceita.
+ */
+export function descreverVersao(versao: string): string {
+  const [data = versao, revisao] = versao.split(".");
+  return revisao ? `${dataPorExtenso(data)}, revisão ${revisao}` : dataPorExtenso(data);
+}
+
 export type Bloco = { tipo: "p"; texto: string } | { tipo: "lista"; itens: string[] };
 export type Secao = { id: string; titulo: string; blocos: Bloco[] };
 
@@ -90,11 +101,10 @@ export function politicaDePrivacidade(): Secao[] {
       titulo: "Quem é o responsável",
       blocos: [
         p(
-          `${nome}, CNPJ ${cnpj}, é a responsável pela plataforma MCB. Para qualquer assunto sobre seus dados — dúvidas e pedidos de acesso, correção ou exclusão — escreva para ${email}. Esse é também o canal do encarregado pelo tratamento de dados.`,
+          `${nome}, CNPJ ${cnpj}, é a responsável pela plataforma MCB. Pedidos sobre seus dados — dúvidas, acesso, correção ou exclusão — podem ser feitos à sua gestora ou à MCB, pelo e-mail ${email}; a MCB encaminha e apoia a resposta. Esse é também o canal do encarregado pelo tratamento de dados.`,
         ),
-        // REVISAR: papéis de controladora e operadora entre a MCB e cada gestora.
         p(
-          "A plataforma é usada por gestoras que acompanham candidatas. Quando você se inscreve pela página de uma gestora, ela e a equipe dela passam a acompanhar seus dados na plataforma.",
+          "Cada gestora é a controladora dos dados das candidatas que se inscrevem pela página dela: é ela quem decide como acompanhar cada candidata. A MCB opera a plataforma para as gestoras e trata esses dados em nome delas, conforme as instruções delas e esta política. A MCB é controladora dos dados das contas das gestoras e das estatísticas de acesso ao site, e não usa os dados das candidatas para fins próprios.",
         ),
       ],
     },
@@ -135,12 +145,11 @@ export function politicaDePrivacidade(): Secao[] {
       id: "finalidades",
       titulo: "Para que usamos os dados",
       blocos: [
-        // REVISAR: bases legais de cada finalidade.
         lista(
-          "Candidatas: analisar o perfil e acompanhar a jornada no método — organizar tarefas, conferir os requisitos de qualificação e registrar a evolução dos números. A base é o consentimento dado na inscrição.",
-          "Comunicação: permitir que a gestora fale com você. Mensagens de WhatsApp são enviadas pela própria gestora, do WhatsApp dela; a plataforma só prepara o texto.",
-          "Gestoras e equipe: prestar o serviço contratado — contas, ambientes e limites do plano.",
-          "Segurança e prestação de contas: manter registros das ações feitas na plataforma, prevenir abuso e cumprir obrigações legais.",
+          "Candidatas: analisar o perfil e acompanhar a jornada no método — organizar tarefas, conferir os requisitos de qualificação e registrar a evolução dos números. A base é o consentimento dado na inscrição (LGPD, art. 7º, I), que você pode revogar a qualquer momento; a revogação encerra o acompanhamento e leva à exclusão dos dados.",
+          "Comunicação: permitir que a gestora fale com você. Mensagens de WhatsApp são enviadas pela própria gestora, do WhatsApp dela; a plataforma só prepara o texto. A base é o mesmo consentimento.",
+          "Gestoras e equipe: prestar o serviço contratado — contas, ambientes e limites do plano. A base é a execução do contrato (art. 7º, V).",
+          "Segurança e prestação de contas: manter registros das ações feitas na plataforma, prevenir abuso e cumprir obrigações legais. A base é o legítimo interesse em manter a plataforma segura (art. 7º, IX) e, quando houver, o cumprimento de obrigação legal (art. 7º, II).",
         ),
         p(
           "Os requisitos de qualificação seguem critérios fixos, e a decisão de auditoria é sempre de uma pessoa. A plataforma não toma decisões automatizadas sobre você.",
@@ -155,7 +164,7 @@ export function politicaDePrivacidade(): Secao[] {
           "Quando a gestora usa a análise assistida, a plataforma envia ao Google (modelo Gemini) os números do perfil, o tipo de conta, a frequência de stories e reels, os temas, o que você busca com o perfil, a principal dificuldade e as descrições dos prints já conferidos. Não são enviados nome, e-mail, WhatsApp, cidade, estado nem o @ do Instagram.",
         ),
         p(
-          "O resultado é uma leitura de apoio, revisada pela gestora. Cada análise fica registrada com o que foi enviado, o que voltou e a versão das instruções usadas.",
+          "O resultado é uma leitura de apoio, revisada pela gestora. Cada análise fica registrada com o que foi enviado, o que voltou e a versão das instruções usadas. A base é o mesmo consentimento do acompanhamento.",
         ),
       ],
     },
@@ -188,7 +197,7 @@ export function politicaDePrivacidade(): Secao[] {
       titulo: "Por quanto tempo guardamos",
       blocos: [
         p(
-          "Guardamos os dados enquanto durar o acompanhamento com a gestora, ou até que você ou a gestora peçam a exclusão.",
+          `Guardamos os dados enquanto durar o acompanhamento. Se a candidatura ficar ${DIAS_PARA_EXCLUSAO} dias sem nenhuma atividade — nenhuma ação da gestora ou da candidata na plataforma —, os dados são excluídos automaticamente; antes disso, a gestora é avisada no painel. Você ou a gestora podem pedir a exclusão a qualquer momento.`,
         ),
         p(
           "Depois de uma exclusão, fica só o registro de que o pedido foi atendido, sem nome nem contato, para comprovar o atendimento. Cópias de segurança dos prestadores podem manter dados por um período limitado, até serem substituídas.",
@@ -256,7 +265,7 @@ export function politicaDePrivacidade(): Secao[] {
       titulo: "Mudanças nesta política",
       blocos: [
         p(
-          `Esta é a versão de ${dataPorExtenso(VERSAO_POLITICA)}. Quando mudarmos algo relevante, a nova versão será publicada nesta página, com a data, e as inscrições passarão a registrar a versão aceita.`,
+          `Esta é a versão de ${descreverVersao(VERSAO_POLITICA)}. Quando mudarmos algo relevante, a nova versão será publicada nesta página, com a data, e as inscrições passarão a registrar a versão aceita.`,
         ),
       ],
     },
@@ -312,6 +321,15 @@ export function termosDeUso(): Secao[] {
       ],
     },
     {
+      id: "operacao",
+      titulo: "Operação de dados",
+      blocos: [
+        p(
+          "Para os dados das candidatas, a gestora é controladora e a MCB é operadora. A MCB se compromete a: tratar os dados só para prestar o serviço e conforme as instruções da gestora; manter sigilo e medidas de segurança; usar apenas os prestadores listados na Política de Privacidade, com obrigações equivalentes; comunicar à gestora, sem demora, incidentes de segurança que envolvam esses dados; apoiar a gestora no atendimento a pedidos de titulares; e excluir os dados ao fim do uso, salvo guarda exigida por lei.",
+        ),
+      ],
+    },
+    {
       id: "candidata",
       titulo: "Candidatas",
       blocos: [
@@ -325,7 +343,7 @@ export function termosDeUso(): Secao[] {
       titulo: "Planos e limites",
       blocos: [
         p(
-          "Cada ambiente tem um plano, com limites de candidatas, pessoas na equipe, análises assistidas e armazenamento. A cobrança é combinada diretamente com a MCB, e a troca de plano é feita pela administração da plataforma.",
+          "Cada ambiente tem um plano, com limites de candidatas, pessoas na equipe, análises assistidas e armazenamento. Os preços estão na página inicial do MCB. A cobrança é mensal e se renova automaticamente a cada mês. A gestora pode cancelar a qualquer momento, sem multa; o plano vale até o fim do mês já pago. Na primeira contratação, a gestora pode desistir em até 7 dias e recebe de volta o valor pago (Código de Defesa do Consumidor, art. 49). Enquanto a cobrança não é feita pela própria plataforma, ela é combinada diretamente com a MCB, e a troca de plano é feita pela administração.",
         ),
       ],
     },
@@ -365,7 +383,7 @@ export function termosDeUso(): Secao[] {
       titulo: "Mudanças nestes termos",
       blocos: [
         p(
-          `Podemos atualizar estes termos. A versão vigente fica nesta página; esta é a de ${dataPorExtenso(VERSAO_TERMOS)}.`,
+          `Podemos atualizar estes termos. A versão vigente fica nesta página; esta é a de ${descreverVersao(VERSAO_TERMOS)}.`,
         ),
       ],
     },

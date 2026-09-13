@@ -1126,6 +1126,25 @@ export type Database = {
     }
     Functions: {
       can_read_tenant: { Args: { _tenant: string }; Returns: boolean }
+      candidatas_inativas_com_arquivos: {
+        Args: never
+        Returns: {
+          ambiente: string
+          arquivos: number
+          email: string
+          influencer_id: string
+          nome: string
+          ultima_atividade: string
+        }[]
+      }
+      candidatas_perto_da_exclusao: {
+        Args: { p_dias_aviso?: number; p_tenant: string }
+        Returns: {
+          influencer_id: string
+          nome: string
+          ultima_atividade: string
+        }[]
+      }
       excluir_candidata: {
         Args: { p_actor: string; p_influencer_id: string }
         Returns: Json
@@ -1198,10 +1217,15 @@ export type Database = {
       }
       is_tenant_member: { Args: { _tenant: string }; Returns: boolean }
       is_tenant_member_raw: { Args: { _tenant: string }; Returns: boolean }
+      limpar_candidatas_inativas: { Args: never; Returns: number }
       link_influencer_account: { Args: never; Returns: number }
       shares_tenant_with: { Args: { _user: string }; Returns: boolean }
       storage_tenant_id: { Args: { _name: string }; Returns: string }
       tenant_is_demo: { Args: { _tenant: string }; Returns: boolean }
+      ultima_atividade_candidata: {
+        Args: { p_influencer_id: string }
+        Returns: string
+      }
     }
     Enums: {
       ai_analysis_status: "PENDENTE" | "CONCLUIDA" | "ERRO"

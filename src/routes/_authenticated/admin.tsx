@@ -5,6 +5,7 @@ import { toast } from "sonner";
 
 import { AppShell } from "@/components/mcb/AppShell";
 import { ExclusaoDeDadosSection } from "@/components/mcb/ExclusaoDeDadosSection";
+import { InativasComArquivosSection } from "@/components/mcb/InativasComArquivosSection";
 import {
   getPlatformOverview,
   setTenantPlan,
@@ -215,8 +216,9 @@ function AdminPage() {
         </ul>
       )}
 
-      <div className="mt-10">
+      <div className="mt-10 grid gap-6">
         <ExclusaoDeDadosSection />
+        <InativasComArquivosSection />
       </div>
     </AppShell>
   );
