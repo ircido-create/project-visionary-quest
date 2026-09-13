@@ -243,9 +243,11 @@ de verdade com segurança. Recursos novos ficam para quando houver uso para orie
       frase explica que esse índice não decide a qualificação. A outra era de regra: o
       envio da candidatura avaliava sem os sinais de nicho, bio, perfil, stories e
       constância, que só o recálculo da gestora usava; toda inscrição começava com no
-      máximo 45%. A regra passou a ser uma só (`sinaisDasRespostas`, com testes). As duas
-      candidatas reais que já existiam ficam com o índice antigo até a gestora
-      recalcular (Monique iria a 80%, a outra a 55%).
+      máximo 45%. A regra passou a ser uma só (`sinaisDasRespostas`, com testes).
+      Publicado e conferido no mesmo dia. As duas candidatas reais foram recalculadas a
+      pedido, pelo próprio motor do app e só se o índice ainda fosse o antigo: Monique de
+      45% para 80%, a outra de 30% para 55%, cada uma com avaliação nova e registro
+      `influencer.indice_recalculado` no log. As etapas não mudaram.
 - [x] **Separar os dados de teste.** Decisão de 2026-09-13: o ambiente "Gestora Ircido"
       foi excluído por inteiro — 8 candidatas de seed com tarefas, notas, feedbacks,
       números, avaliações, histórico e análises de IA, 18 modelos de tarefa, a marca, um
