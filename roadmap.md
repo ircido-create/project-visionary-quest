@@ -161,10 +161,19 @@ de verdade com segurança. Recursos novos ficam para quando houver uso para orie
       que o sistema faz de fato (dados coletados, finalidade, prazo, direitos, como pedir
       exclusão), com link no formulário de candidatura e no rodapé. Depende dos dados de
       quem responde pelos dados e de revisão por quem cuida da parte legal.
-- [ ] **Primeiros passos da gestora nova.** Ao criar o ambiente, a página de candidatura
-      já nasce no ar e entra sozinha na lista pública do MCB. Roteiro no painel (ajustar
-      a página, carregar os modelos de tarefa, copiar o link, convidar a equipe) e
-      página listada no MCB só quando a gestora escolher.
+- [x] **Primeiros passos da gestora nova.** Cartão "Primeiros passos" no painel da dona
+      e da administradora de um ambiente real: ajustar a página, carregar os modelos de
+      tarefa, receber a primeira candidatura (com o link completo e "Copiar link") e,
+      opcional, convidar a equipe. Cada passo sai dos dados — página ajustada é marca
+      salva mais de um minuto depois da criação do ambiente —, sem tabela de progresso;
+      some quando os três obrigatórios estão feitos ou ao ocultar (preferência de quem vê,
+      no navegador). A página de candidatura continua nascendo no ar, mas só entra na
+      lista da página inicial do MCB por escolha da gestora (`is_listed_on_home`,
+      desligado por padrão), em Configurações, que ganhou também "Copiar link". Na
+      migração ficaram na lista a Equipe Blessing e as duas demonstrações; a Gestora
+      Ircido (teste) saiu. Conferido em produção em 2026-09-13: lista da página inicial,
+      cartão com "2 de 3" na Gestora Ircido e a opção em Configurações. Não exercitado
+      ainda: a criação de um ambiente novo por outra conta.
 - [ ] **Jornada real de ponta a ponta.** Inscrição, gestora, convite pelo WhatsApp,
       cadastro, confirmação de e-mail e portal, com um e-mail e um telefone de verdade.
       Confirma também se o Supabase aceita `/auth` como retorno da confirmação.
