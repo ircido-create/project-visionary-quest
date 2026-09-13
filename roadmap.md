@@ -157,10 +157,22 @@ de verdade com segurança. Recursos novos ficam para quando houver uso para orie
       exclusão sem nome nem e-mail. Não foi exercitada ainda a exclusão de conta de
       acesso nem de arquivo no Storage — a candidatura de teste não tinha nenhum dos dois.
       Fora do alcance: CSVs já exportados e os logs do próprio Supabase.
-- [ ] **Política de privacidade e termos de uso.** Não existem. Páginas públicas com o
-      que o sistema faz de fato (dados coletados, finalidade, prazo, direitos, como pedir
-      exclusão), com link no formulário de candidatura e no rodapé. Depende dos dados de
-      quem responde pelos dados e de revisão por quem cuida da parte legal.
+- [x] **Política de privacidade e termos de uso.** `/privacidade` e `/termos`, escritas
+      a partir do que o sistema faz de fato, conferido no código e no banco: dados de
+      candidatas, gestoras e visitantes; o que vai e o que não vai para a IA (nome,
+      contato, cidade e @ não vão); prestadores (Supabase, Lovable, Cloudflare, Tinybird,
+      Hostinger, Google, Meta); exclusão como ela funciona; cookies e as estatísticas de
+      acesso que o script do Lovable (`/~flock.js`) envia à Tinybird; idade mínima de 18
+      anos; dados guardados até o pedido de exclusão. Responsável: MONIQUE ANNELINE DA
+      SILVA KALLAGIAN, CNPJ 31.293.212/0001-38, contato@mcblessing.com.br; foro em
+      Osasco/SP. Links no rodapé, no consentimento do formulário (que passou a dizer
+      "Tenho 18 anos ou mais") e no cadastro, cujo título ficou "Criar sua conta", neutro
+      para gestora e candidata. Cada consentimento grava a versão aceita em
+      `consent_logs.version`. Conferido em produção em 2026-09-13. **Falta a revisão
+      jurídica** dos pontos marcados com REVISAR em `documentosLegais.ts`: papéis de
+      controladora e operadora entre a MCB e cada gestora, bases legais, transferência
+      internacional e limites de responsabilidade. Texto e versão mudam juntos: ao
+      alterar, subir `VERSAO_POLITICA`/`VERSAO_TERMOS`.
 - [x] **Primeiros passos da gestora nova.** Cartão "Primeiros passos" no painel da dona
       e da administradora de um ambiente real: ajustar a página, carregar os modelos de
       tarefa, receber a primeira candidatura (com o link completo e "Copiar link") e,
