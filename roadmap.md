@@ -189,9 +189,16 @@ de verdade com segurança. Recursos novos ficam para quando houver uso para orie
 - [ ] **Jornada real de ponta a ponta.** Inscrição, gestora, convite pelo WhatsApp,
       cadastro, confirmação de e-mail e portal, com um e-mail e um telefone de verdade.
       Confirma também se o Supabase aceita `/auth` como retorno da confirmação.
-- [ ] **Separar os dados de teste.** "Gestora Ircido" é teste dentro da conta real da
-      dona da plataforma; decidir o destino antes de o uso real começar, para não
-      misturar.
+- [x] **Separar os dados de teste.** Decisão de 2026-09-13: o ambiente "Gestora Ircido"
+      foi excluído por inteiro — 8 candidatas de seed com tarefas, notas, feedbacks,
+      números, avaliações, histórico e análises de IA, 18 modelos de tarefa, a marca, um
+      convite pendente de teste e os 21 registros de log do próprio ambiente. Uma
+      operação só, com trava (só apagava se o ambiente estivesse como foi conferido); o
+      registro `platform.ambiente_de_teste_excluido` ficou fora do ambiente, só com
+      contagens. `/g/gestora-ircido` passou a dar 404. A conta de portal da candidata de
+      teste Helena foi mantida por escolha da dona; há outra conta @gmail.com do mesmo
+      dia (10/09), sem candidatura nem ambiente, que não foi tocada. A plataforma ficou
+      com a Equipe Blessing (real) e as duas demonstrações.
 
 ## Pendências conhecidas
 - [x] **Inscrições reais em ambiente de demonstração — corrigido em 2026-09-12.**
