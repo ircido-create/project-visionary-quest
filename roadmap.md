@@ -203,9 +203,10 @@ de verdade com segurança. Recursos novos ficam para quando houver uso para orie
       operação só, com trava (só apagava se o ambiente estivesse como foi conferido); o
       registro `platform.ambiente_de_teste_excluido` ficou fora do ambiente, só com
       contagens. `/g/gestora-ircido` passou a dar 404. A conta de portal da candidata de
-      teste Helena foi mantida por escolha da dona; há outra conta @gmail.com do mesmo
-      dia (10/09), sem candidatura nem ambiente, que não foi tocada. A plataforma ficou
-      com a Equipe Blessing (real) e as duas demonstrações.
+      teste Helena foi mantida por escolha da dona. Outra conta @gmail.com do mesmo dia
+      (10/09), sem nome, candidatura, ambiente, papel nem perfil, foi excluída a pedido
+      (`platform.conta_orfa_excluida` no log). A plataforma ficou com a Equipe Blessing
+      (real) e as duas demonstrações.
 
 ## Pendências conhecidas
 - [x] **Inscrições reais em ambiente de demonstração — corrigido em 2026-09-12.**
