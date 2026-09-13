@@ -144,11 +144,19 @@ gestora é a dona da plataforma, as 8 candidatas de "Gestora Ircido" são dados 
 gargalo não é funcionalidade — é a plataforma ainda não estar pronta para receber gente
 de verdade com segurança. Recursos novos ficam para quando houver uso para orientar.
 
-- [ ] **Exclusão de dados a pedido.** O formulário de candidatura promete "posso pedir a
-      exclusão a qualquer momento", e não existe como cumprir: Configurações manda pedir
-      ao suporte, que não tem ferramenta. Uma ação na administração que apaga de vez a
-      candidata — cadastro, inscrição, tarefas, notas, números, arquivos — e deixa no log
-      só o registro da exclusão, sem dado pessoal.
+- [x] **Exclusão de dados a pedido.** Na administração da plataforma, "Exclusão de dados
+      a pedido": busca por e-mail em todos os ambientes (sem curinga), mostra o que vai
+      sumir e só libera o botão com o e-mail digitado de novo. Ordem: arquivos no
+      Storage; depois o banco, pela função `excluir_candidata` (só a chave de serviço
+      executa), que apaga o token do Vault, a candidata com a cascata das 11 tabelas e
+      grava `candidata.excluida_a_pedido` no log só com contagens; por fim a conta de
+      acesso ao portal e o perfil, se pedidos e se a conta não for de gestora, da
+      administração ou de outra candidatura. Só a dona da plataforma usa. Testado em
+      produção em 2026-09-13 com uma candidatura de teste enviada pelo formulário
+      público: nada sobrou em nenhuma das 12 tabelas, e o log ficou com o registro da
+      exclusão sem nome nem e-mail. Não foi exercitada ainda a exclusão de conta de
+      acesso nem de arquivo no Storage — a candidatura de teste não tinha nenhum dos dois.
+      Fora do alcance: CSVs já exportados e os logs do próprio Supabase.
 - [ ] **Política de privacidade e termos de uso.** Não existem. Páginas públicas com o
       que o sistema faz de fato (dados coletados, finalidade, prazo, direitos, como pedir
       exclusão), com link no formulário de candidatura e no rodapé. Depende dos dados de
