@@ -203,7 +203,7 @@ function AuthPage() {
           {mode === "signin"
             ? "Entrar no seu ambiente"
             : mode === "signup"
-              ? "Criar sua conta de gestora"
+              ? "Criar sua conta"
               : "Recuperar o acesso"}
         </h1>
         <p className="mt-2 text-sm text-muted-foreground">
@@ -266,6 +266,29 @@ function AuthPage() {
                   ? "Criar conta"
                   : "Enviar link"}
           </Button>
+          {mode === "signup" ? (
+            <p className="text-xs text-muted-foreground">
+              Ao criar a conta, você concorda com os{" "}
+              <a
+                href="/termos"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline underline-offset-4"
+              >
+                Termos de Uso
+              </a>{" "}
+              e a{" "}
+              <a
+                href="/privacidade"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline underline-offset-4"
+              >
+                Política de Privacidade
+              </a>
+              .
+            </p>
+          ) : null}
         </form>
 
         <div className="mt-5 grid gap-2 text-sm">

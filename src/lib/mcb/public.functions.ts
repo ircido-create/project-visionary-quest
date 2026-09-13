@@ -5,6 +5,7 @@ import { z } from "zod";
 import type { Database, Json } from "@/integrations/supabase/types";
 import { audit } from "@/lib/mcb/audit";
 import { garantirEspacoParaCandidata } from "@/lib/mcb/limits";
+import { VERSAO_POLITICA } from "@/lib/mcb/documentosLegais";
 import { MENSAGEM_DEMONSTRACAO } from "@/lib/mcb/paginasPublicas";
 import { evaluateQualification } from "@/lib/mcb/qualification";
 
@@ -259,6 +260,8 @@ export const submitApplication = createServerFn({ method: "POST" })
         tenant_id: tenant.id,
         influencer_id: influencer.id,
         purpose: "Análise de perfil e acompanhamento do Método Criadora Blessing",
+        // Prova de qual texto da Política de Privacidade a candidata aceitou.
+        version: VERSAO_POLITICA,
         source: `landing:${data.slug}`,
       }),
       supabaseAdmin.from("status_history").insert({

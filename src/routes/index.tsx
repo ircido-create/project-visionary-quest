@@ -196,6 +196,15 @@ function Landing() {
           MCB — Método Criadora Blessing. Plataforma independente de formação e organização de candidaturas.
           Não garantimos aprovação em nenhum programa de terceiros.
         </p>
+        <p className="mt-2">
+          <Link to="/privacidade" className="underline underline-offset-4">
+            Política de Privacidade
+          </Link>
+          {" · "}
+          <Link to="/termos" className="underline underline-offset-4">
+            Termos de Uso
+          </Link>
+        </p>
       </footer>
     </div>
   );

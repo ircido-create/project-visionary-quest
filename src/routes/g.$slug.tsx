@@ -341,8 +341,18 @@ function ManagerLanding() {
                 onChange={(e) => set("consent", e.target.checked)}
               />
               <span className="text-muted-foreground">
-                Autorizo o uso dos meus dados para análise do meu perfil e acompanhamento na jornada do Método
-                Criadora Blessing. Posso pedir a exclusão a qualquer momento.
+                Autorizo o uso dos meus dados para análise do meu perfil e acompanhamento na jornada
+                do Método Criadora Blessing. Tenho 18 anos ou mais. Posso pedir a exclusão a
+                qualquer momento, como explica a{" "}
+                <a
+                  href="/privacidade"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline underline-offset-4"
+                >
+                  Política de Privacidade
+                </a>
+                .
               </span>
             </label>
 
