@@ -114,8 +114,8 @@ porque tudo que depende de secret está travado em produção (ver Pendências).
       portal (antes caía em `/dashboard`, na tela de criar ambiente); tarefas
       canceladas saem das abertas e atrasadas do painel. Conferido em produção em
       2026-09-12, nos ambientes de demonstração: botões, mensagens e lembretes do
-      painel. Falta ver um convite real de ponta a ponta — cadastro, confirmação e
-      chegada ao portal —, que confirma se o Supabase aceita `/auth` como retorno.
+      painel. Convite real de ponta a ponta feito em 2026-09-13 (ver Fase 6): o
+      Supabase aceita `/auth` como retorno da confirmação de e-mail.
 - [x] **Relatório de evolução para compartilhar.** Botão "Relatório" na página da
       candidata abre `/relatorio/<id>`, um documento em A4 para salvar em PDF pela
       impressão do navegador: nível, índice, requisitos cumpridos, números de início e de
@@ -186,9 +186,16 @@ de verdade com segurança. Recursos novos ficam para quando houver uso para orie
       Ircido (teste) saiu. Conferido em produção em 2026-09-13: lista da página inicial,
       cartão com "2 de 3" na Gestora Ircido e a opção em Configurações. Não exercitado
       ainda: a criação de um ambiente novo por outra conta.
-- [ ] **Jornada real de ponta a ponta.** Inscrição, gestora, convite pelo WhatsApp,
-      cadastro, confirmação de e-mail e portal, com um e-mail e um telefone de verdade.
-      Confirma também se o Supabase aceita `/auth` como retorno da confirmação.
+- [x] **Jornada real de ponta a ponta.** Feita em 2026-09-13 com uma pessoa real:
+      inscrição pelo celular a partir do botão da página inicial (Equipe Blessing), com o
+      consentimento gravando a versão 2026-09-13 da política; convite pelo WhatsApp com o
+      número normalizado (+55) e a mensagem certa; cadastro pelo link
+      `/auth?modo=cadastro` e confirmação de e-mail em menos de 30 segundos. A
+      confirmação voltou por `/auth`, vinculou a inscrição pelo e-mail e levou ao portal.
+      Uma inscrição antiga da mesma pessoa, com outro e-mail, ficou sem vínculo, como
+      previsto. Observação para depois: no portal, "Qualificada para análise"
+      (requisitos cumpridos) aparece ao lado de "45% de progresso" (índice que também
+      pesa nicho, bio e constância), o que pode confundir a candidata.
 - [x] **Separar os dados de teste.** Decisão de 2026-09-13: o ambiente "Gestora Ircido"
       foi excluído por inteiro — 8 candidatas de seed com tarefas, notas, feedbacks,
       números, avaliações, histórico e análises de IA, 18 modelos de tarefa, a marca, um
