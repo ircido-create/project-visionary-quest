@@ -12,7 +12,8 @@
  */
 
 export type RequirementStatus = "PASS" | "FAIL" | "UNKNOWN" | "REVIEW";
-export type QualificationStatus = "QUALIFIED" | "NOT_QUALIFIED" | "NEEDS_EVIDENCE" | "MANUAL_REVIEW";
+export type QualificationStatus =
+  "QUALIFIED" | "NOT_QUALIFIED" | "NEEDS_EVIDENCE" | "MANUAL_REVIEW";
 export type TriState = "SIM" | "NAO" | "NAO_SEI";
 export type ProfileType = "PESSOAL" | "CRIADOR" | "COMERCIAL" | "NAO_SEI";
 export type DataSource = "META_API" | "MANUAL" | "SCREENSHOT" | "INTERNAL";
@@ -100,6 +101,33 @@ export type ProgressSignals = {
   consistentContent?: boolean;
 };
 
+export type RespostasDaInscricao = {
+  topics: string | null;
+  profileGoal: string | null;
+  profileType: string | null;
+  storiesFrequency: string | null;
+  reelsFrequency: string | null;
+};
+
+/**
+ * Os sinais de preparação que saem das respostas da inscrição. A mesma regra vale no
+ * envio da candidatura e no recálculo feito pela gestora — antes, o envio avaliava sem
+ * sinais e toda candidata começava com no máximo 45%.
+ */
+export function sinaisDasRespostas(respostas: RespostasDaInscricao): ProgressSignals {
+  const preenchido = (valor: string | null) => Boolean(valor && valor.trim().length > 8);
+  return {
+    nicheDefined: preenchido(respostas.topics),
+    bioReady: preenchido(respostas.profileGoal),
+    profileOrganized: respostas.profileType === "CRIADOR",
+    storiesActive:
+      respostas.storiesFrequency === "Todos os dias" ||
+      respostas.storiesFrequency === "Algumas vezes por semana",
+    consistentContent:
+      respostas.reelsFrequency === "Frequentemente" || respostas.reelsFrequency === "Às vezes",
+  };
+}
+
 function num(value: number | null | undefined): number | null {
   return typeof value === "number" && Number.isFinite(value) ? value : null;
 }
@@ -182,7 +210,8 @@ export function evaluateQualification(
         : profileType === "PESSOAL" || profileType === "COMERCIAL"
           ? "FAIL"
           : "UNKNOWN",
-    currentValue: profileType === null || profileType === "NAO_SEI" ? null : profileTypeLabel(profileType),
+    currentValue:
+      profileType === null || profileType === "NAO_SEI" ? null : profileTypeLabel(profileType),
     targetValue: "Criadora de conteúdo",
     targetLabel: "conta de criadora de conteúdo",
     gap:

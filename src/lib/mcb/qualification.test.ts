@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { evaluateQualification, formatarValorAtual } from "./qualification";
+import { evaluateQualification, formatarValorAtual, sinaisDasRespostas } from "./qualification";
 
 const qualified = {
   followers: 1200,
@@ -29,12 +29,18 @@ describe("motor determinístico de qualificação", () => {
   });
 
   it("exige público feminino estritamente acima de 50%", () => {
-    expect(evaluateQualification({ ...qualified, femaleAudiencePct: 50 }).status).toBe("NOT_QUALIFIED");
-    expect(evaluateQualification({ ...qualified, femaleAudiencePct: 50.1 }).status).toBe("QUALIFIED");
+    expect(evaluateQualification({ ...qualified, femaleAudiencePct: 50 }).status).toBe(
+      "NOT_QUALIFIED",
+    );
+    expect(evaluateQualification({ ...qualified, femaleAudiencePct: 50.1 }).status).toBe(
+      "QUALIFIED",
+    );
   });
 
   it("exige perfil de criador de conteúdo", () => {
-    expect(evaluateQualification({ ...qualified, profileType: "PESSOAL" }).status).toBe("NOT_QUALIFIED");
+    expect(evaluateQualification({ ...qualified, profileType: "PESSOAL" }).status).toBe(
+      "NOT_QUALIFIED",
+    );
   });
 
   it("nunca qualifica com dado ausente e pede evidência", () => {
@@ -84,5 +90,49 @@ describe("exibição dos valores dos requisitos", () => {
     expect(evaluateQualification({ ...qualified, femaleAudiencePct: 50.1 }).status).toBe(
       "QUALIFIED",
     );
+  });
+});
+
+describe("sinais de preparação a partir das respostas", () => {
+  it("contam nicho, bio, perfil, stories e constância", () => {
+    const sinais = sinaisDasRespostas({
+      topics: "Maquiagem e autocuidado",
+      profileGoal: "Falar com mulheres que querem se cuidar",
+      profileType: "CRIADOR",
+      storiesFrequency: "Todos os dias",
+      reelsFrequency: "Às vezes",
+    });
+    expect(sinais).toEqual({
+      nicheDefined: true,
+      bioReady: true,
+      profileOrganized: true,
+      storiesActive: true,
+      consistentContent: true,
+    });
+  });
+
+  it("respostas vazias ou curtas não contam", () => {
+    const sinais = sinaisDasRespostas({
+      topics: "  ",
+      profileGoal: "curto",
+      profileType: "NAO_SEI",
+      storiesFrequency: "Raramente",
+      reelsFrequency: "Nunca",
+    });
+    expect(Object.values(sinais).some(Boolean)).toBe(false);
+  });
+
+  it("quem cumpre os requisitos e já faz stories e reels não fica parada em 45%", () => {
+    const resultado = evaluateQualification(
+      qualified,
+      sinaisDasRespostas({
+        topics: "",
+        profileGoal: "",
+        profileType: "CRIADOR",
+        storiesFrequency: "Todos os dias",
+        reelsFrequency: "Frequentemente",
+      }),
+    );
+    expect(resultado.progress.score).toBe(80);
   });
 });

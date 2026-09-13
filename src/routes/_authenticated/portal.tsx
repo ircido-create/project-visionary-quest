@@ -79,14 +79,20 @@ function Application({
         <div>
           <h2 className="font-serif text-2xl">{application.gestora}</h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            {STATUS_LABELS[application.status as InfluencerStatus] ?? application.status} ·{" "}
-            {application.nivel}
+            {STATUS_LABELS[application.status as InfluencerStatus] ?? application.status}
           </p>
         </div>
         <span className="rounded-full border border-border px-3 py-1 text-xs">
-          {Math.round(Number(application.progresso))}% de progresso
+          Preparação do perfil: {Math.round(Number(application.progresso))}%
         </span>
       </div>
+      {/* A etapa e o índice medem coisas diferentes; lado a lado, sem explicação, uma
+          candidata "Qualificada para análise" com 45% achava que algo estava errado. */}
+      <p className="mt-3 text-xs text-muted-foreground">
+        A etapa mostra em que ponto do acompanhamento você está. A preparação do perfil soma os
+        requisitos do programa e também nicho, bio, organização do perfil, stories e constância:
+        ajuda a acompanhar a sua evolução, mas não decide a qualificação.
+      </p>
 
       <div className="mt-5">
         <h3 className="text-xs uppercase tracking-[0.15em] text-muted-foreground">Suas tarefas</h3>

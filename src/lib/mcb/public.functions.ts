@@ -7,7 +7,7 @@ import { audit } from "@/lib/mcb/audit";
 import { garantirEspacoParaCandidata } from "@/lib/mcb/limits";
 import { VERSAO_POLITICA } from "@/lib/mcb/documentosLegais";
 import { MENSAGEM_DEMONSTRACAO } from "@/lib/mcb/paginasPublicas";
-import { evaluateQualification } from "@/lib/mcb/qualification";
+import { evaluateQualification, sinaisDasRespostas } from "@/lib/mcb/qualification";
 
 function publicClient() {
   const key = process.env["SUPABASE_PUBLISHABLE_KEY"]!;
@@ -180,15 +180,24 @@ export const submitApplication = createServerFn({ method: "POST" })
       };
     }
 
-    const evaluation = evaluateQualification({
-      followers: data.followers,
-      postsCount: data.postsCount,
-      recentPosts6m: data.recentPosts6m,
-      profileType: data.profileType,
-      femaleAudiencePct: data.femaleAudiencePct,
-      source: "MANUAL",
-      capturedAt: new Date().toISOString(),
-    });
+    const evaluation = evaluateQualification(
+      {
+        followers: data.followers,
+        postsCount: data.postsCount,
+        recentPosts6m: data.recentPosts6m,
+        profileType: data.profileType,
+        femaleAudiencePct: data.femaleAudiencePct,
+        source: "MANUAL",
+        capturedAt: new Date().toISOString(),
+      },
+      sinaisDasRespostas({
+        topics: data.topics,
+        profileGoal: data.profileGoal,
+        profileType: data.profileType,
+        storiesFrequency: data.storiesFrequency,
+        reelsFrequency: data.reelsFrequency,
+      }),
+    );
 
     const initialStatus =
       evaluation.status === "QUALIFIED"

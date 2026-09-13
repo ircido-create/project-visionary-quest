@@ -236,9 +236,16 @@ de verdade com segurança. Recursos novos ficam para quando houver uso para orie
       `/auth?modo=cadastro` e confirmação de e-mail em menos de 30 segundos. A
       confirmação voltou por `/auth`, vinculou a inscrição pelo e-mail e levou ao portal.
       Uma inscrição antiga da mesma pessoa, com outro e-mail, ficou sem vínculo, como
-      previsto. Observação para depois: no portal, "Qualificada para análise"
-      (requisitos cumpridos) aparece ao lado de "45% de progresso" (índice que também
-      pesa nicho, bio e constância), o que pode confundir a candidata.
+      previsto. Observação resolvida no mesmo dia: no portal, "Qualificada para análise"
+      aparecia ao lado de "45% de progresso". Havia duas causas. Uma de texto: o
+      cabeçalho juntava a etapa com o nível calculado, e o selo não dizia o que media. O
+      portal agora mostra só a etapa, o selo virou "Preparação do perfil: X%" e uma
+      frase explica que esse índice não decide a qualificação. A outra era de regra: o
+      envio da candidatura avaliava sem os sinais de nicho, bio, perfil, stories e
+      constância, que só o recálculo da gestora usava; toda inscrição começava com no
+      máximo 45%. A regra passou a ser uma só (`sinaisDasRespostas`, com testes). As duas
+      candidatas reais que já existiam ficam com o índice antigo até a gestora
+      recalcular (Monique iria a 80%, a outra a 55%).
 - [x] **Separar os dados de teste.** Decisão de 2026-09-13: o ambiente "Gestora Ircido"
       foi excluído por inteiro — 8 candidatas de seed com tarefas, notas, feedbacks,
       números, avaliações, histórico e análises de IA, 18 modelos de tarefa, a marca, um

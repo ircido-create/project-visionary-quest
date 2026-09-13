@@ -6,7 +6,11 @@ import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { audit } from "@/lib/mcb/audit";
 import { garantirEspacoParaMembro } from "@/lib/mcb/limits";
-import { evaluateQualification, type ProgressSignals } from "@/lib/mcb/qualification";
+import {
+  evaluateQualification,
+  sinaisDasRespostas,
+  type ProgressSignals,
+} from "@/lib/mcb/qualification";
 import type { Database, Json } from "@/integrations/supabase/types";
 
 type InfluencerRow = Database["public"]["Tables"]["influencers"]["Row"];
@@ -29,12 +33,27 @@ export const getWorkspaces = createServerFn({ method: "GET" })
 
     const [{ data: memberships }, { data: demoTenants }, { data: profile }] = await Promise.all([
       supabase.from("tenant_memberships").select("tenant_id, role").eq("user_id", userId),
-      supabase.from("tenants").select("id, name, slug, is_demo, plan_id, status").eq("is_demo", true).order("created_at"),
-      supabase.from("profiles").select("id, full_name, email, avatar_url").eq("id", userId).maybeSingle(),
+      supabase
+        .from("tenants")
+        .select("id, name, slug, is_demo, plan_id, status")
+        .eq("is_demo", true)
+        .order("created_at"),
+      supabase
+        .from("profiles")
+        .select("id, full_name, email, avatar_url")
+        .eq("id", userId)
+        .maybeSingle(),
     ]);
 
     const ownTenantIds = (memberships ?? []).map((m) => m.tenant_id);
-    let ownTenants: Array<{ id: string; name: string; slug: string; is_demo: boolean; plan_id: string | null; status: string }> = [];
+    let ownTenants: Array<{
+      id: string;
+      name: string;
+      slug: string;
+      is_demo: boolean;
+      plan_id: string | null;
+      status: string;
+    }> = [];
     if (ownTenantIds.length > 0) {
       const { data } = await supabase
         .from("tenants")
@@ -163,17 +182,13 @@ export const createTenant = createServerFn({ method: "POST" })
   });
 
 function signalsFor(influencer: InfluencerRow): ProgressSignals {
-  const filled = (value: string | null) => Boolean(value && value.trim().length > 8);
-  return {
-    nicheDefined: filled(influencer.topics),
-    bioReady: filled(influencer.profile_goal),
-    profileOrganized: influencer.profile_type === "CRIADOR",
-    storiesActive:
-      influencer.stories_frequency === "Todos os dias" ||
-      influencer.stories_frequency === "Algumas vezes por semana",
-    consistentContent:
-      influencer.reels_frequency === "Frequentemente" || influencer.reels_frequency === "Às vezes",
-  };
+  return sinaisDasRespostas({
+    topics: influencer.topics,
+    profileGoal: influencer.profile_goal,
+    profileType: influencer.profile_type,
+    storiesFrequency: influencer.stories_frequency,
+    reelsFrequency: influencer.reels_frequency,
+  });
 }
 
 export function evaluateInfluencer(influencer: InfluencerRow) {
@@ -183,7 +198,8 @@ export function evaluateInfluencer(influencer: InfluencerRow) {
       postsCount: influencer.posts_count,
       recentPosts6m: influencer.recent_posts_6m,
       profileType: influencer.profile_type,
-      femaleAudiencePct: influencer.female_audience_pct === null ? null : Number(influencer.female_audience_pct),
+      femaleAudiencePct:
+        influencer.female_audience_pct === null ? null : Number(influencer.female_audience_pct),
       source: influencer.data_source,
       capturedAt: influencer.updated_at,
     },
@@ -193,11 +209,17 @@ export function evaluateInfluencer(influencer: InfluencerRow) {
 
 export const getDashboard = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { tenantId: string }) => z.object({ tenantId: z.string().uuid() }).parse(input))
+  .inputValidator((input: { tenantId: string }) =>
+    z.object({ tenantId: z.string().uuid() }).parse(input),
+  )
   .handler(async ({ data, context }) => {
     const { supabase } = context;
     const [{ data: influencers }, { data: tasks }] = await Promise.all([
-      supabase.from("influencers").select("*").eq("tenant_id", data.tenantId).order("created_at", { ascending: false }),
+      supabase
+        .from("influencers")
+        .select("*")
+        .eq("tenant_id", data.tenantId)
+        .order("created_at", { ascending: false }),
       supabase
         .from("tasks")
         .select("id, title, due_date, status, influencer_id, priority")
@@ -230,11 +252,19 @@ export const getDashboard = createServerFn({ method: "POST" })
 
     const funnel = [
       { key: "entrada", label: "Entrada", value: rows.length },
-      { key: "estruturando", label: "Estruturando", value: countStatus(["EM_ESTRUTURACAO", "AGUARDANDO_DIAGNOSTICO"]) },
+      {
+        key: "estruturando",
+        label: "Estruturando",
+        value: countStatus(["EM_ESTRUTURACAO", "AGUARDANDO_DIAGNOSTICO"]),
+      },
       { key: "produzindo", label: "Produzindo", value: countStatus(["EM_PRODUCAO"]) },
       { key: "crescendo", label: "Crescendo", value: countStatus(["EM_CRESCIMENTO"]) },
       { key: "auditoria", label: "Auditoria", value: countStatus(["PRONTA_AUDITORIA"]) },
-      { key: "qualificadas", label: "Qualificadas", value: countStatus(["QUALIFICADA", "ENVIADA_ANALISE", "APROVADA"]) },
+      {
+        key: "qualificadas",
+        label: "Qualificadas",
+        value: countStatus(["QUALIFICADA", "ENVIADA_ANALISE", "APROVADA"]),
+      },
     ];
 
     return {
@@ -284,7 +314,9 @@ export const getDashboard = createServerFn({ method: "POST" })
 
 export const listInfluencers = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { tenantId: string }) => z.object({ tenantId: z.string().uuid() }).parse(input))
+  .inputValidator((input: { tenantId: string }) =>
+    z.object({ tenantId: z.string().uuid() }).parse(input),
+  )
   .handler(async ({ data, context }) => {
     const { data: rows, error } = await context.supabase
       .from("influencers")
@@ -303,7 +335,8 @@ export const listInfluencers = createServerFn({ method: "POST" })
         instagramHandle: row.instagram_handle,
         followers: row.followers,
         postsCount: row.posts_count,
-        femaleAudiencePct: row.female_audience_pct === null ? null : Number(row.female_audience_pct),
+        femaleAudiencePct:
+          row.female_audience_pct === null ? null : Number(row.female_audience_pct),
         status: row.status,
         level: evaluation.progress.level,
         score: evaluation.progress.score,
@@ -479,15 +512,16 @@ export const updateInfluencerMetrics = createServerFn({ method: "POST" })
 
 export const changeInfluencerStatus = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { tenantId: string; influencerId: string; status: InfluencerStatus; note?: string }) =>
-    z
-      .object({
-        tenantId: z.string().uuid(),
-        influencerId: z.string().uuid(),
-        status: z.string().min(3).max(40),
-        note: z.string().trim().max(400).optional(),
-      })
-      .parse(input),
+  .inputValidator(
+    (input: { tenantId: string; influencerId: string; status: InfluencerStatus; note?: string }) =>
+      z
+        .object({
+          tenantId: z.string().uuid(),
+          influencerId: z.string().uuid(),
+          status: z.string().min(3).max(40),
+          note: z.string().trim().max(400).optional(),
+        })
+        .parse(input),
   )
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
@@ -534,15 +568,16 @@ export const changeInfluencerStatus = createServerFn({ method: "POST" })
 
 export const addNote = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { tenantId: string; influencerId: string; body: string; kind: "note" | "feedback" }) =>
-    z
-      .object({
-        tenantId: z.string().uuid(),
-        influencerId: z.string().uuid(),
-        body: z.string().trim().min(3).max(2000),
-        kind: z.enum(["note", "feedback"]),
-      })
-      .parse(input),
+  .inputValidator(
+    (input: { tenantId: string; influencerId: string; body: string; kind: "note" | "feedback" }) =>
+      z
+        .object({
+          tenantId: z.string().uuid(),
+          influencerId: z.string().uuid(),
+          body: z.string().trim().min(3).max(2000),
+          kind: z.enum(["note", "feedback"]),
+        })
+        .parse(input),
   )
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
@@ -599,14 +634,19 @@ export const createTask = createServerFn({ method: "POST" })
 
 export const setTaskStatus = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { tenantId: string; taskId: string; status: "PENDENTE" | "EM_ANDAMENTO" | "CONCLUIDA" | "CANCELADA" }) =>
-    z
-      .object({
-        tenantId: z.string().uuid(),
-        taskId: z.string().uuid(),
-        status: z.enum(["PENDENTE", "EM_ANDAMENTO", "CONCLUIDA", "CANCELADA"]),
-      })
-      .parse(input),
+  .inputValidator(
+    (input: {
+      tenantId: string;
+      taskId: string;
+      status: "PENDENTE" | "EM_ANDAMENTO" | "CONCLUIDA" | "CANCELADA";
+    }) =>
+      z
+        .object({
+          tenantId: z.string().uuid(),
+          taskId: z.string().uuid(),
+          status: z.enum(["PENDENTE", "EM_ANDAMENTO", "CONCLUIDA", "CANCELADA"]),
+        })
+        .parse(input),
   )
   .handler(async ({ data, context }) => {
     const { error } = await context.supabase
@@ -623,7 +663,9 @@ export const setTaskStatus = createServerFn({ method: "POST" })
 
 export const listTasks = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { tenantId: string }) => z.object({ tenantId: z.string().uuid() }).parse(input))
+  .inputValidator((input: { tenantId: string }) =>
+    z.object({ tenantId: z.string().uuid() }).parse(input),
+  )
   .handler(async ({ data, context }) => {
     const [{ data: tasks }, { data: influencers }] = await Promise.all([
       context.supabase
@@ -642,17 +684,31 @@ export const listTasks = createServerFn({ method: "POST" })
 
 export const getSettings = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { tenantId: string }) => z.object({ tenantId: z.string().uuid() }).parse(input))
+  .inputValidator((input: { tenantId: string }) =>
+    z.object({ tenantId: z.string().uuid() }).parse(input),
+  )
   .handler(async ({ data, context }) => {
     const { supabase } = context;
-    const [{ data: tenant }, { data: branding }, { data: members }, { data: invitations }, { data: plans }] =
-      await Promise.all([
-        supabase.from("tenants").select("*").eq("id", data.tenantId).maybeSingle(),
-        supabase.from("tenant_branding").select("*").eq("tenant_id", data.tenantId).maybeSingle(),
-        supabase.from("tenant_memberships").select("user_id, role, created_at").eq("tenant_id", data.tenantId),
-        supabase.from("invitations").select("*").eq("tenant_id", data.tenantId).order("created_at", { ascending: false }),
-        supabase.from("plans").select("*").eq("is_active", true).order("sort_order"),
-      ]);
+    const [
+      { data: tenant },
+      { data: branding },
+      { data: members },
+      { data: invitations },
+      { data: plans },
+    ] = await Promise.all([
+      supabase.from("tenants").select("*").eq("id", data.tenantId).maybeSingle(),
+      supabase.from("tenant_branding").select("*").eq("tenant_id", data.tenantId).maybeSingle(),
+      supabase
+        .from("tenant_memberships")
+        .select("user_id, role, created_at")
+        .eq("tenant_id", data.tenantId),
+      supabase
+        .from("invitations")
+        .select("*")
+        .eq("tenant_id", data.tenantId)
+        .order("created_at", { ascending: false }),
+      supabase.from("plans").select("*").eq("is_active", true).order("sort_order"),
+    ]);
 
     const { count: candidateCount } = await supabase
       .from("influencers")
@@ -660,8 +716,12 @@ export const getSettings = createServerFn({ method: "POST" })
       .eq("tenant_id", data.tenantId);
 
     const memberIds = (members ?? []).map((m) => m.user_id);
-    let memberProfiles: Array<{ id: string; full_name: string | null; email: string | null; avatar_url: string | null }> =
-      [];
+    let memberProfiles: Array<{
+      id: string;
+      full_name: string | null;
+      email: string | null;
+      avatar_url: string | null;
+    }> = [];
     if (memberIds.length > 0) {
       const { data: profileRows } = await supabase
         .from("profiles")
@@ -741,14 +801,15 @@ export const updateBranding = createServerFn({ method: "POST" })
 
 export const inviteMember = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { tenantId: string; email: string; role: "manager_admin" | "manager_member" }) =>
-    z
-      .object({
-        tenantId: z.string().uuid(),
-        email: z.string().trim().email().max(160),
-        role: z.enum(["manager_admin", "manager_member"]),
-      })
-      .parse(input),
+  .inputValidator(
+    (input: { tenantId: string; email: string; role: "manager_admin" | "manager_member" }) =>
+      z
+        .object({
+          tenantId: z.string().uuid(),
+          email: z.string().trim().email().max(160),
+          role: z.enum(["manager_admin", "manager_member"]),
+        })
+        .parse(input),
   )
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
@@ -783,7 +844,11 @@ async function assertOwner(
 export const setMemberRole = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator(
-    (input: { tenantId: string; memberId: string; role: "manager_owner" | "manager_admin" | "manager_member" }) =>
+    (input: {
+      tenantId: string;
+      memberId: string;
+      role: "manager_owner" | "manager_admin" | "manager_member";
+    }) =>
       z
         .object({
           tenantId: z.string().uuid(),
