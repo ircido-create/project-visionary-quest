@@ -173,9 +173,28 @@ de verdade com segurança. Recursos novos ficam para quando houver uso para orie
       nos termos; 3 de risco alto (papéis de controladora e operadora, cookie de
       estatística sem escolha, transferência internacional sem hipótese por prestador),
       5 pedindo decisão de negócio —, entregue à dona como página privada para levar ao
-      jurídico. **Falta a validação jurídica**; depois dela, o texto muda em
-      `documentosLegais.ts` e as mudanças de sistema (T1, P2, P5, P8, P9) viram tarefas. Texto e versão mudam juntos: ao
-      alterar, subir `VERSAO_POLITICA`/`VERSAO_TERMOS`.
+      jurídico. Decisões da dona aplicadas na revisão `2026-09-13.2`: **P1/T2** cada
+      gestora é controladora dos dados das candidatas e a MCB opera a plataforma, sem uso
+      próprio desses dados (seção "Operação de dados" nos Termos); **P4** base legal em
+      cada finalidade (consentimento para o acompanhamento); **P5** exclusão após 90 dias
+      sem atividade (item abaixo); **T3** preços na página inicial, cobrança mensal com
+      renovação automática, cancelamento sem multa valendo até o fim do mês pago e 7 dias
+      de arrependimento (CDC art. 49). **P2**: o Lovable não deixa condicionar o script
+      de estatísticas a consentimento; a decisão é desligar "Visitor analytics" nas
+      configurações do projeto — quando sumir do site, sai o trecho de cookies da política
+      e a menção às estatísticas em P1. **Falta a validação jurídica** do conjunto e dos
+      pontos ainda abertos (P3, P6–P11, T1, T4–T6; comentários `REVISAR` no código).
+      Texto e versão mudam juntos: ao alterar, subir `VERSAO_POLITICA`/`VERSAO_TERMOS`.
+- [x] **Exclusão por inatividade (90 dias).** Migração
+      `20260913140000_fase6_inatividade_90_dias`, aplicada em 2026-09-13: `pg_cron`
+      ligado e a tarefa `mcb-limpeza-inatividade` roda todo dia às 06h UTC
+      (`limpar_candidatas_inativas`), excluindo pela mesma `excluir_candidata` e gravando
+      `candidata.excluida_por_inatividade`. Atividade é qualquer rastro da gestora ou da
+      candidata (`ultima_atividade_candidata`). Ficam fora: ambientes de demonstração e
+      candidatas com arquivos no Storage — estas aparecem na administração ("Inativas com
+      arquivos") para exclusão pela ferramenta que apaga os arquivos. A gestora vê
+      "Perto da exclusão por inatividade" no painel nos 15 dias anteriores. No dia da
+      aplicação, nenhuma candidata real estava na janela de aviso nem vencida.
 - [x] **Primeiros passos da gestora nova.** Cartão "Primeiros passos" no painel da dona
       e da administradora de um ambiente real: ajustar a página, carregar os modelos de
       tarefa, receber a primeira candidatura (com o link completo e "Copiar link") e,
