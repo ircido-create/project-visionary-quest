@@ -386,6 +386,24 @@ encerrar o uso a qualquer momento.
       desfaz cobrança já paga. Não exercitado de ponta a ponta: exige um ambiente de
       teste criado por outra conta.
 
+## Fase 11 — Qualidade técnica
+
+Montada em 2026-09-14, com medição antes de mexer.
+
+- [x] **Relatório sem biblioteca de gráficos.** O gráfico de seguidores do relatório
+      usava o recharts: 376 KB de JavaScript para uma linha. Virou SVG próprio
+      (`GraficoSeguidores`), com a escala e as posições em `grafico.ts`, puras e testadas
+      (marcas redondas sem decimais, eixo mesmo com um valor só, no máximo 8 rótulos). O
+      recharts saiu das dependências, e com ele `components/ui/chart.tsx`, que nenhuma
+      tela usava. Medido no build: o JavaScript do relatório foi de 376 KB para 1 KB, e o
+      total do app de 1.213 KB para 845 KB.
+- Ficou como está, de propósito: o pacote principal (527 KB) é quase todo o supabase-js,
+  que embarca o cliente de Realtime mesmo sem uso — mexer nisso é trabalho de
+  biblioteca. Os `select("*")` rodam todos no servidor e a maioria precisa da linha
+  inteira (motor de qualificação, exportação completa); não pesam no navegador. Testes de
+  tela exigiriam novas dependências de teste (jsdom, testing-library); as regras de cada
+  fase estão cobertas por testes das funções puras.
+
 ## Pendências conhecidas
 - [x] **Inscrições reais em ambiente de demonstração — corrigido em 2026-09-12.**
       Ambiente de demonstração é legível por qualquer conta logada (`can_read_tenant`), e

@@ -10,15 +10,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import {
-  CartesianGrid,
-  Line,
-  LineChart,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from "recharts";
+import { GraficoSeguidores } from "@/components/mcb/GraficoSeguidores";
 
 import { Button } from "@/components/ui/button";
 import { getInfluencer } from "@/lib/mcb/app.functions";
@@ -201,24 +193,8 @@ function RelatorioPage() {
         {grafico.length > 1 ? (
           <div className="mt-5">
             <p className="text-xs text-muted-foreground">Seguidores ao longo do acompanhamento</p>
-            <div className="mt-2 h-56 w-full">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={grafico} margin={{ top: 8, right: 16, bottom: 0, left: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-                  <XAxis dataKey="data" tick={{ fontSize: 11 }} />
-                  <YAxis tick={{ fontSize: 11 }} width={52} allowDecimals={false} />
-                  <Tooltip />
-                  {/* Sem animação: a impressão captura a linha já desenhada. */}
-                  <Line
-                    type="monotone"
-                    dataKey="seguidores"
-                    name="Seguidores"
-                    stroke="var(--primary)"
-                    strokeWidth={2}
-                    isAnimationActive={false}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
+            <div className="mt-2 w-full">
+              <GraficoSeguidores pontos={grafico} />
             </div>
           </div>
         ) : null}
