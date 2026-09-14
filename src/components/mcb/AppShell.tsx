@@ -6,6 +6,7 @@ import { useWorkspace } from "@/lib/mcb/useWorkspace";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { amISuperadmin } from "@/lib/mcb/admin.functions";
+import { SinoDeAvisos } from "@/components/mcb/SinoDeAvisos";
 import { cn } from "@/lib/utils";
 
 const NAV = [
@@ -127,7 +128,10 @@ export function AppShell({
                 <p className="mt-1 text-sm text-muted-foreground">{description}</p>
               ) : null}
             </div>
-            {actions}
+            <div className="flex items-center gap-3">
+              {actions}
+              <SinoDeAvisos />
+            </div>
           </header>
 
           {suspenso ? (

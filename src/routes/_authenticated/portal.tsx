@@ -9,6 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { InstagramSection } from "@/components/mcb/InstagramSection";
 import { RequisitosDoPortal } from "@/components/mcb/RequisitosDoPortal";
+import { SinoDeAvisos } from "@/components/mcb/SinoDeAvisos";
 
 export const Route = createFileRoute("/_authenticated/portal")({
   head: () => ({
@@ -43,16 +44,19 @@ function PortalShell({ children }: { children: React.ReactNode }) {
             <Link to="/" className="font-serif text-2xl tracking-tight">
               MCB
             </Link>
-            <button
-              type="button"
-              className="text-sm text-muted-foreground underline underline-offset-4"
-              onClick={async () => {
-                await supabase.auth.signOut();
-                navigate({ to: "/auth" });
-              }}
-            >
-              Sair
-            </button>
+            <div className="flex items-center gap-4">
+              <SinoDeAvisos />
+              <button
+                type="button"
+                className="text-sm text-muted-foreground underline underline-offset-4"
+                onClick={async () => {
+                  await supabase.auth.signOut();
+                  navigate({ to: "/auth" });
+                }}
+              >
+                Sair
+              </button>
+            </div>
           </div>
         </header>
         <main className="mx-auto max-w-4xl px-5 py-8">{children}</main>

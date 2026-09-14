@@ -231,6 +231,57 @@ export type Database = {
           },
         ]
       }
+      avisos: {
+        Row: {
+          criado_em: string
+          id: string
+          influencer_id: string | null
+          lido_em: string | null
+          quantidade: number
+          tenant_id: string | null
+          tipo: string
+          titulo: string
+          user_id: string
+        }
+        Insert: {
+          criado_em?: string
+          id?: string
+          influencer_id?: string | null
+          lido_em?: string | null
+          quantidade?: number
+          tenant_id?: string | null
+          tipo: string
+          titulo: string
+          user_id: string
+        }
+        Update: {
+          criado_em?: string
+          id?: string
+          influencer_id?: string | null
+          lido_em?: string | null
+          quantidade?: number
+          tenant_id?: string | null
+          tipo?: string
+          titulo?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "avisos_influencer_id_fkey"
+            columns: ["influencer_id"]
+            isOneToOne: false
+            referencedRelation: "influencers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "avisos_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       consent_logs: {
         Row: {
           accepted_at: string

@@ -343,6 +343,25 @@ informação que a gestora tem na página dela e que mais orienta a candidata.
       testes; o teste de RLS ganhou a verificação de que o portal não traz decisão nem
       nota de auditoria.
 
+## Fase 9 — Avisos dentro do app
+
+Montada em 2026-09-14. O MCB não envia e-mail próprio (ver Pendências: DNS), então nada
+avisava a gestora de uma candidatura nova ou a candidata de uma tarefa nova — cada uma
+tinha de entrar e procurar.
+
+- [x] **Sininho de avisos** (`20260914130000_fase9_avisos.sql`), no topo do painel da
+      gestora e do portal da candidata, com a contagem de não lidos e os 20 últimos.
+      Equipe do ambiente: nova candidatura e tarefa concluída pela própria candidata no
+      portal (a concluída pela gestora não avisa). Dona e administradora: candidata que
+      passou para "Pronta para auditoria" depois da inscrição. Candidata com conta: tarefa
+      nova e feedback novo. Os avisos nascem em gatilhos do banco, e não no app, para
+      valer em todo caminho que cria tarefa, feedback ou etapa; demonstrações não geram
+      aviso. Várias tarefas de uma vez viram um aviso só, com a contagem. Pela API, a
+      pessoa lê os dela e só consegue marcar como lido. Como trazem o nome da candidata,
+      os avisos somem com ela, e a tarefa diária `mcb-limpeza-avisos` apaga os lidos há
+      mais de 30 dias e todos com mais de 90. O sininho consulta a cada minuto; se a
+      consulta falhar, ele some em vez de mostrar erro.
+
 ## Pendências conhecidas
 - [x] **Inscrições reais em ambiente de demonstração — corrigido em 2026-09-12.**
       Ambiente de demonstração é legível por qualquer conta logada (`can_read_tenant`), e
