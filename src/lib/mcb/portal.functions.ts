@@ -13,6 +13,8 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { requisitosParaCandidata, type RequisitoDoPortal } from "@/lib/mcb/portalRequisitos";
+import { evaluateQualification } from "@/lib/mcb/qualification";
 
 export type PortalTask = {
   id: string;
@@ -40,10 +42,16 @@ export type PortalApplication = {
     seguidores: number | null;
     publicacoes: number | null;
     publico_feminino_pct: number | null;
+    recentes_6m?: "SIM" | "NAO" | "NAO_SEI" | null;
+    tipo_perfil?: "PESSOAL" | "CRIADOR" | "COMERCIAL" | "NAO_SEI" | null;
+    fonte?: "META_API" | "MANUAL" | "SCREENSHOT" | "INTERNAL" | null;
+    atualizado_em?: string | null;
   };
   tarefas: PortalTask[];
   evolucao: PortalSnapshot[];
   feedbacks: Array<{ texto: string; data: string }>;
+  /** Calculado no servidor do app, com o mesmo motor da página da gestora (Fase 8). */
+  requisitos: RequisitoDoPortal[];
 };
 
 /** Vincula a conta pelo e-mail (idempotente) e devolve as candidaturas dela. */
@@ -58,7 +66,26 @@ export const getPortal = createServerFn({ method: "POST" })
     const { data, error } = await context.supabase.rpc("get_portal_data");
     if (error) throw new Error(error.message);
 
-    return { applications: (data ?? []) as PortalApplication[] };
+    const brutas = (data ?? []) as Array<Omit<PortalApplication, "requisitos">>;
+    return {
+      applications: brutas.map((candidatura): PortalApplication => ({
+        ...candidatura,
+        requisitos: requisitosParaCandidata(
+          evaluateQualification({
+            followers: candidatura.metricas.seguidores,
+            postsCount: candidatura.metricas.publicacoes,
+            recentPosts6m: candidatura.metricas.recentes_6m ?? null,
+            profileType: candidatura.metricas.tipo_perfil ?? null,
+            femaleAudiencePct:
+              candidatura.metricas.publico_feminino_pct === null
+                ? null
+                : Number(candidatura.metricas.publico_feminino_pct),
+            source: candidatura.metricas.fonte ?? "MANUAL",
+            capturedAt: candidatura.metricas.atualizado_em ?? null,
+          }).requirements,
+        ),
+      })),
+    };
   });
 
 /** A candidata marca a própria tarefa. A função no banco só deixa mudar o status. */

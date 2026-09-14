@@ -8,6 +8,7 @@ import { STATUS_LABELS, type InfluencerStatus } from "@/lib/mcb/labels";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { InstagramSection } from "@/components/mcb/InstagramSection";
+import { RequisitosDoPortal } from "@/components/mcb/RequisitosDoPortal";
 
 export const Route = createFileRoute("/_authenticated/portal")({
   head: () => ({
@@ -93,6 +94,11 @@ function Application({
         requisitos do programa e também nicho, bio, organização do perfil, stories e constância:
         ajuda a acompanhar a sua evolução, mas não decide a qualificação.
       </p>
+
+      <RequisitosDoPortal
+        itens={application.requisitos}
+        atualizadoEm={application.metricas.atualizado_em ?? null}
+      />
 
       <div className="mt-5">
         <h3 className="text-xs uppercase tracking-[0.15em] text-muted-foreground">Suas tarefas</h3>

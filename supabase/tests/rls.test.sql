@@ -203,6 +203,15 @@ select 'candidata não conclui tarefa que não é dela',
        not public.influencer_set_task_status((select tarefa_alheia from fixo),
                                              'CONCLUIDA'::task_status);
 
+-- Fase 8: o portal traz o necessário para calcular os requisitos, e só isso.
+insert into resultado (verificacao, passou)
+select 'portal traz os dados dos requisitos da candidata',
+       (public.get_portal_data() -> 0 -> 'metricas') ? 'tipo_perfil';
+
+insert into resultado (verificacao, passou)
+select 'portal não traz decisão nem nota de auditoria',
+       public.get_portal_data()::text not like '%manual_decision%';
+
 -- ---------------------------------------------------------------------------
 -- Membresia e colunas de plataforma (correção de 2026-09-14)
 -- ---------------------------------------------------------------------------

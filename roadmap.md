@@ -324,6 +324,25 @@ depende de escolher o provedor e de os secrets gravarem no Lovable (ver Pendênc
       SQL como usuária simulada foi bloqueado pelo classificador de permissões; ele roda
       colado no SQL editor.
 
+## Fase 8 — O portal mostra o que falta
+
+Montada em 2026-09-14. A candidata via no portal a etapa, a porcentagem de preparação,
+as tarefas e os números, mas não o que falta para os requisitos do programa — a
+informação que a gestora tem na página dela e que mais orienta a candidata.
+
+- [x] **Requisitos no portal** (`20260914120000_fase8_portal_requisitos.sql`). A seção
+      "Requisitos do programa" mostra "X de 5 requisitos cumpridos" e, em cada um, o
+      valor de hoje, a meta, a situação (cumprido, falta, a confirmar) e o próximo passo
+      escrito para a candidata — "Faltam 88 seguidores para chegar a 500", "Envie à sua
+      gestora o print do público nas estatísticas do Instagram". O cálculo é feito no
+      servidor do app com o mesmo motor da página da gestora, a partir dos números
+      atuais; a função do portal passou a trazer só o que faltava para isso (tipo de
+      perfil, recência, origem e data do número). De propósito, não usa a última
+      avaliação gravada, que pode estar atrás do cadastro e traz a decisão, a nota e o
+      autor da auditoria — internos da gestora. Linguagem em `portalRequisitos.ts`, com
+      testes; o teste de RLS ganhou a verificação de que o portal não traz decisão nem
+      nota de auditoria.
+
 ## Pendências conhecidas
 - [x] **Inscrições reais em ambiente de demonstração — corrigido em 2026-09-12.**
       Ambiente de demonstração é legível por qualquer conta logada (`can_read_tenant`), e
