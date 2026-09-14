@@ -814,6 +814,14 @@ export const inviteMember = createServerFn({ method: "POST" })
   )
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
+    // Antes do limite do plano: convite para quem já está na equipe não pode nem ocupar
+    // vaga. O banco também recusa (política de convites); aqui a mensagem fica clara.
+    const { data: jaNaEquipe } = await supabase.rpc("email_ja_na_equipe", {
+      _tenant: data.tenantId,
+      _email: data.email,
+    });
+    if (jaNaEquipe) throw new Error("Essa pessoa já faz parte da equipe.");
+
     await garantirEspacoParaMembro(supabase, data.tenantId);
 
     const { error } = await supabase.from("invitations").upsert({

@@ -1254,6 +1254,10 @@ export type Database = {
         Args: never
         Returns: number
       }
+      email_ja_na_equipe: {
+        Args: { _email: string; _tenant: string }
+        Returns: boolean
+      }
       candidatas_perto_da_exclusao: {
         Args: { p_dias_aviso?: number; p_tenant: string }
         Returns: {

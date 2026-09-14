@@ -303,11 +303,26 @@ depende de escolher o provedor e de os secrets gravarem no Lovable (ver Pendênc
       leitura depois. Política: os pagamentos registrados entram nos dados das gestoras.
       `VERSAO_ACEITE_EXIGIDO` ficou em `.4`: nenhuma gestora além da dona da plataforma
       existia, e a mudança não pede novo aceite de quem já tem conta.
-- Não exercitado de ponta a ponta: um ambiente novo por outra conta passando pela
-  avaliação, o registro de pagamento, o cancelamento e um convite aceito. O teste de
-  RLS (`supabase/tests/rls.test.sql`) ganhou os casos da correção de 2026-09-14, mas
-  não foi rodado — rodar SQL como usuária simulada foi bloqueado pelo classificador de
-  permissões; ele roda colado no SQL editor.
+- [x] **Teste de ponta a ponta em produção, 2026-09-14**, com uma segunda conta da dona
+      (e-mail e senha): cadastro gravando o aceite na criação da conta (`.5`, origem
+      "cadastro"); ambiente novo nascendo no Essencial, em avaliação até 14 dias depois,
+      com a conta como dona; convite aceito na entrada seguinte da conta principal, como
+      membro; pagamento registrado na administração com o período começando no fim da
+      avaliação (28/09 a 28/10); cancelamento pela dona dentro dos 7 dias, registrado como
+      arrependimento, com o período encerrado na hora; e a suspensão diária, rodada à mão,
+      pegando o ambiente cancelado. Cada passo ficou no log com quem fez. O ambiente de
+      teste foi apagado depois, a pedido (`platform.ambiente_de_teste_excluido` no log,
+      só com contagens); a conta de teste ficou para testes futuros. Dois achados:
+      (1) convidar quem já está na equipe gravava um convite que ocupava vaga e virava
+      "aceito" sem mudar nada — corrigido no mesmo dia
+      (`20260914110000_convite_para_quem_ja_esta_na_equipe.sql`): o banco recusa,
+      comparando com o e-mail da conta (conta criada por e-mail e senha não ganha perfil
+      sozinha), e o app diz "Essa pessoa já faz parte da equipe."; (2) no cancelamento
+      com arrependimento o acesso só termina na próxima execução da tarefa diária — até
+      um dia a mais, aceito como está. O teste de RLS (`supabase/tests/rls.test.sql`)
+      ganhou os casos da correção de membros e colunas de plataforma, mas não foi rodado:
+      SQL como usuária simulada foi bloqueado pelo classificador de permissões; ele roda
+      colado no SQL editor.
 
 ## Pendências conhecidas
 - [x] **Inscrições reais em ambiente de demonstração — corrigido em 2026-09-12.**
