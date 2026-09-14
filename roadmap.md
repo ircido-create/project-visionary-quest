@@ -282,6 +282,22 @@ de verdade com segurança. Recursos novos ficam para quando houver uso para orie
       ambiente com página ligada e ativo. Conferido pela API como visitante e na página
       pública. Fica como está, de propósito: visitante lê as colunas de `tenants` de
       páginas públicas (nome, slug, plano, situação) — nada sensível.
+- [x] **Dois furos nas regras de acesso — corrigidos em 2026-09-14**, achados ao planejar
+      a Fase 7 (`20260914090000_corrige_membresia_e_colunas_de_plataforma.sql`).
+      (1) A política de inclusão em `tenant_memberships` aceitava `user_id = auth.uid()`
+      sem olhar o ambiente: qualquer conta logada podia se incluir como dona de qualquer
+      ambiente. Agora, por conta própria, só quem criou o ambiente, como dona e enquanto
+      ele não tem membro; dona e administradora seguem incluindo. (2) Dona e
+      administradora podiam mudar plano, situação e o marcador de demonstração do
+      próprio ambiente (e escolher esses valores ao criá-lo). Um gatilho em `tenants`
+      passou a reservar essas colunas à administração da plataforma e força Essencial,
+      ativo e não demonstração na criação por gestora. Sem sinal de uso: no dia havia um
+      único membro em todo o banco, a dona da Equipe Blessing, e nenhuma troca de plano
+      ou situação fora da administração. A prova ao vivo (inclusão como usuária inventada,
+      em transação desfeita) foi bloqueada pelo classificador de permissões; o que está
+      verificado são as regras aplicadas, lidas do catálogo. Achado junto: **os convites
+      de equipe nunca incluíram ninguém** — o convite é gravado, mas nada o aceita. Vai
+      para a Fase 7.
 - [ ] **Secrets não gravam no Lovable — integração da Meta e análise de IA sem
       funcionar em produção.** Em 2026-09-11, `META_APP_ID`, `META_APP_SECRET`,
       `META_REDIRECT_URI` e `GEMINI_API_KEY` foram cadastrados pela tela do Lovable três
