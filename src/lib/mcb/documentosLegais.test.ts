@@ -109,6 +109,12 @@ describe("conteúdo", () => {
     expect(texto).toContain("5 dias antes do vencimento");
   });
 
+  it("os termos dizem que a dona baixa os dados e exclui o ambiente", () => {
+    const texto = textoDe(termosDeUso());
+    expect(texto).toContain("baixar todos os dados");
+    expect(texto).toContain("excluí-lo de vez");
+  });
+
   it("os termos trazem a cláusula de operação de dados", () => {
     expect(termosDeUso().map((sec) => sec.id)).toContain("operacao");
   });

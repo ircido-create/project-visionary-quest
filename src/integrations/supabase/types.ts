@@ -1309,6 +1309,10 @@ export type Database = {
         Args: { _email: string; _tenant: string }
         Returns: boolean
       }
+      excluir_ambiente: {
+        Args: { p_actor: string; p_tenant: string }
+        Returns: Json
+      }
       candidatas_perto_da_exclusao: {
         Args: { p_dias_aviso?: number; p_tenant: string }
         Returns: {

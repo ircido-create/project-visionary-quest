@@ -6,6 +6,7 @@ import { toast } from "sonner";
 
 import { AppShell } from "@/components/mcb/AppShell";
 import { AssinaturaSection } from "@/components/mcb/AssinaturaSection";
+import { EncerrarAmbienteSection } from "@/components/mcb/EncerrarAmbienteSection";
 import { ModelosTarefaSection } from "@/components/mcb/ModelosTarefaSection";
 import { definirListagemNoMcb } from "@/lib/mcb/primeirosPassos.functions";
 import {
@@ -599,10 +600,21 @@ function SettingsPage() {
             <h2 className="font-serif text-xl">Privacidade</h2>
             <p className="mt-2 text-sm text-muted-foreground">
               Cada candidatura registra o consentimento com data, finalidade e origem. Para excluir
-              os dados de uma candidata, arquive o perfil e solicite a remoção definitiva pelo
-              suporte.
+              os dados de uma candidata, escreva para contato@mcblessing.com.br: a MCB exclui a
+              candidatura, os prints e, se pedido, a conta de acesso.
             </p>
           </section>
+
+          {tenantId && !readOnly && settings?.currentRole === "manager_owner" && settings.tenant ? (
+            <EncerrarAmbienteSection
+              tenantId={tenantId}
+              nome={settings.tenant.name}
+              onExcluido={() => {
+                void refetch();
+                void queryClient.invalidateQueries({ queryKey: ["mcb"] });
+              }}
+            />
+          ) : null}
         </div>
 
         {tenantId ? <ModelosTarefaSection tenantId={tenantId} readOnly={readOnly} /> : null}

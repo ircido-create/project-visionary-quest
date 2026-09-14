@@ -362,6 +362,30 @@ tinha de entrar e procurar.
       mais de 30 dias e todos com mais de 90. O sininho consulta a cada minuto; se a
       consulta falhar, ele some em vez de mostrar erro.
 
+## Fase 10 — Encerrar o ambiente e levar os dados
+
+Montada em 2026-09-14. Depois da Fase 7, cancelar deixava o ambiente só leitura sem prazo,
+e excluir dependia da administração da plataforma. Os Termos já diziam que a gestora pode
+encerrar o uso a qualquer momento.
+
+- [x] **Baixar todos os dados e excluir o ambiente de vez**, em Configurações, na seção
+      "Encerrar o ambiente" (só para a dona). "Baixar todos os dados" gera um JSON com
+      candidatas, inscrições, tarefas, notas, feedbacks, números, avaliações, histórico,
+      consentimentos, pagamentos, modelos de tarefa e a lista de prints (os arquivos
+      continuam na página de cada candidata); dona e administradora podem baixar, a
+      leitura passa pelas regras de sempre e cada exportação fica no log
+      (`ambiente.exportado`). Excluir pede o nome do ambiente digitado de novo e segue a
+      ordem da exclusão de candidata: arquivos no Storage (registrados e da pasta do
+      ambiente) e depois `excluir_ambiente`
+      (`20260914140000_fase10_encerrar_ambiente.sql`, só a chave de serviço executa), que
+      confere de novo que é a dona, apaga do Vault os tokens do Instagram e o ambiente em
+      cascata, e registra no log da plataforma só com contagens
+      (`ambiente.excluido_pela_dona`). As contas de acesso das pessoas continuam;
+      demonstrações não são excluídas por aqui. Termos na revisão `2026-09-13.6`
+      (Política segue na `.5`): a dona baixa e exclui em Configurações, e excluir não
+      desfaz cobrança já paga. Não exercitado de ponta a ponta: exige um ambiente de
+      teste criado por outra conta.
+
 ## Pendências conhecidas
 - [x] **Inscrições reais em ambiente de demonstração — corrigido em 2026-09-12.**
       Ambiente de demonstração é legível por qualquer conta logada (`can_read_tenant`), e

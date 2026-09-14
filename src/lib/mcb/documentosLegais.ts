@@ -24,7 +24,7 @@ export const CONTROLADOR = {
 };
 
 export const VERSAO_POLITICA = "2026-09-13.5";
-export const VERSAO_TERMOS = "2026-09-13.5";
+export const VERSAO_TERMOS = "2026-09-13.6";
 
 /**
  * Aceite mínimo para usar a área logada (T1). Só sobe quando a mudança pede novo aceite de
@@ -390,7 +390,7 @@ export function termosDeUso(): Secao[] {
       titulo: "Suspensão e encerramento",
       blocos: [
         p(
-          "A MCB pode suspender um ambiente por falta de pagamento, uso indevido ou violação destes termos. Antes de suspender, a MCB avisa a gestora por e-mail e dá prazo para regularizar, salvo quando houver risco para candidatas ou uso ilícito. Um ambiente suspenso continua disponível só para leitura. A gestora pode encerrar o uso a qualquer momento; a exclusão de dados segue a Política de Privacidade.",
+          "A MCB pode suspender um ambiente por falta de pagamento, uso indevido ou violação destes termos. Antes de suspender, a MCB avisa a gestora por e-mail e dá prazo para regularizar, salvo quando houver risco para candidatas ou uso ilícito. Um ambiente suspenso continua disponível só para leitura. A gestora pode encerrar o uso a qualquer momento. Em Configurações, a dona do ambiente pode baixar todos os dados dele e excluí-lo de vez, com os prints; a exclusão não desfaz cobranças já pagas. Os demais pedidos de exclusão seguem a Política de Privacidade.",
         ),
       ],
     },
