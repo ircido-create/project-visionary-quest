@@ -73,9 +73,9 @@ function Landing() {
             Do perfil pessoal à criadora de conteúdo pronta para análise.
           </h1>
           <p className="mt-5 max-w-2xl text-base opacity-90">
-            Uma plataforma para gestoras acompanharem candidatas com clareza: candidatura estruturada,
-            jornada guiada em cinco etapas e auditoria dos requisitos com critérios explícitos — sem
-            promessas de aprovação.
+            Uma plataforma para gestoras acompanharem candidatas com clareza: candidatura
+            estruturada, jornada guiada em cinco etapas e auditoria dos requisitos com critérios
+            explícitos — sem promessas de aprovação.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Button asChild size="lg" variant="secondary">
@@ -103,8 +103,8 @@ function Landing() {
       <section id="metodo" className="mx-auto max-w-6xl px-6 py-20">
         <h2 className="font-serif text-3xl">As cinco etapas da jornada</h2>
         <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
-          Cada candidata avança por etapas com tarefas concretas. Os pilares {PILLARS.join(", ")} orientam a
-          produção de conteúdo em todas elas.
+          Cada candidata avança por etapas com tarefas concretas. Os pilares {PILLARS.join(", ")}{" "}
+          orientam a produção de conteúdo em todas elas.
         </p>
         <div className="mt-10 grid gap-4 md:grid-cols-3 lg:grid-cols-5">
           {METHOD_STAGES.map((stage, index) => (
@@ -122,20 +122,22 @@ function Landing() {
           <div>
             <h3 className="font-serif text-2xl">Critérios claros</h3>
             <p className="mt-2 text-sm text-muted-foreground">
-              Seguidores, publicações, recência, tipo de perfil e público feminino avaliados por regras fixas.
-              Dado ausente nunca vira aprovação: fica como pendência.
+              Seguidores, publicações, recência, tipo de perfil e público feminino avaliados por
+              regras fixas. Dado ausente nunca vira aprovação: fica como pendência.
             </p>
           </div>
           <div>
             <h3 className="font-serif text-2xl">Evolução acompanhada</h3>
             <p className="mt-2 text-sm text-muted-foreground">
-              Índice de progresso, histórico de métricas, tarefas por etapa e registro de cada mudança de status.
+              Índice de progresso, histórico de métricas, tarefas por etapa e registro de cada
+              mudança de status.
             </p>
           </div>
           <div>
             <h3 className="font-serif text-2xl">Cada gestora no seu espaço</h3>
             <p className="mt-2 text-sm text-muted-foreground">
-              Dados isolados por ambiente, página de candidatura própria e equipe com papéis definidos.
+              Dados isolados por ambiente, página de candidatura própria e equipe com papéis
+              definidos.
             </p>
           </div>
         </div>
@@ -144,18 +146,24 @@ function Landing() {
       <section id="planos" className="mx-auto max-w-6xl px-6 py-20">
         <h2 className="font-serif text-3xl">Planos</h2>
         <p className="mt-2 text-sm text-muted-foreground">
-          Escolha o limite de candidatas e de pessoas na equipe. A cobrança online entra em uma próxima etapa.
+          Escolha o limite de candidatas e de pessoas na equipe. Todo ambiente começa com 14 dias de
+          avaliação grátis; depois, a cobrança é mensal e combinada com a MCB.
         </p>
         <div className="mt-10 grid gap-4 md:grid-cols-3">
           {data.plans.map((plan) => (
-            <article key={plan.id} className="glass flex flex-col rounded-xl border border-border/60 p-6">
+            <article
+              key={plan.id}
+              className="glass flex flex-col rounded-xl border border-border/60 p-6"
+            >
               <h3 className="font-serif text-2xl">{plan.name}</h3>
               <p className="mt-1 text-sm text-muted-foreground">{plan.description}</p>
               <p className="mt-4 font-serif text-3xl">
                 {plan.price_cents === 0
                   ? "Gratuito"
                   : `R$ ${(plan.price_cents / 100).toLocaleString("pt-BR", { minimumFractionDigits: 0 })}`}
-                {plan.price_cents > 0 ? <span className="text-sm text-muted-foreground">/mês</span> : null}
+                {plan.price_cents > 0 ? (
+                  <span className="text-sm text-muted-foreground">/mês</span>
+                ) : null}
               </p>
               <ul className="mt-4 space-y-1 text-sm text-muted-foreground">
                 <li>Até {plan.max_candidates} candidatas</li>
@@ -193,8 +201,8 @@ function Landing() {
 
       <footer className="border-t border-border/60 px-6 py-10 text-center text-xs text-muted-foreground">
         <p>
-          MCB — Método Criadora Blessing. Plataforma independente de formação e organização de candidaturas.
-          Não garantimos aprovação em nenhum programa de terceiros.
+          MCB — Método Criadora Blessing. Plataforma independente de formação e organização de
+          candidaturas. Não garantimos aprovação em nenhum programa de terceiros.
         </p>
         <p className="mt-2">
           <Link to="/privacidade" className="underline underline-offset-4">

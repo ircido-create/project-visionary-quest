@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 
 import { AppShell, StatCard } from "@/components/mcb/AppShell";
+import { AvisoAssinaturaCard } from "@/components/mcb/AvisoAssinaturaCard";
 import { AvisoInatividadeCard } from "@/components/mcb/AvisoInatividadeCard";
 import { PrimeirosPassosCard } from "@/components/mcb/PrimeirosPassosCard";
 import { getDashboard } from "@/lib/mcb/app.functions";
@@ -32,7 +33,10 @@ function DashboardPage() {
 
   if (!isLoading && tenants.length === 0) {
     return (
-      <AppShell title="Bem-vinda ao MCB" description="Crie seu ambiente para começar a receber candidaturas.">
+      <AppShell
+        title="Bem-vinda ao MCB"
+        description="Crie seu ambiente para começar a receber candidaturas."
+      >
         <Button asChild>
           <Link to="/configuracoes">Criar meu ambiente</Link>
         </Button>
@@ -56,17 +60,35 @@ function DashboardPage() {
         <p className="text-sm text-muted-foreground">Carregando indicadores...</p>
       ) : (
         <div className="grid gap-6">
+          {tenantId && !readOnly ? <AvisoAssinaturaCard tenantId={tenantId} /> : null}
           {tenantId && !readOnly ? <PrimeirosPassosCard tenantId={tenantId} /> : null}
           {tenantId && !readOnly ? <AvisoInatividadeCard tenantId={tenantId} /> : null}
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <StatCard label="Candidatas" value={data.totals.candidates} hint="total no ambiente" />
             <StatCard label="Novas (14 dias)" value={data.totals.newApplications} />
-            <StatCard label="Qualificadas" value={data.totals.qualified} tone="positive" hint="todos os critérios atendidos" />
+            <StatCard
+              label="Qualificadas"
+              value={data.totals.qualified}
+              tone="positive"
+              hint="todos os critérios atendidos"
+            />
             <StatCard label="Em desenvolvimento" value={data.totals.developing} />
-            <StatCard label="Aguardando dados" value={data.totals.waitingData} hint="pendência de comprovação" />
+            <StatCard
+              label="Aguardando dados"
+              value={data.totals.waitingData}
+              hint="pendência de comprovação"
+            />
             <StatCard label="Prontas para auditoria" value={data.totals.readyForAudit} />
-            <StatCard label="Tarefas atrasadas" value={data.totals.lateTasks} tone={data.totals.lateTasks > 0 ? "warning" : "default"} />
-            <StatCard label="Crescimento médio" value={`${data.totals.averageGrowth > 0 ? "+" : ""}${data.totals.averageGrowth}`} hint="seguidores desde a entrada" />
+            <StatCard
+              label="Tarefas atrasadas"
+              value={data.totals.lateTasks}
+              tone={data.totals.lateTasks > 0 ? "warning" : "default"}
+            />
+            <StatCard
+              label="Crescimento médio"
+              value={`${data.totals.averageGrowth > 0 ? "+" : ""}${data.totals.averageGrowth}`}
+              hint="seguidores desde a entrada"
+            />
           </div>
 
           <section className="glass rounded-xl border border-border/60 p-6">
@@ -96,7 +118,9 @@ function DashboardPage() {
             <section className="glass rounded-xl border border-border/60 p-6">
               <h2 className="font-serif text-xl">Perto da meta</h2>
               {data.nearGoal.length === 0 ? (
-                <p className="mt-3 text-sm text-muted-foreground">Nenhuma candidata em desenvolvimento agora.</p>
+                <p className="mt-3 text-sm text-muted-foreground">
+                  Nenhuma candidata em desenvolvimento agora.
+                </p>
               ) : (
                 <ul className="mt-4 grid gap-3">
                   {data.nearGoal.map((item) => (

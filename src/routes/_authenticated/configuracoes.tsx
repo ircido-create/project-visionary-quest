@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import { AppShell } from "@/components/mcb/AppShell";
+import { AssinaturaSection } from "@/components/mcb/AssinaturaSection";
 import { ModelosTarefaSection } from "@/components/mcb/ModelosTarefaSection";
 import { definirListagemNoMcb } from "@/lib/mcb/primeirosPassos.functions";
 import {
@@ -90,7 +91,6 @@ function SettingsPage() {
     });
   }, [profile]);
 
-
   const guard = () => {
     if (readOnly) {
       toast.error("Ambiente de demonstração: crie o seu ambiente para salvar alterações.");
@@ -110,7 +110,9 @@ function SettingsPage() {
 
   const tenantMutation = useMutation({
     mutationFn: () =>
-      saveTenant({ data: { name: newTenant.name, managerName: newTenant.managerName || newTenant.name } }),
+      saveTenant({
+        data: { name: newTenant.name, managerName: newTenant.managerName || newTenant.name },
+      }),
     onSuccess: async (result) => {
       toast.success("Ambiente criado.");
       await refetch();
@@ -151,8 +153,10 @@ function SettingsPage() {
   });
 
   const roleMutation = useMutation({
-    mutationFn: (input: { memberId: string; role: "manager_owner" | "manager_admin" | "manager_member" }) =>
-      changeRole({ data: { tenantId: tenantId!, ...input } }),
+    mutationFn: (input: {
+      memberId: string;
+      role: "manager_owner" | "manager_admin" | "manager_member";
+    }) => changeRole({ data: { tenantId: tenantId!, ...input } }),
     onSuccess: () => {
       toast.success("Papel atualizado.");
       queryClient.invalidateQueries({ queryKey: ["mcb", "settings", tenantId] });
@@ -211,7 +215,9 @@ function SettingsPage() {
       } else if (code === "same_password") {
         toast.error("A nova senha precisa ser diferente da atual.");
       } else if (text.includes("current password")) {
-        toast.error("A senha atual não confere. Se você entra pelo Google, use \"Esqueci minha senha\" na tela de entrada.");
+        toast.error(
+          'A senha atual não confere. Se você entra pelo Google, use "Esqueci minha senha" na tela de entrada.',
+        );
       } else {
         toast.error("Não foi possível alterar a senha.");
       }
@@ -220,7 +226,6 @@ function SettingsPage() {
     setPasswords({ current: "", next: "", confirm: "" });
     toast.success("Senha alterada.");
   }
-
 
   const settings = query.data;
   const publicUrl = settings?.tenant ? `/g/${settings.tenant.slug}` : null;
@@ -234,7 +239,10 @@ function SettingsPage() {
   };
 
   return (
-    <AppShell title="Configurações" description="Seu ambiente, sua página de candidatura, sua equipe e seu plano.">
+    <AppShell
+      title="Configurações"
+      description="Seu ambiente, sua página de candidatura, sua equipe e seu plano."
+    >
       <div className="grid gap-6 lg:grid-cols-2">
         <section className="glass rounded-xl border border-border/60 p-6 lg:col-span-2">
           <h2 className="font-serif text-xl">Meu perfil</h2>
@@ -285,7 +293,6 @@ function SettingsPage() {
                 />
               </Field>
               <Field label="Nova senha">
-
                 <Input
                   type="password"
                   minLength={8}
@@ -314,7 +321,8 @@ function SettingsPage() {
           <section className="glass rounded-xl border border-border/60 p-6 lg:col-span-2">
             <h2 className="font-serif text-xl">Criar meu ambiente</h2>
             <p className="mt-1 text-sm text-muted-foreground">
-              Você está apenas visitando a demonstração. Crie seu próprio ambiente para receber candidaturas reais.
+              Você está apenas visitando a demonstração. Crie seu próprio ambiente para receber
+              candidaturas reais.
             </p>
             <form
               className="mt-4 grid gap-3 sm:grid-cols-2"
@@ -338,7 +346,9 @@ function SettingsPage() {
                 <Input
                   id="managerName"
                   value={newTenant.managerName}
-                  onChange={(e) => setNewTenant((prev) => ({ ...prev, managerName: e.target.value }))}
+                  onChange={(e) =>
+                    setNewTenant((prev) => ({ ...prev, managerName: e.target.value }))
+                  }
                 />
               </div>
               <div className="sm:col-span-2">
@@ -419,7 +429,9 @@ function SettingsPage() {
             <Field label="Frase de autoridade">
               <Input
                 value={branding.authorityQuote}
-                onChange={(e) => setBranding((prev) => ({ ...prev, authorityQuote: e.target.value }))}
+                onChange={(e) =>
+                  setBranding((prev) => ({ ...prev, authorityQuote: e.target.value }))
+                }
               />
             </Field>
             <Field label="Sua bio">
@@ -433,7 +445,9 @@ function SettingsPage() {
               <Field label="@ do Instagram">
                 <Input
                   value={branding.instagramHandle}
-                  onChange={(e) => setBranding((prev) => ({ ...prev, instagramHandle: e.target.value }))}
+                  onChange={(e) =>
+                    setBranding((prev) => ({ ...prev, instagramHandle: e.target.value }))
+                  }
                 />
               </Field>
               <Field label="WhatsApp">
@@ -460,13 +474,17 @@ function SettingsPage() {
                   {settings.usage.members} de {settings.plan.max_members} pessoas na equipe
                 </p>
                 <p className="mt-2 text-xs text-muted-foreground">
-                  A cobrança online entra em uma próxima etapa; os limites já são acompanhados aqui.
+                  Os limites do plano são acompanhados aqui; a assinatura está logo abaixo.
                 </p>
               </div>
             ) : (
-              <p className="mt-3 text-sm text-muted-foreground">Sem plano atribuído a este ambiente.</p>
+              <p className="mt-3 text-sm text-muted-foreground">
+                Sem plano atribuído a este ambiente.
+              </p>
             )}
           </section>
+
+          {tenantId && !readOnly ? <AssinaturaSection tenantId={tenantId} /> : null}
 
           <section className="glass rounded-xl border border-border/60 p-6">
             <h2 className="font-serif text-xl">Equipe</h2>
@@ -503,7 +521,8 @@ function SettingsPage() {
                               if (!guard()) return;
                               roleMutation.mutate({
                                 memberId: member.user_id,
-                                role: event.target.value as "manager_owner" | "manager_admin" | "manager_member",
+                                role: event.target.value as
+                                  "manager_owner" | "manager_admin" | "manager_member",
                               });
                             }}
                           >
@@ -557,6 +576,11 @@ function SettingsPage() {
                 Convidar
               </Button>
             </form>
+            <p className="mt-2 text-xs text-muted-foreground">
+              O MCB não envia e-mail de convite. Mande para a pessoa o link
+              mcblessing.com.br/auth?modo=cadastro e peça que ela crie a conta com o e-mail
+              convidado: ao entrar, ela passa a fazer parte da equipe. O convite vale 14 dias.
+            </p>
             {settings?.invitations.length ? (
               <ul className="mt-4 grid gap-2 text-sm">
                 {settings.invitations.map((invitation) => (
@@ -574,8 +598,9 @@ function SettingsPage() {
           <section className="glass rounded-xl border border-border/60 p-6">
             <h2 className="font-serif text-xl">Privacidade</h2>
             <p className="mt-2 text-sm text-muted-foreground">
-              Cada candidatura registra o consentimento com data, finalidade e origem. Para excluir os dados de uma
-              candidata, arquive o perfil e solicite a remoção definitiva pelo suporte.
+              Cada candidatura registra o consentimento com data, finalidade e origem. Para excluir
+              os dados de uma candidata, arquive o perfil e solicite a remoção definitiva pelo
+              suporte.
             </p>
           </section>
         </div>

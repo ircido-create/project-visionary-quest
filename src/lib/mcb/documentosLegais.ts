@@ -23,8 +23,8 @@ export const CONTROLADOR = {
   foro: "Osasco/SP" as string | null,
 };
 
-export const VERSAO_POLITICA = "2026-09-13.4";
-export const VERSAO_TERMOS = "2026-09-13.4";
+export const VERSAO_POLITICA = "2026-09-13.5";
+export const VERSAO_TERMOS = "2026-09-13.5";
 
 /**
  * Aceite mínimo para usar a área logada (T1). Só sobe quando a mudança pede novo aceite de
@@ -166,7 +166,7 @@ export function politicaDePrivacidade(): Secao[] {
           "Não pedimos dados sensíveis. Se algum chegar pelas respostas abertas, ele é usado só para o acompanhamento e pode ser excluído a pedido.",
         ),
         p(
-          "De gestoras e equipe: nome, e-mail, foto (se informada), dados de acesso, os textos e contatos da página de candidatura, o registro das ações feitas na plataforma e o do aceite dos Termos de Uso e desta política (versão e data).",
+          "De gestoras e equipe: nome, e-mail, foto (se informada), dados de acesso, os textos e contatos da página de candidatura, o registro das ações feitas na plataforma, o do aceite dos Termos de Uso e desta política (versão e data) e os pagamentos registrados (valor, data e período).",
         ),
         p(
           "De quem visita o site: só o necessário para o site funcionar, descrito em “Cookies e armazenamento no navegador”. Não coletamos estatísticas de visita.",
@@ -381,7 +381,7 @@ export function termosDeUso(): Secao[] {
       titulo: "Planos e limites",
       blocos: [
         p(
-          "Cada ambiente tem um plano, com limites de candidatas, pessoas na equipe, análises assistidas e armazenamento. Os preços estão na página inicial do MCB. A cobrança é mensal e se renova automaticamente a cada mês. A gestora pode cancelar a qualquer momento, sem multa; o plano vale até o fim do mês já pago. Na primeira contratação, a gestora pode desistir em até 7 dias e recebe de volta o valor pago (Código de Defesa do Consumidor, art. 49). Enquanto a cobrança não é feita pela própria plataforma, ela é combinada diretamente com a MCB, e a troca de plano é feita pela administração.",
+          "Cada ambiente tem um plano, com limites de candidatas, pessoas na equipe, análises assistidas e armazenamento. Os preços estão na página inicial do MCB. Todo ambiente novo começa com 14 dias de avaliação gratuita no plano Essencial. A cobrança é mensal e se renova automaticamente a cada mês. A gestora pode cancelar a qualquer momento, sem multa, em Configurações; o plano vale até o fim do mês já pago. Na primeira contratação, a gestora pode desistir em até 7 dias e recebe de volta o valor pago (Código de Defesa do Consumidor, art. 49). Enquanto a cobrança não é feita pela própria plataforma, ela é combinada diretamente com a MCB, e a troca de plano é feita pela administração. A gestora é avisada no painel 5 dias antes do vencimento. Sem o pagamento, o ambiente segue funcionando por mais 3 dias; depois fica disponível só para leitura, e a página deixa de receber candidaturas, até o pagamento ser registrado.",
         ),
       ],
     },

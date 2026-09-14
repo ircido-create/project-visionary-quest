@@ -44,6 +44,10 @@ export function useWorkspace() {
     readOnly: active?.readOnly ?? false,
     /** Ambiente suspenso pela administração: leitura continua, escrita não. */
     suspenso: (active as { status?: string } | null)?.status === "SUSPENDED",
+    /** Suspenso porque a assinatura venceu: o pagamento reativa. */
+    suspensoPorVencimento:
+      (active as { status?: string } | null)?.status === "SUSPENDED" &&
+      (active as { suspensao_motivo?: string | null } | null)?.suspensao_motivo === "VENCIMENTO",
     setActive,
     refetch: query.refetch,
   };

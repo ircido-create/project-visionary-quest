@@ -27,7 +27,8 @@ export function AppShell({
   actions?: ReactNode;
 }) {
   const navigate = useNavigate();
-  const { tenants, active, setActive, profile, readOnly, suspenso } = useWorkspace();
+  const { tenants, active, setActive, profile, readOnly, suspenso, suspensoPorVencimento } =
+    useWorkspace();
 
   // O acesso à administração só aparece para quem de fato o tem. A garantia continua
   // sendo do servidor: esconder o link é conveniência, não segurança.
@@ -122,23 +123,25 @@ export function AppShell({
           <header className="flex flex-wrap items-end justify-between gap-4">
             <div>
               <h1 className="font-serif text-3xl tracking-tight">{title}</h1>
-              {description ? <p className="mt-1 text-sm text-muted-foreground">{description}</p> : null}
+              {description ? (
+                <p className="mt-1 text-sm text-muted-foreground">{description}</p>
+              ) : null}
             </div>
             {actions}
           </header>
 
           {suspenso ? (
             <p className="mt-6 rounded-lg border border-destructive/60 bg-destructive/10 px-4 py-3 text-sm">
-              Este ambiente está suspenso pela administração. Você continua vendo todos os dados,
-              mas não é possível alterá-los nem receber novas candidaturas. Fale com a administração
-              da plataforma para reativar.
+              {suspensoPorVencimento
+                ? "A assinatura deste ambiente venceu. Você continua vendo todos os dados, mas não é possível alterá-los nem receber novas candidaturas até o pagamento. Fale com a MCB em contato@mcblessing.com.br para reativar."
+                : "Este ambiente está suspenso pela administração. Você continua vendo todos os dados, mas não é possível alterá-los nem receber novas candidaturas. Fale com a administração da plataforma para reativar."}
             </p>
           ) : null}
 
           {readOnly ? (
             <p className="mt-6 rounded-lg border border-border bg-muted/60 px-4 py-3 text-sm text-muted-foreground">
-              Você está em um ambiente de demonstração: os dados são fictícios e as alterações não são salvas.
-              Crie o seu próprio ambiente em Configurações.
+              Você está em um ambiente de demonstração: os dados são fictícios e as alterações não
+              são salvas. Crie o seu próprio ambiente em Configurações.
             </p>
           ) : null}
 

@@ -187,6 +187,50 @@ export type Database = {
         }
         Relationships: []
       }
+      pagamentos: {
+        Row: {
+          forma: string
+          id: string
+          observacao: string | null
+          periodo_fim: string
+          periodo_inicio: string
+          registrado_em: string
+          registrado_por: string | null
+          tenant_id: string
+          valor_centavos: number
+        }
+        Insert: {
+          forma?: string
+          id?: string
+          observacao?: string | null
+          periodo_fim: string
+          periodo_inicio: string
+          registrado_em?: string
+          registrado_por?: string | null
+          tenant_id: string
+          valor_centavos: number
+        }
+        Update: {
+          forma?: string
+          id?: string
+          observacao?: string | null
+          periodo_fim?: string
+          periodo_inicio?: string
+          registrado_em?: string
+          registrado_por?: string | null
+          tenant_id?: string
+          valor_centavos?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pagamentos_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       consent_logs: {
         Row: {
           accepted_at: string
@@ -1099,6 +1143,8 @@ export type Database = {
       }
       tenants: {
         Row: {
+          cancelada_em: string | null
+          cobranca: string
           created_at: string
           created_by: string | null
           id: string
@@ -1109,9 +1155,13 @@ export type Database = {
           plan_id: string | null
           slug: string
           status: string
+          suspensao_motivo: string | null
           updated_at: string
+          vence_em: string | null
         }
         Insert: {
+          cancelada_em?: string | null
+          cobranca?: string
           created_at?: string
           created_by?: string | null
           id?: string
@@ -1122,9 +1172,13 @@ export type Database = {
           plan_id?: string | null
           slug: string
           status?: string
+          suspensao_motivo?: string | null
           updated_at?: string
+          vence_em?: string | null
         }
         Update: {
+          cancelada_em?: string | null
+          cobranca?: string
           created_at?: string
           created_by?: string | null
           id?: string
@@ -1135,7 +1189,9 @@ export type Database = {
           plan_id?: string | null
           slug?: string
           status?: string
+          suspensao_motivo?: string | null
           updated_at?: string
+          vence_em?: string | null
         }
         Relationships: [
           {
@@ -1167,6 +1223,36 @@ export type Database = {
       aceitar_termos: {
         Args: { p_versao_politica: string; p_versao_termos: string }
         Returns: undefined
+      }
+      aceitar_convites_pendentes: {
+        Args: never
+        Returns: number
+      }
+      cancelar_assinatura: {
+        Args: { p_tenant: string }
+        Returns: Json
+      }
+      plataforma_contatos_das_donas: {
+        Args: never
+        Returns: { email: string; nome: string; tenant_id: string }[]
+      }
+      pode_ser_primeira_dona: {
+        Args: { _tenant: string }
+        Returns: boolean
+      }
+      registrar_pagamento: {
+        Args: {
+          p_forma: string
+          p_meses: number
+          p_observacao: string
+          p_tenant: string
+          p_valor_centavos: number
+        }
+        Returns: string
+      }
+      suspender_vencidos: {
+        Args: never
+        Returns: number
       }
       candidatas_perto_da_exclusao: {
         Args: { p_dias_aviso?: number; p_tenant: string }

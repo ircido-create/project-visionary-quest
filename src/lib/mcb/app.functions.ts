@@ -35,7 +35,7 @@ export const getWorkspaces = createServerFn({ method: "GET" })
       supabase.from("tenant_memberships").select("tenant_id, role").eq("user_id", userId),
       supabase
         .from("tenants")
-        .select("id, name, slug, is_demo, plan_id, status")
+        .select("id, name, slug, is_demo, plan_id, status, suspensao_motivo")
         .eq("is_demo", true)
         .order("created_at"),
       supabase
@@ -53,11 +53,12 @@ export const getWorkspaces = createServerFn({ method: "GET" })
       is_demo: boolean;
       plan_id: string | null;
       status: string;
+      suspensao_motivo: string | null;
     }> = [];
     if (ownTenantIds.length > 0) {
       const { data } = await supabase
         .from("tenants")
-        .select("id, name, slug, is_demo, plan_id, status")
+        .select("id, name, slug, is_demo, plan_id, status, suspensao_motivo")
         .in("id", ownTenantIds);
       ownTenants = data ?? [];
     }

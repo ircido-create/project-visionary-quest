@@ -38,6 +38,11 @@ export type AmbienteNaVisaoGeral = {
   isDemo: boolean;
   criadoEm: string;
   plano: { id: string; nome: string } | null;
+  cobranca: string;
+  venceEm: string | null;
+  suspensaoMotivo: string | null;
+  precoCentavos: number | null;
+  dona: { nome: string | null; email: string | null } | null;
   uso: {
     candidatas: number;
     membros: number;
@@ -68,16 +73,21 @@ export const getPlatformOverview = createServerFn({ method: "GET" })
       return new Date(Date.UTC(agora.getUTCFullYear(), agora.getUTCMonth(), 1)).toISOString();
     })();
 
-    const [tenants, planos, influencers, memberships, analises, arquivos] = await Promise.all([
-      supabase.from("tenants").select("*").order("created_at"),
-      supabase
-        .from("plans")
-        .select("id, name, max_candidates, max_members, max_ai_analyses, storage_mb"),
-      supabase.from("influencers").select("tenant_id"),
-      supabase.from("tenant_memberships").select("tenant_id"),
-      supabase.from("ai_analyses").select("tenant_id").gte("created_at", inicioDoMes),
-      supabase.from("files").select("tenant_id, size_bytes"),
-    ]);
+    const [tenants, planos, influencers, memberships, analises, arquivos, contatos] =
+      await Promise.all([
+        supabase.from("tenants").select("*").order("created_at"),
+        supabase
+          .from("plans")
+          .select(
+            "id, name, max_candidates, max_members, max_ai_analyses, storage_mb, price_cents",
+          ),
+        supabase.from("influencers").select("tenant_id"),
+        supabase.from("tenant_memberships").select("tenant_id"),
+        supabase.from("ai_analyses").select("tenant_id").gte("created_at", inicioDoMes),
+        supabase.from("files").select("tenant_id, size_bytes"),
+        // A administração não é membro dos ambientes: o contato vem de uma função própria.
+        supabase.rpc("plataforma_contatos_das_donas"),
+      ]);
 
     const contar = (linhas: Array<{ tenant_id: string }> | null) => {
       const mapa = new Map<string, number>();
@@ -100,6 +110,9 @@ export const getPlatformOverview = createServerFn({ method: "GET" })
     }
 
     const planoPorId = new Map((planos.data ?? []).map((p) => [p.id, p]));
+    const donaPorAmbiente = new Map(
+      (contatos.data ?? []).map((c) => [c.tenant_id, { nome: c.nome, email: c.email }]),
+    );
 
     const ambientes: AmbienteNaVisaoGeral[] = (tenants.data ?? []).map((t) => {
       const plano = t.plan_id ? (planoPorId.get(t.plan_id) ?? null) : null;
@@ -111,6 +124,11 @@ export const getPlatformOverview = createServerFn({ method: "GET" })
         isDemo: t.is_demo,
         criadoEm: t.created_at,
         plano: plano ? { id: plano.id, nome: plano.name } : null,
+        cobranca: t.cobranca,
+        venceEm: t.vence_em,
+        suspensaoMotivo: t.suspensao_motivo,
+        precoCentavos: plano ? plano.price_cents : null,
+        dona: donaPorAmbiente.get(t.id) ?? null,
         uso: {
           candidatas: porCandidatas.get(t.id) ?? 0,
           membros: porMembros.get(t.id) ?? 0,
@@ -177,7 +195,11 @@ export const setTenantStatus = createServerFn({ method: "POST" })
 
     const { error } = await supabase
       .from("tenants")
-      .update({ status: data.status })
+      // O motivo separa a suspensão manual da por vencimento: só esta o pagamento desfaz.
+      .update({
+        status: data.status,
+        suspensao_motivo: data.status === "SUSPENDED" ? "ADMINISTRACAO" : null,
+      })
       .eq("id", data.tenantId);
     if (error) throw new Error(error.message);
 

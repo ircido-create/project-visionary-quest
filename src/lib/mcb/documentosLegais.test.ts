@@ -102,6 +102,13 @@ describe("conteúdo", () => {
     expect(texto).toContain("Não coletamos estatísticas de visita");
   });
 
+  it("os termos trazem a avaliação de 14 dias e a tolerância de 3 dias", () => {
+    const texto = textoDe(termosDeUso());
+    expect(texto).toContain("14 dias de avaliação gratuita");
+    expect(texto).toContain("mais 3 dias");
+    expect(texto).toContain("5 dias antes do vencimento");
+  });
+
   it("os termos trazem a cláusula de operação de dados", () => {
     expect(termosDeUso().map((sec) => sec.id)).toContain("operacao");
   });

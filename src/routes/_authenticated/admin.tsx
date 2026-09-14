@@ -6,6 +6,8 @@ import { toast } from "sonner";
 import { AppShell } from "@/components/mcb/AppShell";
 import { ExclusaoDeDadosSection } from "@/components/mcb/ExclusaoDeDadosSection";
 import { InativasComArquivosSection } from "@/components/mcb/InativasComArquivosSection";
+import { AssinaturaDoAmbiente } from "@/components/mcb/AssinaturaDoAmbiente";
+import { VencimentosSection } from "@/components/mcb/VencimentosSection";
 import {
   getPlatformOverview,
   setTenantPlan,
@@ -48,12 +50,14 @@ function Ambiente({
   planos,
   onTrocarPlano,
   onTrocarStatus,
+  onAtualizado,
   ocupado,
 }: {
   ambiente: AmbienteNaVisaoGeral;
   planos: Array<{ id: string; nome: string }>;
   onTrocarPlano: (planId: string) => void;
   onTrocarStatus: (status: "ACTIVE" | "SUSPENDED") => void;
+  onAtualizado: () => void;
   ocupado: boolean;
 }) {
   const suspenso = ambiente.status === "SUSPENDED";
@@ -109,6 +113,8 @@ function Ambiente({
           </dd>
         </div>
       </dl>
+
+      <AssinaturaDoAmbiente ambiente={ambiente} onAtualizado={onAtualizado} />
 
       <div className="mt-5 flex flex-wrap items-center gap-3">
         <label className="text-xs text-muted-foreground" htmlFor={`plano-${ambiente.id}`}>
@@ -211,12 +217,14 @@ function AdminPage() {
               ocupado={ocupado}
               onTrocarPlano={(planId) => planoMutation.mutate({ tenantId: ambiente.id, planId })}
               onTrocarStatus={(status) => statusMutation.mutate({ tenantId: ambiente.id, status })}
+              onAtualizado={invalidar}
             />
           ))}
         </ul>
       )}
 
       <div className="mt-10 grid gap-6">
+        <VencimentosSection ambientes={ambientes} />
         <ExclusaoDeDadosSection />
         <InativasComArquivosSection />
       </div>

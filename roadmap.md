@@ -260,6 +260,55 @@ de verdade com segurança. Recursos novos ficam para quando houver uso para orie
       (`platform.conta_orfa_excluida` no log). A plataforma ficou com a Equipe Blessing
       (real) e as duas demonstrações.
 
+## Fase 7 — Assinatura sem cobrança online
+
+Montada em 2026-09-14. O ponto de partida: quem criava um ambiente pelo "Criar meu
+ambiente" recebia o Essencial (R$ 97/mês) na hora e sem prazo — na prática, de graça e
+para sempre —, enquanto os Termos já prometiam cobrança mensal, renovação, cancelamento
+e arrependimento. Não havia tabela de cobrança nenhuma. Cobrança online continua de fora:
+depende de escolher o provedor e de os secrets gravarem no Lovable (ver Pendências).
+
+- [x] **Assinatura com prazo** (`20260914100000_fase7_assinatura_e_convites.sql`).
+      Decisões de 2026-09-14: ambiente criado por gestora nasce com 14 dias de avaliação
+      no Essencial; aviso no painel da gestora a partir de 5 dias antes do vencimento;
+      vencido, mais 3 dias de tolerância, e então só leitura — a suspensão que já existia
+      — com a página parando de receber candidaturas. A tarefa diária
+      `mcb-suspensao-por-vencimento` (06h15 UTC) faz isso; cancelada, suspende no fim do
+      período, sem tolerância. O pagamento é combinado pelo contato; na administração,
+      "Registrar pagamento" (valor, meses, forma, observação) grava em `pagamentos`,
+      calcula o novo vencimento — a partir do fim do período atual, se ainda não venceu —
+      e reativa o ambiente suspenso por vencimento (a suspensão manual guarda outro
+      motivo e não é desfeita pelo pagamento). A dona cancela em Configurações, sem
+      multa; na primeira contratação, em até 7 dias do pagamento, é arrependimento: o
+      período acaba na hora e a MCB devolve o valor, fora do sistema. As colunas da
+      assinatura só mudam pela administração ou por essas funções (o gatilho de colunas
+      de plataforma passou a cobri-las). Ambientes anteriores à fase — o da dona da
+      plataforma e as demonstrações — ficaram isentos.
+- [x] **Aviso de cobrança por e-mail feito pela dona da plataforma.** O MCB não envia
+      e-mail próprio (ver Pendências: DNS). A administração ganhou "Vencimentos": quem
+      termina em até 5 dias, está na tolerância ou foi suspenso por vencimento, com um
+      link que abre o e-mail da dona da plataforma já escrito para a dona do ambiente.
+      O contato vem de `plataforma_contatos_das_donas`, porque a administração não é
+      membro dos ambientes. Cumpre o que os Termos (T6) prometem: aviso por e-mail e
+      prazo antes de suspender.
+- [x] **Convites de equipe que funcionam.** Até aqui o convite era gravado e nada o
+      aceitava. Agora quem entra com o e-mail convidado (confirmado), dentro dos 14 dias
+      de validade, passa a fazer parte da equipe com o papel do convite
+      (`aceitar_convites_pendentes`, chamada na entrada). Convite para "dona" nunca é
+      aceito, e só dona e administradora criam, alteram ou apagam convites (antes, pela
+      regra do banco, qualquer membro, com qualquer papel). O MCB não envia o e-mail de
+      convite: Configurações diz para mandar o link de cadastro à pessoa.
+- [x] **Termos e Política, revisão `2026-09-13.5`.** Planos: 14 dias de avaliação,
+      cancelamento em Configurações, aviso 5 dias antes, 3 dias de tolerância e só
+      leitura depois. Política: os pagamentos registrados entram nos dados das gestoras.
+      `VERSAO_ACEITE_EXIGIDO` ficou em `.4`: nenhuma gestora além da dona da plataforma
+      existia, e a mudança não pede novo aceite de quem já tem conta.
+- Não exercitado de ponta a ponta: um ambiente novo por outra conta passando pela
+  avaliação, o registro de pagamento, o cancelamento e um convite aceito. O teste de
+  RLS (`supabase/tests/rls.test.sql`) ganhou os casos da correção de 2026-09-14, mas
+  não foi rodado — rodar SQL como usuária simulada foi bloqueado pelo classificador de
+  permissões; ele roda colado no SQL editor.
+
 ## Pendências conhecidas
 - [x] **Inscrições reais em ambiente de demonstração — corrigido em 2026-09-12.**
       Ambiente de demonstração é legível por qualquer conta logada (`can_read_tenant`), e

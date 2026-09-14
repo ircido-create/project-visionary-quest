@@ -39,6 +39,7 @@ create temporary table fixo on commit drop as
 select
   '00000000-0000-4000-8000-00000000a001'::uuid as tenant_ativo,
   '00000000-0000-4000-8000-00000000a002'::uuid as tenant_suspenso,
+  '00000000-0000-4000-8000-00000000a003'::uuid as tenant_da_estranha,
   '00000000-0000-4000-8000-00000000b001'::uuid as gestora,
   '00000000-0000-4000-8000-00000000b002'::uuid as estranha,
   '00000000-0000-4000-8000-00000000b003'::uuid as candidata,
@@ -201,6 +202,91 @@ insert into resultado (verificacao, passou)
 select 'candidata não conclui tarefa que não é dela',
        not public.influencer_set_task_status((select tarefa_alheia from fixo),
                                              'CONCLUIDA'::task_status);
+
+-- ---------------------------------------------------------------------------
+-- Membresia e colunas de plataforma (correção de 2026-09-14)
+-- ---------------------------------------------------------------------------
+set local request.jwt.claims to '{"sub":"00000000-0000-4000-8000-00000000b002","role":"authenticated"}';
+
+do $$
+declare _recusou boolean;
+begin
+  begin
+    insert into public.tenant_memberships (tenant_id, user_id, role)
+    select tenant_ativo, estranha, 'manager_owner'::tenant_role from fixo;
+    _recusou := false;
+  exception when insufficient_privilege then
+    _recusou := true;
+  end;
+  insert into resultado (verificacao, passou)
+  values ('estranha NÃO se inclui como dona de ambiente alheio', _recusou);
+end $$;
+
+-- Pede Premium e demonstração; o banco entrega Essencial, ativo e não demonstração.
+insert into public.tenants (id, name, slug, status, is_demo, is_public_page_enabled, plan_id, created_by)
+select tenant_da_estranha, 'Teste Estranha', 'teste-rls-estranha', 'SUSPENDED', true, false,
+       (select id from public.plans where code = 'premium'), estranha from fixo;
+
+insert into resultado (verificacao, passou)
+select 'ambiente criado por gestora nasce Essencial, ativo e não demonstração',
+       exists (
+         select 1 from public.tenants t join public.plans p on p.id = t.plan_id
+          where t.id = (select tenant_da_estranha from fixo)
+            and p.code = 'essencial' and t.status = 'ACTIVE' and not t.is_demo
+       );
+
+do $$
+declare _n integer;
+begin
+  insert into public.tenant_memberships (tenant_id, user_id, role)
+  select tenant_da_estranha, estranha, 'manager_owner'::tenant_role from fixo;
+  get diagnostics _n = row_count;
+  insert into resultado (verificacao, passou)
+  values ('quem cria o ambiente vira a primeira dona', _n = 1);
+exception when others then
+  insert into resultado (verificacao, passou)
+  values ('quem cria o ambiente vira a primeira dona', false);
+end $$;
+
+do $$
+declare _recusou boolean;
+begin
+  begin
+    update public.tenants set plan_id = (select id from public.plans where code = 'premium')
+     where id = (select tenant_da_estranha from fixo);
+    _recusou := false;
+  exception when insufficient_privilege then
+    _recusou := true;
+  end;
+  insert into resultado (verificacao, passou)
+  values ('dona NÃO troca o próprio plano', _recusou);
+end $$;
+
+do $$
+declare _n integer;
+begin
+  update public.tenants set name = 'Teste Estranha renomeado'
+   where id = (select tenant_da_estranha from fixo);
+  get diagnostics _n = row_count;
+  insert into resultado (verificacao, passou)
+  values ('dona continua renomeando o próprio ambiente', _n = 1);
+end $$;
+
+set local request.jwt.claims to '{"sub":"00000000-0000-4000-8000-00000000b003","role":"authenticated"}';
+
+do $$
+declare _recusou boolean;
+begin
+  begin
+    insert into public.tenant_memberships (tenant_id, user_id, role)
+    select tenant_da_estranha, candidata, 'manager_owner'::tenant_role from fixo;
+    _recusou := false;
+  exception when insufficient_privilege then
+    _recusou := true;
+  end;
+  insert into resultado (verificacao, passou)
+  values ('ambiente que já tem dona NÃO aceita outra por conta própria', _recusou);
+end $$;
 
 -- ---------------------------------------------------------------------------
 reset role;

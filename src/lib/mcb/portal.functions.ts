@@ -96,6 +96,10 @@ export const resolveLanding = createServerFn({ method: "POST" })
     const { userId } = context;
 
     try {
+      // Convite de equipe: quem entra com o e-mail convidado passa a ser da equipe, e
+      // por isso vai para o painel logo abaixo.
+      await context.supabase.rpc("aceitar_convites_pendentes");
+
       // Vincula antes de decidir: no primeiro login a candidatura ainda não tem dono.
       await context.supabase.rpc("link_influencer_account");
 
