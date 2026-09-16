@@ -8,6 +8,7 @@ import {
   lerPublicoFeminino,
   montarUrlDeAutorizacao,
   precisaRenovar,
+  completarComVault,
 } from "./instagram";
 
 describe("url de autorização", () => {
@@ -215,5 +216,26 @@ describe("nomes de controle do diagnóstico", () => {
   it("não devolve o valor da referência", () => {
     const r = diagnosticarConfig({ GEMINI_API_KEY: "chave-muito-secreta" });
     expect(JSON.stringify(r)).not.toContain("chave-muito-secreta");
+  });
+});
+
+describe("credenciais da Meta guardadas no Vault", () => {
+  it("o Vault completa só o que falta no ambiente, e o ambiente tem prioridade", () => {
+    const completo = completarComVault({ META_APP_ID: "do-ambiente", META_APP_SECRET: "  " }, [
+      { nome: "META_APP_ID", valor: "do-vault" },
+      { nome: "META_APP_SECRET", valor: "segredo-do-vault" },
+      { nome: "META_REDIRECT_URI", valor: " https://mcblessing.com.br/instagram/retorno " },
+    ]);
+    expect(completo["META_APP_ID"]).toBe("do-ambiente");
+    expect(completo["META_APP_SECRET"]).toBe("segredo-do-vault");
+    expect(completo["META_REDIRECT_URI"]).toBe("https://mcblessing.com.br/instagram/retorno");
+  });
+
+  it("não aceita outros nomes nem valores vazios vindos do Vault", () => {
+    const completo = completarComVault({}, [
+      { nome: "OUTRO_SEGREDO", valor: "x" },
+      { nome: "META_APP_ID", valor: "   " },
+    ]);
+    expect(completo).toEqual({});
   });
 });

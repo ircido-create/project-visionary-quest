@@ -28,7 +28,7 @@ import { z } from "zod";
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { evaluateInfluencer } from "@/lib/mcb/app.functions";
-import { ambienteServidor, lerEnv, nomesPresentes } from "@/lib/mcb/env";
+import { ambienteServidor, nomesPresentes } from "@/lib/mcb/env";
 import {
   GRAPH_HOST,
   META_API_VERSION,
@@ -36,6 +36,7 @@ import {
   SCOPES,
   VARIAVEIS_META,
   VARIAVEIS_REFERENCIA,
+  completarComVault,
   diagnosticarConfig,
   lerErroDaMeta,
   lerPerfil,
@@ -46,13 +47,39 @@ import {
 import type { Json } from "@/integrations/supabase/types";
 
 /**
- * Credenciais do app da Meta. Em produção são secrets do Lovable; localmente vivem em
- * `.env.local` — nunca no `.env`, que é versionado num repositório público.
+ * Os segredos da Meta guardados no Vault do banco, pela função `segredos_da_meta` (só a
+ * chave de serviço executa). Se a leitura falhar, a integração só fica indisponível —
+ * como antes, quando o ambiente não trazia as variáveis.
  */
-function credenciais() {
-  const appId = lerEnv("META_APP_ID");
-  const appSecret = lerEnv("META_APP_SECRET");
-  const redirectUri = lerEnv("META_REDIRECT_URI");
+async function segredosDoVault(): Promise<Array<{ nome: string; valor: string }>> {
+  try {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data, error } = await supabaseAdmin.rpc("segredos_da_meta");
+    if (error) return [];
+    return (data ?? []).map((linha) => ({ nome: linha.nome, valor: linha.valor }));
+  } catch {
+    return [];
+  }
+}
+
+/**
+ * O ambiente da Meta: primeiro as variáveis do servidor (secrets do Lovable ou
+ * `.env.local` localmente — nunca o `.env`, versionado num repositório público); o que
+ * faltar vem do Vault, porque os secrets cadastrados no Lovable não chegavam ao servidor
+ * publicado.
+ */
+async function ambienteDaMeta() {
+  const { doProcesso, dosBindings, mesclado } = ambienteServidor();
+  const faltaAlgo = VARIAVEIS_META.some((nome) => !mesclado[nome]?.trim());
+  const doVault = faltaAlgo ? await segredosDoVault() : [];
+  return { doProcesso, dosBindings, doVault, completo: completarComVault(mesclado, doVault) };
+}
+
+async function credenciais() {
+  const { completo } = await ambienteDaMeta();
+  const appId = completo["META_APP_ID"]?.trim();
+  const appSecret = completo["META_APP_SECRET"]?.trim();
+  const redirectUri = completo["META_REDIRECT_URI"]?.trim();
   if (!appId || !appSecret || !redirectUri) {
     throw new Error(
       "Integração com o Instagram não configurada. Faltam META_APP_ID, META_APP_SECRET " +
@@ -69,15 +96,16 @@ function credenciais() {
  * Devolve só nomes, nunca valores: ver `diagnosticarConfig`.
  */
 export const integracaoMetaDisponivel = createServerFn({ method: "GET" }).handler(async () => {
-  const { doProcesso, dosBindings, mesclado } = ambienteServidor();
+  const { doProcesso, dosBindings, doVault, completo } = await ambienteDaMeta();
   const nomes = [...VARIAVEIS_META, ...VARIAVEIS_REFERENCIA];
   return {
-    ...diagnosticarConfig(mesclado),
+    ...diagnosticarConfig(completo),
     // De onde cada nome veio. Separa "o secret existe mas mora nos bindings" de
     // "o secret não chega ao Worker de jeito nenhum". Só nomes.
     origem: {
       processEnv: nomesPresentes(doProcesso, nomes),
       bindings: nomesPresentes(dosBindings, nomes),
+      vault: doVault.filter((segredo) => segredo.valor.trim()).map((segredo) => segredo.nome),
     },
   };
 });
@@ -135,7 +163,7 @@ export const iniciarConexaoInstagram = createServerFn({ method: "POST" })
     z.object({ influencerId: z.string().uuid() }).parse(input),
   )
   .handler(async ({ data, context }) => {
-    const { appId, redirectUri } = credenciais();
+    const { appId, redirectUri } = await credenciais();
 
     // Falha aqui, e não depois do desvio pela Meta, se a pessoa não for a dona.
     const { data: dono, error } = await rpc(context.supabase, "is_influencer_owner", {
@@ -156,7 +184,7 @@ export const concluirConexaoInstagram = createServerFn({ method: "POST" })
     z.object({ code: z.string().min(1), state: z.string().uuid() }).parse(input),
   )
   .handler(async ({ data, context }) => {
-    const { appId, appSecret, redirectUri } = credenciais();
+    const { appId, appSecret, redirectUri } = await credenciais();
 
     // 1. Código -> token curto (1 hora, uso único).
     const corpo = new URLSearchParams({
@@ -252,7 +280,7 @@ export const sincronizarInstagram = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const { supabase } = context;
     // Falha cedo e com mensagem clara se a integração não estiver configurada.
-    credenciais();
+    await credenciais();
 
     const { data: token, error: erroToken } = await rpc(supabase, "instagram_token", {
       p_influencer_id: data.influencerId,

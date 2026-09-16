@@ -101,6 +101,28 @@ META_APP_SECRET=...
 META_REDIRECT_URI=https://mcblessing.com.br/instagram/retorno
 ```
 
+### 3b. Alternativa: guardar no Vault do banco
+
+Como os secrets do Lovable não chegam ao servidor publicado, as três variáveis também
+podem morar no Vault (migração `20260916100000_segredos_da_meta_no_vault.sql`). O
+servidor lê primeiro o ambiente e completa o que faltar pelo Vault. A URL de retorno já
+está gravada. O ID do app e a chave secreta são gravados por quem tem os valores, no
+editor SQL do banco:
+
+```sql
+select vault.create_secret('ID_DO_APP_DO_INSTAGRAM', 'META_APP_ID');
+select vault.create_secret('CHAVE_SECRETA_DO_APP_DO_INSTAGRAM', 'META_APP_SECRET');
+```
+
+Para trocar um valor já gravado:
+
+```sql
+select vault.update_secret(id, 'NOVO_VALOR') from vault.secrets where name = 'META_APP_SECRET';
+```
+
+Não precisa publicar de novo: a leitura acontece a cada chamada. O diagnóstico abaixo
+passa a mostrar, em `origem.vault`, os nomes que vieram do Vault (nunca os valores).
+
 ### 4. Publicar e conferir
 
 Commit na `main` atualiza só o **preview** do Lovable. O site `mcblessing.com.br` só

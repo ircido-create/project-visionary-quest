@@ -1289,6 +1289,10 @@ export type Database = {
           ultima_atividade: string
         }[]
       }
+      segredos_da_meta: {
+        Args: never
+        Returns: { nome: string; valor: string }[]
+      }
       candidatas_perto_da_exclusao: {
         Args: { p_dias_aviso?: number; p_tenant: string }
         Returns: {

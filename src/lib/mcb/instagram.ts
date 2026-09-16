@@ -164,6 +164,23 @@ export type DiagnosticoConfig = {
   referencias: string[];
 };
 
+/**
+ * Completa as variáveis da Meta que faltam no ambiente com as guardadas no Vault do banco.
+ * O ambiente tem prioridade; do Vault só entram os três nomes da Meta, com valor.
+ */
+export function completarComVault(
+  env: Record<string, string | undefined>,
+  doVault: Array<{ nome: string; valor: string }>,
+): Record<string, string | undefined> {
+  const completo = { ...env };
+  for (const { nome, valor } of doVault) {
+    if (!(VARIAVEIS_META as readonly string[]).includes(nome)) continue;
+    if (completo[nome]?.trim() || !valor.trim()) continue;
+    completo[nome] = valor.trim();
+  }
+  return completo;
+}
+
 /** Nomes de controle do diagnóstico. Ver `DiagnosticoConfig.referencias`. */
 export const VARIAVEIS_REFERENCIA = ["GEMINI_API_KEY", "LOVABLE_API_KEY", "SUPABASE_URL"] as const;
 
