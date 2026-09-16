@@ -474,6 +474,15 @@ Montada em 2026-09-14, com medição antes de mexer.
       O commit do código saiu com a mensagem do anterior por engano (`8f655f0`); a
       descrição certa está no commit vazio seguinte. **Não exercitado de ponta a ponta**:
       não havia candidata para analisar; o custo sai dos créditos de IA do workspace.
+- [x] **Credenciais da Meta pelo Vault do banco, 2026-09-16.** Para contornar os
+      secrets que não gravam, `20260916100000_segredos_da_meta_no_vault.sql` criou
+      `segredos_da_meta` (só a chave de serviço executa, só os três nomes da Meta) e o
+      servidor lê primeiro o ambiente e completa o que faltar pelo Vault
+      (`completarComVault`, com testes). A `META_REDIRECT_URI`, pública, já está no
+      Vault; conferido em produção pelo diagnóstico (`origem.vault`). **Falta a dona
+      gravar `META_APP_ID` e `META_APP_SECRET`** com `vault.create_secret` no editor SQL
+      (passo a passo em `docs/integracao-meta.md`, seção 3b) — e o app da Meta
+      aprovado para o fluxo real.
 - [ ] **Secrets não gravam no Lovable — integração da Meta (a análise de IA foi
       resolvida pelo gateway, item acima) e, antes, análise de IA sem
       funcionar em produção.** Em 2026-09-11, `META_APP_ID`, `META_APP_SECRET`,
