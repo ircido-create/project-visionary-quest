@@ -115,7 +115,7 @@ function CandidatesPage() {
       </div>
 
       {query.isLoading ? (
-        <p className="mt-8 text-sm text-muted-foreground">Carregando candidatas...</p>
+        <p className="mt-8 text-sm text-muted-foreground">Carregando {isOnbio ? "afiliadas" : "candidatas"}...</p>
       ) : rows.length === 0 ? (
         <p className="mt-8 text-sm text-muted-foreground">
           {isOnbio ? "Nenhuma afiliada encontrada. Use “Nova afiliada” para fazer o primeiro cadastro." : "Nenhuma candidata encontrada com esses filtros. Compartilhe sua página de candidatura para receber novas inscrições."}

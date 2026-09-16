@@ -5,6 +5,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { getWorkspaces } from "@/lib/mcb/app.functions";
 
 const STORAGE_KEY = "mcb.activeTenant";
+const WORKSPACE_EVENT = "mcb:workspace-changed";
 
 export function useWorkspace() {
   const fetchWorkspaces = useServerFn(getWorkspaces);
@@ -21,6 +22,13 @@ export function useWorkspace() {
 
   useEffect(() => {
     setStored(window.localStorage.getItem(STORAGE_KEY));
+    const syncWorkspace = () => setStored(window.localStorage.getItem(STORAGE_KEY));
+    window.addEventListener("storage", syncWorkspace);
+    window.addEventListener(WORKSPACE_EVENT, syncWorkspace);
+    return () => {
+      window.removeEventListener("storage", syncWorkspace);
+      window.removeEventListener(WORKSPACE_EVENT, syncWorkspace);
+    };
   }, []);
 
   const tenants = query.data?.tenants ?? [];
@@ -32,6 +40,7 @@ export function useWorkspace() {
   const setActive = useCallback((tenantId: string) => {
     window.localStorage.setItem(STORAGE_KEY, tenantId);
     setStored(tenantId);
+    window.dispatchEvent(new Event(WORKSPACE_EVENT));
   }, []);
 
   return {

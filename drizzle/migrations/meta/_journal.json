@@ -15,6 +15,13 @@
       "when": 1789588751625,
       "tag": "0001_restrict_onbio_to_monique",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1789591824283,
+      "tag": "0002_support_onbio_instagram_portal",
+      "breakpoints": true
     }
   ]
 }

@@ -254,6 +254,15 @@ function CandidateDetail() {
               <div className="grid gap-1.5"><Label htmlFor="onbio-instagram">Instagram</Label><Input id="onbio-instagram" value={profileForm.instagramHandle} onChange={(e) => setProfileForm((prev) => ({ ...prev, instagramHandle: e.target.value }))} /></div>
               <Button type="submit" disabled={readOnly || profileMutation.isPending}>Salvar contato</Button>
             </form>
+            <InstagramSection influencerId={id} podeGerenciar={false} pessoa="afiliada" />
+          </section>
+          <section className="glass rounded-xl border border-border/60 p-6">
+            <h2 className="text-xl font-semibold">Instagram</h2>
+            <div className="mt-4 grid grid-cols-2 gap-4">
+              <div><p className="text-xs text-muted-foreground">Seguidores</p><p className="mt-1 text-2xl font-semibold">{influencer.followers?.toLocaleString("pt-BR") ?? "—"}</p></div>
+              <div><p className="text-xs text-muted-foreground">Publicações</p><p className="mt-1 text-2xl font-semibold">{influencer.posts_count?.toLocaleString("pt-BR") ?? "—"}</p></div>
+            </div>
+            <p className="mt-4 text-xs text-muted-foreground">Os números são atualizados quando a afiliada autoriza e sincroniza a conta profissional.</p>
           </section>
           <section className="glass rounded-xl border border-border/60 p-6">
             <h2 className="text-xl font-semibold">Tarefas</h2>

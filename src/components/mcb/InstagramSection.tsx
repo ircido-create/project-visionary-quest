@@ -30,10 +30,12 @@ const dataHora = (iso: string | null | undefined) =>
 export function InstagramSection({
   influencerId,
   podeGerenciar,
+  pessoa = "candidata",
 }: {
   influencerId: string;
   /** Verdadeiro só para a dona da conta. A recusa real acontece no banco. */
   podeGerenciar: boolean;
+  pessoa?: "candidata" | "afiliada";
 }) {
   const queryClient = useQueryClient();
   const buscarStatus = useServerFn(getInstagramStatus);
@@ -61,6 +63,7 @@ export function InstagramSection({
     // Os números mudam: a candidata vê pelo portal, a gestora pelo detalhe.
     queryClient.invalidateQueries({ queryKey: ["mcb", "portal"] });
     queryClient.invalidateQueries({ queryKey: ["mcb", "influencer"] });
+    queryClient.invalidateQueries({ queryKey: ["mcb", "influencers"] });
   };
 
   const conexao = useMutation({
@@ -129,7 +132,7 @@ export function InstagramSection({
             <p className="mt-1 text-sm text-muted-foreground">
               {podeGerenciar
                 ? "Conectando sua conta profissional, seus números entram sozinhos — sem print."
-                : "A candidata ainda não conectou a conta."}
+                : `A ${pessoa} ainda não conectou a conta.`}
             </p>
           )}
         </div>

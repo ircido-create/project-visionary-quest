@@ -219,6 +219,21 @@ export const concluirConexaoInstagram = createServerFn({ method: "POST" })
     perfilUrl.searchParams.set("access_token", longo.access_token);
     const perfil = lerPerfil(await pedirJson(perfilUrl.toString()));
     if (!perfil) throw new Error("Não foi possível ler o perfil na Meta.");
+    if (!perfil.username) throw new Error("A Meta não informou o @ da conta autorizada.");
+
+    const { data: cadastro, error: erroCadastro } = await context.supabase
+      .from("influencers")
+      .select("instagram_handle")
+      .eq("id", data.state)
+      .maybeSingle();
+    if (erroCadastro) throw new Error(erroCadastro.message);
+    const cadastrado = cadastro?.instagram_handle?.replace(/^@/, "").toLowerCase() ?? null;
+    const autorizado = perfil.username.replace(/^@/, "").toLowerCase();
+    if (cadastrado && cadastrado !== autorizado) {
+      throw new Error(
+        `A conta autorizada é @${perfil.username}, mas o cadastro informa @${cadastro?.instagram_handle}. Autorize a conta cadastrada ou peça à gestora para corrigir o @.`,
+      );
+    }
 
     const expiraEm = longo.expires_in
       ? new Date(Date.now() + longo.expires_in * 1000).toISOString()
@@ -304,6 +319,21 @@ export const sincronizarInstagram = createServerFn({ method: "POST" })
       };
 
       const perfil = await lerPerfilDaMeta(emUso);
+      if (!perfil.username) throw new Error("A Meta não informou o @ da conta conectada.");
+
+      const { data: cadastro, error: erroCadastro } = await supabase
+        .from("influencers")
+        .select("instagram_handle")
+        .eq("id", data.influencerId)
+        .maybeSingle();
+      if (erroCadastro) throw new Error(erroCadastro.message);
+      const cadastrado = cadastro?.instagram_handle?.replace(/^@/, "").toLowerCase() ?? null;
+      const autorizado = perfil.username.replace(/^@/, "").toLowerCase();
+      if (cadastrado && cadastrado !== autorizado) {
+        throw new Error(
+          `Esta conexão pertence a @${perfil.username}, mas o cadastro informa @${cadastro?.instagram_handle}. Peça à gestora para corrigir o @ antes de atualizar.`,
+        );
+      }
 
       // 2. Renova quando estiver perto de vencer. Um token que expira no meio do uso
       //    faria a candidata reconectar sem entender por quê.
