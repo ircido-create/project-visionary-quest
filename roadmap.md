@@ -463,7 +463,19 @@ Montada em 2026-09-14, com medição antes de mexer.
       verificado são as regras aplicadas, lidas do catálogo. Achado junto: **os convites
       de equipe nunca incluíram ninguém** — o convite é gravado, mas nada o aceita. Vai
       para a Fase 7.
-- [ ] **Secrets não gravam no Lovable — integração da Meta e análise de IA sem
+- [x] **Análise de IA pelo gateway do Lovable, 2026-09-16.** Para não depender dos
+      secrets cadastrados à mão, a análise assistida passou a usar o gateway de IA do
+      Lovable (`ai-gateway.ts`, com testes), com a `LOVABLE_API_KEY` que o próprio
+      Lovable provisiona; o modelo continua do Google (`google/gemini-2.5-flash`), por
+      chamada de ferramenta com o schema da análise e a mesma validação e auditoria.
+      Saiu a dependência `@google/genai`. Conferido em produção pelo diagnóstico de
+      variáveis: a `LOVABLE_API_KEY` chega ao servidor. Política de Privacidade na
+      revisão `2026-09-13.6` (os dados da análise chegam ao Google por meio do Lovable).
+      O commit do código saiu com a mensagem do anterior por engano (`8f655f0`); a
+      descrição certa está no commit vazio seguinte. **Não exercitado de ponta a ponta**:
+      não havia candidata para analisar; o custo sai dos créditos de IA do workspace.
+- [ ] **Secrets não gravam no Lovable — integração da Meta (a análise de IA foi
+      resolvida pelo gateway, item acima) e, antes, análise de IA sem
       funcionar em produção.** Em 2026-09-11, `META_APP_ID`, `META_APP_SECRET`,
       `META_REDIRECT_URI` e `GEMINI_API_KEY` foram cadastrados pela tela do Lovable três
       vezes (More → Cloud → Secrets; Project Settings → Secrets; apagados e regravados).
