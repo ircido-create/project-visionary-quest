@@ -230,13 +230,6 @@ function AuthPage() {
         </p>
 
         <div className="mt-6 grid gap-3">
-          <button
-            type="button"
-            className="lovable-auth-button"
-            onClick={() => void handleSocial("lovable")}
-          >
-            Continuar com Lovable
-          </button>
           <Button
             type="button"
             variant="outline"

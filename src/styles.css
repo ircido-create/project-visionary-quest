@@ -226,3 +226,8 @@
     scroll-behavior: auto !important;
   }
 }
+
+/* Selo "Made with Lovable" que a hospedagem injeta nas páginas publicadas (plano Pro permite ocultar). */
+#lovable-badge {
+  display: none !important;
+}
