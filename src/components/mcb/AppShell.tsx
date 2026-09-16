@@ -9,9 +9,16 @@ import { amISuperadmin } from "@/lib/mcb/admin.functions";
 import { SinoDeAvisos } from "@/components/mcb/SinoDeAvisos";
 import { cn } from "@/lib/utils";
 
-const NAV = [
+const MCB_NAV = [
   { to: "/dashboard", label: "Visão geral" },
   { to: "/candidatas", label: "Candidatas" },
+  { to: "/tarefas", label: "Tarefas" },
+  { to: "/configuracoes", label: "Configurações" },
+] as const;
+
+const ONBIO_NAV = [
+  { to: "/dashboard", label: "Visão geral" },
+  { to: "/candidatas", label: "Afiliadas" },
   { to: "/tarefas", label: "Tarefas" },
   { to: "/configuracoes", label: "Configurações" },
 ] as const;
@@ -30,6 +37,8 @@ export function AppShell({
   const navigate = useNavigate();
   const { tenants, active, setActive, profile, readOnly, suspenso, suspensoPorVencimento } =
     useWorkspace();
+  const isOnbio = active?.module === "ONBIO";
+  const navigation = isOnbio ? ONBIO_NAV : MCB_NAV;
 
   // O acesso à administração só aparece para quem de fato o tem. A garantia continua
   // sendo do servidor: esconder o link é conveniência, não segurança.
@@ -43,18 +52,18 @@ export function AppShell({
   });
 
   const itensDeNavegacao = plataforma?.superadmin
-    ? [...NAV, { to: "/admin", label: "Plataforma" } as const]
-    : NAV;
+    ? [...navigation, { to: "/admin", label: "Plataforma" } as const]
+    : navigation;
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className={cn("min-h-screen bg-background text-foreground", isOnbio && "onbio-theme")}>
       <div className="grain-overlay flex min-h-screen flex-col lg:flex-row">
         <aside className="glass border-b border-border/60 px-5 py-5 lg:w-72 lg:border-b-0 lg:border-r">
           <Link to="/" className="font-serif text-2xl tracking-tight">
-            MCB
+            {isOnbio ? "ONBIO" : "MCB"}
           </Link>
           <p className="mt-1 text-xs uppercase tracking-[0.2em] text-muted-foreground">
-            Método Criadora Blessing
+            {isOnbio ? "Gestão de afiliadas" : "Método Criadora Blessing"}
           </p>
 
           <div className="mt-6">

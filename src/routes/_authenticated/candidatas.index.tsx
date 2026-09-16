@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useMemo, useState } from "react";
+import { toast } from "sonner";
 
 import { AppShell } from "@/components/mcb/AppShell";
 import { BotaoExportar } from "@/components/mcb/BotaoExportar";
@@ -11,6 +12,9 @@ import { useWorkspace } from "@/lib/mcb/useWorkspace";
 import { STATUS_LABELS, STATUS_ORDER } from "@/lib/mcb/labels";
 import { QUALIFICATION_LABELS } from "@/lib/mcb/qualification";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { createOnbioAffiliate } from "@/lib/onbio/onbio.functions";
 
 export const Route = createFileRoute("/_authenticated/candidatas/")({
   head: () => ({
@@ -24,12 +28,16 @@ export const Route = createFileRoute("/_authenticated/candidatas/")({
 });
 
 function CandidatesPage() {
-  const { tenantId } = useWorkspace();
+  const { tenantId, active, readOnly } = useWorkspace();
+  const isOnbio = active?.module === "ONBIO";
   const fetchList = useServerFn(listInfluencers);
   const exportar = useServerFn(exportarCandidatas);
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState<string>("TODOS");
   const [view, setView] = useState<"lista" | "pipeline">("lista");
+  const [showForm, setShowForm] = useState(false);
+  const [affiliate, setAffiliate] = useState({ fullName: "", email: "", whatsapp: "", instagramHandle: "", linkExisting: false });
+  const createAffiliate = useServerFn(createOnbioAffiliate);
 
   const query = useQuery({
     queryKey: ["mcb", "influencers", tenantId],
@@ -53,25 +61,33 @@ function CandidatesPage() {
 
   return (
     <AppShell
-      title="Candidatas"
-      description="Filtre, acompanhe e abra o perfil detalhado de cada candidata."
+      title={isOnbio ? "Afiliadas" : "Candidatas"}
+      description={isOnbio ? "Cadastre e acompanhe cada afiliada da ONBIO." : "Filtre, acompanhe e abra o perfil detalhado de cada candidata."}
       actions={
-        <BotaoExportar
+        isOnbio ? <Button disabled={readOnly} onClick={() => setShowForm((value) => !value)}>{showForm ? "Fechar cadastro" : "Nova afiliada"}</Button> : <BotaoExportar
           rotulo="Exportar todas (CSV)"
           desabilitado={!tenantId}
           buscar={() => exportar({ data: { tenantId: tenantId! } })}
         />
       }
     >
+      {isOnbio && showForm ? <form className="mb-6 grid gap-4 rounded-lg border border-border bg-card p-5 md:grid-cols-2" onSubmit={async (event) => { event.preventDefault(); try { await createAffiliate({ data: { tenantId: tenantId!, fullName: affiliate.fullName, email: affiliate.email, whatsapp: affiliate.whatsapp || null, instagramHandle: affiliate.instagramHandle || null, linkExisting: affiliate.linkExisting } }); setAffiliate({ fullName: "", email: "", whatsapp: "", instagramHandle: "", linkExisting: false }); setShowForm(false); await query.refetch(); toast.success("Afiliada cadastrada."); } catch (error) { toast.error(error instanceof Error ? error.message : "Não foi possível cadastrar."); } }}>
+        <div className="grid gap-1.5"><Label htmlFor="affiliate-name">Nome completo</Label><Input id="affiliate-name" required minLength={3} value={affiliate.fullName} onChange={(e) => setAffiliate((p) => ({ ...p, fullName: e.target.value }))} /></div>
+        <div className="grid gap-1.5"><Label htmlFor="affiliate-email">E-mail</Label><Input id="affiliate-email" type="email" required value={affiliate.email} onChange={(e) => setAffiliate((p) => ({ ...p, email: e.target.value }))} /></div>
+        <div className="grid gap-1.5"><Label htmlFor="affiliate-phone">WhatsApp</Label><Input id="affiliate-phone" value={affiliate.whatsapp} onChange={(e) => setAffiliate((p) => ({ ...p, whatsapp: e.target.value }))} /></div>
+        <div className="grid gap-1.5"><Label htmlFor="affiliate-instagram">Instagram</Label><Input id="affiliate-instagram" placeholder="@usuario" value={affiliate.instagramHandle} onChange={(e) => setAffiliate((p) => ({ ...p, instagramHandle: e.target.value }))} /></div>
+        <label className="flex items-start gap-2 text-sm md:col-span-2"><input type="checkbox" className="mt-1" checked={affiliate.linkExisting} onChange={(e) => setAffiliate((p) => ({ ...p, linkExisting: e.target.checked }))} /><span>Vincular à mesma pessoa de outro ambiente quando o e-mail for igual. Somente identidade e contato serão compartilhados.</span></label>
+        <Button className="md:w-fit" type="submit">Cadastrar afiliada</Button>
+      </form> : null}
       <div className="flex flex-wrap items-center gap-3">
         <Input
-          aria-label="Buscar candidata"
+          aria-label={isOnbio ? "Buscar afiliada" : "Buscar candidata"}
           className="max-w-xs"
-          placeholder="Buscar por nome, @ ou e-mail"
+          placeholder={isOnbio ? "Buscar afiliada por nome, @ ou e-mail" : "Buscar por nome, @ ou e-mail"}
           value={search}
           onChange={(event) => setSearch(event.target.value)}
         />
-        <select
+        {!isOnbio ? <select
           aria-label="Filtrar por status"
           className="h-10 rounded-md border border-input bg-background px-3 text-sm"
           value={status}
@@ -83,8 +99,8 @@ function CandidatesPage() {
               {STATUS_LABELS[value]}
             </option>
           ))}
-        </select>
-        <div className="ml-auto flex rounded-md border border-border p-1 text-sm">
+        </select> : null}
+        {!isOnbio ? <div className="ml-auto flex rounded-md border border-border p-1 text-sm">
           {(["lista", "pipeline"] as const).map((option) => (
             <button
               key={option}
@@ -95,28 +111,27 @@ function CandidatesPage() {
               {option}
             </button>
           ))}
-        </div>
+        </div> : null}
       </div>
 
       {query.isLoading ? (
         <p className="mt-8 text-sm text-muted-foreground">Carregando candidatas...</p>
       ) : rows.length === 0 ? (
         <p className="mt-8 text-sm text-muted-foreground">
-          Nenhuma candidata encontrada com esses filtros. Compartilhe sua página de candidatura para receber
-          novas inscrições.
+          {isOnbio ? "Nenhuma afiliada encontrada. Use “Nova afiliada” para fazer o primeiro cadastro." : "Nenhuma candidata encontrada com esses filtros. Compartilhe sua página de candidatura para receber novas inscrições."}
         </p>
       ) : view === "lista" ? (
         <div className="mt-6 overflow-x-auto rounded-xl border border-border/60">
           <table className="w-full min-w-[820px] text-sm">
             <thead className="bg-muted/60 text-left text-xs uppercase tracking-wide text-muted-foreground">
               <tr>
-                <th className="px-4 py-3">Candidata</th>
-                <th className="px-4 py-3">Status</th>
-                <th className="px-4 py-3">Qualificação</th>
+                <th className="px-4 py-3">{isOnbio ? "Afiliada" : "Candidata"}</th>
+                {!isOnbio ? <th className="px-4 py-3">Status</th> : null}
+                {!isOnbio ? <th className="px-4 py-3">Qualificação</th> : null}
                 <th className="px-4 py-3">Seguidores</th>
                 <th className="px-4 py-3">Posts</th>
                 <th className="px-4 py-3">Público fem.</th>
-                <th className="px-4 py-3">Progresso</th>
+                {!isOnbio ? <th className="px-4 py-3">Progresso</th> : null}
               </tr>
             </thead>
             <tbody>
@@ -128,13 +143,13 @@ function CandidatesPage() {
                     </Link>
                     <p className="text-xs text-muted-foreground">@{row.instagramHandle ?? "—"}</p>
                   </td>
-                  <td className="px-4 py-3">{STATUS_LABELS[row.status]}</td>
-                  <td className="px-4 py-3">{QUALIFICATION_LABELS[row.qualification]}</td>
+                  {!isOnbio ? <td className="px-4 py-3">{STATUS_LABELS[row.status]}</td> : null}
+                  {!isOnbio ? <td className="px-4 py-3">{QUALIFICATION_LABELS[row.qualification]}</td> : null}
                   <td className="px-4 py-3">{row.followers ?? "—"}</td>
                   <td className="px-4 py-3">{row.postsCount ?? "—"}</td>
-                  <td className="px-4 py-3">
+                  {!isOnbio ? <td className="px-4 py-3">
                     {row.femaleAudiencePct === null ? "—" : `${row.femaleAudiencePct}%`}
-                  </td>
+                  </td> : null}
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2">
                       <div className="h-2 w-24 rounded-full bg-muted">

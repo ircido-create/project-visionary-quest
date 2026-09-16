@@ -131,6 +131,33 @@
   --ring: oklch(0.727 0.099 83);
 }
 
+.onbio-theme {
+  --background: oklch(0.98 0.006 210);
+  --foreground: oklch(0.24 0.065 248);
+  --card: oklch(0.995 0.003 190);
+  --card-foreground: oklch(0.24 0.065 248);
+  --primary: oklch(0.56 0.13 165);
+  --primary-foreground: oklch(0.99 0.002 190);
+  --secondary: oklch(0.91 0.035 170);
+  --secondary-foreground: oklch(0.25 0.07 245);
+  --muted: oklch(0.94 0.014 215);
+  --muted-foreground: oklch(0.48 0.04 235);
+  --accent: oklch(0.88 0.065 165);
+  --accent-foreground: oklch(0.22 0.065 245);
+  --border: oklch(0.87 0.025 210);
+  --input: oklch(0.87 0.025 210);
+  --ring: oklch(0.56 0.13 165);
+  --gold: oklch(0.56 0.13 165);
+  --gold-soft: oklch(0.88 0.065 165);
+  --plum: oklch(0.24 0.065 248);
+  --wine: oklch(0.31 0.09 245);
+  --font-display: "Inter", "Manrope", ui-sans-serif, system-ui, sans-serif;
+}
+
+.onbio-theme .grain-overlay {
+  background-image: none;
+}
+
 @layer base {
   * {
     border-color: var(--color-border);
