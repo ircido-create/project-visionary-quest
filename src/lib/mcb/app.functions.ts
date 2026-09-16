@@ -35,7 +35,7 @@ export const getWorkspaces = createServerFn({ method: "GET" })
       supabase.from("tenant_memberships").select("tenant_id, role").eq("user_id", userId),
       supabase
         .from("tenants")
-        .select("id, name, slug, is_demo, plan_id, status, suspensao_motivo")
+        .select("id, name, slug, is_demo, plan_id, status, suspensao_motivo, module")
         .eq("is_demo", true)
         .order("created_at"),
       supabase
@@ -54,11 +54,12 @@ export const getWorkspaces = createServerFn({ method: "GET" })
       plan_id: string | null;
       status: string;
       suspensao_motivo: string | null;
+      module: string;
     }> = [];
     if (ownTenantIds.length > 0) {
       const { data } = await supabase
         .from("tenants")
-        .select("id, name, slug, is_demo, plan_id, status, suspensao_motivo")
+        .select("id, name, slug, is_demo, plan_id, status, suspensao_motivo, module")
         .in("id", ownTenantIds);
       ownTenants = data ?? [];
     }
@@ -959,6 +960,13 @@ export const updateInfluencerProfile = createServerFn({ method: "POST" })
     const clean = (value?: string) => (value && value.trim().length > 0 ? value.trim() : null);
     const handle = clean(data.instagramHandle)?.replace(/^@/, "") ?? null;
 
+    const { data: current } = await supabase
+      .from("influencers")
+      .select("person_id")
+      .eq("tenant_id", data.tenantId)
+      .eq("id", data.influencerId)
+      .maybeSingle();
+
     const { data: updated, error } = await supabase
       .from("influencers")
       .update({
@@ -982,6 +990,18 @@ export const updateInfluencerProfile = createServerFn({ method: "POST" })
       .maybeSingle();
     if (error) throw new Error(error.message);
     if (!updated) throw new Error("Candidata não encontrada neste ambiente.");
+
+    if (current?.person_id) {
+      const shared = { full_name: data.fullName, email: data.email.toLowerCase(), whatsapp: clean(data.whatsapp) };
+      const { error: personError } = await supabase.from("people").update(shared).eq("id", current.person_id);
+      if (personError) throw new Error(personError.message);
+      const { error: linkedError } = await supabase
+        .from("influencers")
+        .update(shared)
+        .eq("person_id", current.person_id)
+        .neq("id", data.influencerId);
+      if (linkedError) throw new Error(linkedError.message);
+    }
 
     const evaluation = evaluateInfluencer(updated);
     await Promise.all([

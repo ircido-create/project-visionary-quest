@@ -513,3 +513,10 @@ Montada em 2026-09-14, com medição antes de mexer.
       Gemini devolve 503 com frequência. Há retry com espera, mas
       uma análise pode levar mais de um minuto e ainda falhar. Se virar incômodo, o
       caminho é tornar a análise assíncrona em vez de prender a requisição.
+
+## Módulo ONBIO
+- [x] Banco, isolamento e ambiente ONBIO
+- [x] Interface e linguagem por ambiente
+- [x] Cadastro, vínculo e resultados comerciais
+- [x] IA para pautas e auditoria
+- [ ] Testes e validação

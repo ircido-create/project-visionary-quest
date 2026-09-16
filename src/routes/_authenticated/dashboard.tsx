@@ -10,6 +10,7 @@ import { getDashboard } from "@/lib/mcb/app.functions";
 import { useWorkspace } from "@/lib/mcb/useWorkspace";
 import { linkWhatsApp, mensagemLembrete } from "@/lib/mcb/whatsapp";
 import { Button } from "@/components/ui/button";
+import { OnbioDashboard } from "@/components/onbio/OnbioDashboard";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
@@ -23,7 +24,7 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
 });
 
 function DashboardPage() {
-  const { tenantId, isLoading, tenants, profile, readOnly } = useWorkspace();
+  const { tenantId, isLoading, tenants, profile, readOnly, active } = useWorkspace();
   const fetchDashboard = useServerFn(getDashboard);
   const query = useQuery({
     queryKey: ["mcb", "dashboard", tenantId],
@@ -43,6 +44,8 @@ function DashboardPage() {
       </AppShell>
     );
   }
+
+  if (tenantId && active?.module === "ONBIO") return <OnbioDashboard tenantId={tenantId} />;
 
   const data = query.data;
 
