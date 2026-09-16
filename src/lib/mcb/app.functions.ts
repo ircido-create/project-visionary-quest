@@ -457,13 +457,6 @@ export const updateInfluencerMetrics = createServerFn({ method: "POST" })
   )
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
-    const { data: current } = await supabase
-      .from("influencers")
-      .select("person_id")
-      .eq("tenant_id", data.tenantId)
-      .eq("id", data.influencerId)
-      .maybeSingle();
-
     const { data: updated, error } = await supabase
       .from("influencers")
       .update({
@@ -480,20 +473,6 @@ export const updateInfluencerMetrics = createServerFn({ method: "POST" })
       .maybeSingle();
     if (error) throw new Error(error.message);
     if (!updated) throw new Error("Candidata não encontrada neste ambiente.");
-
-    if (current?.person_id) {
-      const { error: personError } = await supabase
-        .from("people")
-        .update({ full_name: data.fullName, email: data.email.toLowerCase(), whatsapp: clean(data.whatsapp) })
-        .eq("id", current.person_id);
-      if (personError) throw new Error(personError.message);
-      const { error: linkedError } = await supabase
-        .from("influencers")
-        .update({ full_name: data.fullName, email: data.email.toLowerCase(), whatsapp: clean(data.whatsapp) })
-        .eq("person_id", current.person_id)
-        .neq("id", data.influencerId);
-      if (linkedError) throw new Error(linkedError.message);
-    }
 
     const evaluation = evaluateInfluencer(updated);
 
@@ -981,6 +960,13 @@ export const updateInfluencerProfile = createServerFn({ method: "POST" })
     const clean = (value?: string) => (value && value.trim().length > 0 ? value.trim() : null);
     const handle = clean(data.instagramHandle)?.replace(/^@/, "") ?? null;
 
+    const { data: current } = await supabase
+      .from("influencers")
+      .select("person_id")
+      .eq("tenant_id", data.tenantId)
+      .eq("id", data.influencerId)
+      .maybeSingle();
+
     const { data: updated, error } = await supabase
       .from("influencers")
       .update({
@@ -1004,6 +990,18 @@ export const updateInfluencerProfile = createServerFn({ method: "POST" })
       .maybeSingle();
     if (error) throw new Error(error.message);
     if (!updated) throw new Error("Candidata não encontrada neste ambiente.");
+
+    if (current?.person_id) {
+      const shared = { full_name: data.fullName, email: data.email.toLowerCase(), whatsapp: clean(data.whatsapp) };
+      const { error: personError } = await supabase.from("people").update(shared).eq("id", current.person_id);
+      if (personError) throw new Error(personError.message);
+      const { error: linkedError } = await supabase
+        .from("influencers")
+        .update(shared)
+        .eq("person_id", current.person_id)
+        .neq("id", data.influencerId);
+      if (linkedError) throw new Error(linkedError.message);
+    }
 
     const evaluation = evaluateInfluencer(updated);
     await Promise.all([
