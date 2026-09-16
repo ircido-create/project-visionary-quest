@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { Copy } from "lucide-react";
 
 import { AppShell } from "@/components/mcb/AppShell";
 import { AnalysisSection } from "@/components/mcb/AnalysisSection";
@@ -242,8 +243,28 @@ function CandidateDetail() {
   const { influencer, evaluation } = detail;
 
   if (active?.module === "ONBIO") {
+    const copiarAcesso = async () => {
+      const link = `${window.location.origin}/auth?modo=cadastro`;
+      const mensagem = `Olá, ${influencer.full_name}! Seu acesso à ONBIO está pronto.\n\nCrie sua conta usando exatamente este e-mail: ${influencer.email}\n${link}\n\nDepois, confirme o e-mail recebido, entre em “Seu acompanhamento” e toque em “Conectar Instagram”. Se você já criou a conta, basta entrar normalmente ou usar “Esqueci minha senha”.`;
+      try {
+        await navigator.clipboard.writeText(mensagem);
+        toast.success("Acesso da afiliada copiado.");
+      } catch {
+        toast.error("Não foi possível copiar. Verifique a permissão do navegador.");
+      }
+    };
+
     return (
-      <AppShell title={influencer.full_name} description={`Afiliada ONBIO${influencer.instagram_handle ? ` · @${influencer.instagram_handle}` : ""}`}>
+      <AppShell
+        title={influencer.full_name}
+        description={`Afiliada ONBIO${influencer.instagram_handle ? ` · @${influencer.instagram_handle}` : ""}`}
+        actions={
+          <Button type="button" variant="outline" size="sm" onClick={() => void copiarAcesso()}>
+            <Copy aria-hidden="true" />
+            Copiar acesso da afiliada
+          </Button>
+        }
+      >
         <div className="grid gap-6 lg:grid-cols-3">
           <section className="glass rounded-xl border border-border/60 p-6">
             <h2 className="text-xl font-semibold">Identidade e contato</h2>
