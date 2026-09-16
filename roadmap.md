@@ -404,6 +404,27 @@ Montada em 2026-09-14, com medição antes de mexer.
   tela exigiriam novas dependências de teste (jsdom, testing-library); as regras de cada
   fase estão cobertas por testes das funções puras.
 
+## Início da operação — base limpa
+
+- [x] **Base zerada para começar a operação, 2026-09-14**, a pedido da dona, sem cópia
+      prévia e sem registro no log. Saíram: os dois ambientes de demonstração ("Gestora
+      Aline — Demo" e "Gestora Patrícia — Demo") com as 5 candidatas fictícias; a outra
+      candidata da Equipe Blessing; 6 contas de teste ou sem uso; todo o log de auditoria,
+      os aceites dos termos e os avisos. Ficaram: a Equipe Blessing (página `/g/blessing`,
+      plano Premium, isenta de cobrança), as contas ircido@gmail.com (dona da plataforma e
+      do ambiente) e monique@mcblessing.com.br, os 3 planos, as regras de qualificação e
+      as tarefas diárias. Uma única operação com trava: só apagava se a base estivesse
+      como no inventário. Consequências: sem demonstrações, quem entra sem ambiente
+      próprio não vê exemplos, só o convite para criar o ambiente (o código de
+      demonstração continua e volta a valer se um ambiente for marcado como tal); quem
+      tinha aceitado os termos aceita de novo na próxima entrada.
+- [x] **Equipe da Blessing, 2026-09-16.** Monique Kallagian incluída como
+      Administradora (`equipe.membro_incluido` no log). A candidatura que ela tinha na
+      Blessing foi excluída a pedido, pela mesma função da exclusão de dados
+      (`candidata.excluida_a_pedido`, só contagens); a conta e o papel na equipe
+      continuam. Estado de partida: um ambiente, duas pessoas na equipe (dona e
+      administradora) e nenhuma candidatura.
+
 ## Pendências conhecidas
 - [x] **Inscrições reais em ambiente de demonstração — corrigido em 2026-09-12.**
       Ambiente de demonstração é legível por qualquer conta logada (`can_read_tenant`), e
