@@ -1398,6 +1398,13 @@ export type Database = {
         }
         Returns: string
       }
+      segredos_da_meta: {
+        Args: never
+        Returns: {
+          nome: string
+          valor: string
+        }[]
+      }
       shares_tenant_with: { Args: { _user: string }; Returns: boolean }
       storage_tenant_id: { Args: { _name: string }; Returns: string }
       suspender_vencidos: { Args: never; Returns: number }
