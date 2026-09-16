@@ -20,7 +20,7 @@ import * as z from "zod/v4";
 export const PROMPT_VERSION = "v2";
 
 /** Modelo usado. Gravado junto da análise — resultado sem modelo não é auditável. */
-export const ANALYSIS_MODEL = "gemini-3.6-flash";
+export const ANALYSIS_MODEL = "google/gemini-2.5-flash";
 
 export const analysisSchema = z.object({
   resumo: z.string().describe("Duas ou três frases sobre onde a candidata está hoje."),

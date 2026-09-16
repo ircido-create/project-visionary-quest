@@ -165,7 +165,7 @@ export type DiagnosticoConfig = {
 };
 
 /** Nomes de controle do diagnóstico. Ver `DiagnosticoConfig.referencias`. */
-export const VARIAVEIS_REFERENCIA = ["GEMINI_API_KEY", "SUPABASE_URL"] as const;
+export const VARIAVEIS_REFERENCIA = ["GEMINI_API_KEY", "LOVABLE_API_KEY", "SUPABASE_URL"] as const;
 
 /**
  * Diz o que falta na configuração **sem expor valor nenhum**: devolve só nomes, que

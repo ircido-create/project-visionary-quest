@@ -23,7 +23,7 @@ export const CONTROLADOR = {
   foro: "Osasco/SP" as string | null,
 };
 
-export const VERSAO_POLITICA = "2026-09-13.5";
+export const VERSAO_POLITICA = "2026-09-13.6";
 export const VERSAO_TERMOS = "2026-09-13.6";
 
 /**
@@ -193,7 +193,7 @@ export function politicaDePrivacidade(): Secao[] {
       titulo: "Análise assistida por inteligência artificial",
       blocos: [
         p(
-          "Quando a gestora usa a análise assistida, a plataforma envia ao Google (modelo Gemini) os números do perfil, o tipo de conta, a frequência de stories e reels, os temas, o que você busca com o perfil, a principal dificuldade e as descrições dos prints já conferidos. Não são enviados nome, e-mail, WhatsApp, cidade, estado nem o @ do Instagram.",
+          "Quando a gestora usa a análise assistida, a plataforma envia ao Google (modelo Gemini), por meio do serviço de IA do Lovable, os números do perfil, o tipo de conta, a frequência de stories e reels, os temas, o que você busca com o perfil, a principal dificuldade e as descrições dos prints já conferidos. Não são enviados nome, e-mail, WhatsApp, cidade, estado nem o @ do Instagram.",
         ),
         p(
           "O resultado é uma leitura de apoio, revisada pela gestora. Cada análise fica registrada com o que foi enviado, o que voltou e a versão das instruções usadas. A base é o mesmo consentimento do acompanhamento.",
@@ -207,7 +207,7 @@ export function politicaDePrivacidade(): Secao[] {
         p("Não vendemos dados. Eles são acessados por:"),
         lista(
           "A gestora da página em que você se inscreveu e a equipe dela.",
-          "Prestadores que operam a plataforma: Supabase (banco de dados, autenticação e armazenamento de arquivos), Lovable e Cloudflare (hospedagem e entrega do site) e Hostinger (envio dos e-mails de acesso).",
+          "Prestadores que operam a plataforma: Supabase (banco de dados, autenticação e armazenamento de arquivos), Lovable (hospedagem do site e intermediação da análise assistida), Cloudflare (entrega do site) e Hostinger (envio dos e-mails de acesso).",
           "Google, quando você entra com a conta Google ou quando a gestora usa a análise assistida.",
           "Meta, quando você conecta o seu Instagram.",
           "Autoridades públicas, quando a lei exigir.",
@@ -223,7 +223,7 @@ export function politicaDePrivacidade(): Secao[] {
         ),
         lista(
           "Supabase — banco de dados, autenticação e arquivos: Estados Unidos.",
-          "Lovable e Cloudflare — hospedagem e entrega do site: rede de servidores em vários países, inclusive no Brasil.",
+          "Lovable e Cloudflare — hospedagem, entrega do site e intermediação da análise assistida: rede de servidores em vários países, inclusive no Brasil.",
           "Hostinger — envio dos e-mails de acesso: servidores que podem ficar fora do Brasil.",
           "Google — entrada com a conta Google e análise assistida: Estados Unidos e outros países.",
           "Meta — conexão com o Instagram: Estados Unidos e outros países.",

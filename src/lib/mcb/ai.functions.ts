@@ -10,10 +10,10 @@
 
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { GoogleGenAI } from "@google/genai";
 import * as z4 from "zod/v4";
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { gerarAnalise } from "@/lib/mcb/ai-gateway";
 import { audit } from "@/lib/mcb/audit";
 import { lerEnv } from "@/lib/mcb/env";
 import { garantirEspacoParaAnalise } from "@/lib/mcb/limits";
@@ -27,44 +27,20 @@ import {
 import type { Json } from "@/integrations/supabase/types";
 
 /**
- * A chave é variável de ambiente gerenciada pelo Lovable em produção e vive em
- * `.env.local` no desenvolvimento — nunca no `.env`, que é versionado num repo público.
+ * A análise passa pelo gateway de IA do Lovable (`ai-gateway.ts`), com a `LOVABLE_API_KEY`
+ * que o próprio Lovable provisiona no projeto: os secrets cadastrados à mão, como a antiga
+ * `GEMINI_API_KEY`, nunca chegaram ao servidor publicado. Localmente a chave vive em
+ * `.env.local` — nunca no `.env`, que é versionado num repositório público.
  */
-function getGeminiClient() {
-  const apiKey = lerEnv("GEMINI_API_KEY");
+function chaveDoGateway() {
+  const apiKey = lerEnv("LOVABLE_API_KEY");
   if (!apiKey) {
     throw new Error(
-      "GEMINI_API_KEY não configurada. Em produção, cadastre o secret no Lovable; " +
-        "localmente, use .env.local (nunca .env, que é versionado).",
+      "LOVABLE_API_KEY não disponível no servidor. Em produção ela é provisionada pelo " +
+        "Lovable; localmente, use .env.local (nunca .env, que é versionado).",
     );
   }
-  return new GoogleGenAI({ apiKey });
-}
-
-/**
- * A camada gratuita do Gemini devolve 503 UNAVAILABLE com frequência quando o modelo
- * está congestionado, e o próprio erro pede para tentar de novo. Sem isto, a análise
- * falha por sorte e não por mérito.
- *
- * Só repete em falha transitória: erro de chave, de schema ou de cota permanente
- * repetir não conserta, e atrasaria a resposta ao usuário sem motivo.
- */
-async function gerarComRetry(
-  client: GoogleGenAI,
-  params: Parameters<GoogleGenAI["models"]["generateContent"]>[0],
-  tentativas = 3,
-) {
-  for (let i = 0; ; i += 1) {
-    try {
-      return await client.models.generateContent(params);
-    } catch (error) {
-      const texto = error instanceof Error ? error.message : String(error);
-      const transitorio =
-        texto.includes("UNAVAILABLE") || texto.includes("503") || texto.includes("429");
-      if (!transitorio || i >= tentativas - 1) throw error;
-      await new Promise((resolve) => setTimeout(resolve, 2000 * (i + 1)));
-    }
-  }
+  return apiKey;
 }
 
 /** Roda a análise e grava o resultado. A linha é criada antes da chamada, para que
@@ -163,20 +139,16 @@ export const createProfileAnalysis = createServerFn({ method: "POST" })
     };
 
     try {
-      const client = getGeminiClient();
-      const response = await gerarComRetry(client, {
-        model: ANALYSIS_MODEL,
-        contents: buildAnalysisPrompt(promptInput),
-        config: {
-          systemInstruction: SYSTEM_PROMPT,
-          // O schema vem do mesmo zod que tipa AnalysisOutput, então a validação
-          // abaixo e o contrato pedido ao modelo não podem divergir.
-          responseMimeType: "application/json",
-          responseJsonSchema: z4.toJSONSchema(analysisSchema),
-        },
+      const texto = await gerarAnalise({
+        apiKey: chaveDoGateway(),
+        modelo: ANALYSIS_MODEL,
+        sistema: SYSTEM_PROMPT,
+        usuario: buildAnalysisPrompt(promptInput),
+        // O schema vem do mesmo zod que tipa AnalysisOutput, então a validação
+        // abaixo e o contrato pedido ao modelo não podem divergir.
+        schema: z4.toJSONSchema(analysisSchema) as Record<string, unknown>,
       });
 
-      const texto = response.text;
       if (!texto) {
         await finish({ status: "ERRO", error: "O modelo não devolveu conteúdo." });
         return { id: analysis.id, status: "ERRO" as const };
