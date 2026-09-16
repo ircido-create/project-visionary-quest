@@ -8,6 +8,13 @@
       "when": 1789588574316,
       "tag": "0000_add_onbio_affiliate_management",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1789588751625,
+      "tag": "0001_restrict_onbio_to_monique",
+      "breakpoints": true
     }
   ]
 }
