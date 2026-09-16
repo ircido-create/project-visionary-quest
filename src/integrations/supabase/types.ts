@@ -238,6 +238,72 @@ export type Database = {
           },
         ]
       }
+      commercial_results: {
+        Row: {
+          campaign: string | null
+          commission_cents: number
+          created_at: string
+          created_by: string | null
+          goal_cents: number | null
+          id: string
+          influencer_id: string
+          notes: string | null
+          orders: number
+          period_end: string
+          period_start: string
+          revenue_cents: number
+          tenant_id: string
+          updated_at: string
+        }
+        Insert: {
+          campaign?: string | null
+          commission_cents?: number
+          created_at?: string
+          created_by?: string | null
+          goal_cents?: number | null
+          id?: string
+          influencer_id: string
+          notes?: string | null
+          orders?: number
+          period_end: string
+          period_start: string
+          revenue_cents?: number
+          tenant_id: string
+          updated_at?: string
+        }
+        Update: {
+          campaign?: string | null
+          commission_cents?: number
+          created_at?: string
+          created_by?: string | null
+          goal_cents?: number | null
+          id?: string
+          influencer_id?: string
+          notes?: string | null
+          orders?: number
+          period_end?: string
+          period_start?: string
+          revenue_cents?: number
+          tenant_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "commercial_results_influencer_id_fkey"
+            columns: ["influencer_id"]
+            isOneToOne: false
+            referencedRelation: "influencers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "commercial_results_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       consent_logs: {
         Row: {
           accepted_at: string
@@ -403,6 +469,7 @@ export type Database = {
           level: string
           main_difficulty: string | null
           origin: string | null
+          person_id: string | null
           posts_count: number | null
           profile_goal: string | null
           profile_type: Database["public"]["Enums"]["ig_profile_type"] | null
@@ -441,6 +508,7 @@ export type Database = {
           level?: string
           main_difficulty?: string | null
           origin?: string | null
+          person_id?: string | null
           posts_count?: number | null
           profile_goal?: string | null
           profile_type?: Database["public"]["Enums"]["ig_profile_type"] | null
@@ -479,6 +547,7 @@ export type Database = {
           level?: string
           main_difficulty?: string | null
           origin?: string | null
+          person_id?: string | null
           posts_count?: number | null
           profile_goal?: string | null
           profile_type?: Database["public"]["Enums"]["ig_profile_type"] | null
@@ -495,6 +564,13 @@ export type Database = {
           whatsapp?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "influencers_person_id_fkey"
+            columns: ["person_id"]
+            isOneToOne: false
+            referencedRelation: "people"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "influencers_tenant_id_fkey"
             columns: ["tenant_id"]
@@ -598,6 +674,75 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "invitations_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      meeting_agendas: {
+        Row: {
+          completed_at: string | null
+          confirmed: boolean
+          created_at: string
+          created_by: string | null
+          error: string | null
+          id: string
+          influencer_id: string
+          input: Json
+          model: string
+          output: Json | null
+          period_end: string | null
+          period_start: string | null
+          prompt_version: string
+          status: Database["public"]["Enums"]["ai_analysis_status"]
+          tenant_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          confirmed?: boolean
+          created_at?: string
+          created_by?: string | null
+          error?: string | null
+          id?: string
+          influencer_id: string
+          input?: Json
+          model: string
+          output?: Json | null
+          period_end?: string | null
+          period_start?: string | null
+          prompt_version: string
+          status?: Database["public"]["Enums"]["ai_analysis_status"]
+          tenant_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          confirmed?: boolean
+          created_at?: string
+          created_by?: string | null
+          error?: string | null
+          id?: string
+          influencer_id?: string
+          input?: Json
+          model?: string
+          output?: Json | null
+          period_end?: string | null
+          period_start?: string | null
+          prompt_version?: string
+          status?: Database["public"]["Enums"]["ai_analysis_status"]
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "meeting_agendas_influencer_id_fkey"
+            columns: ["influencer_id"]
+            isOneToOne: false
+            referencedRelation: "influencers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "meeting_agendas_tenant_id_fkey"
             columns: ["tenant_id"]
             isOneToOne: false
             referencedRelation: "tenants"
@@ -741,6 +886,36 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      people: {
+        Row: {
+          created_at: string
+          created_by: string
+          email: string
+          full_name: string
+          id: string
+          updated_at: string
+          whatsapp: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          email: string
+          full_name: string
+          id?: string
+          updated_at?: string
+          whatsapp?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          email?: string
+          full_name?: string
+          id?: string
+          updated_at?: string
+          whatsapp?: string | null
+        }
+        Relationships: []
       }
       plans: {
         Row: {
@@ -1202,6 +1377,7 @@ export type Database = {
           is_demo: boolean
           is_listed_on_home: boolean
           is_public_page_enabled: boolean
+          module: string
           name: string
           plan_id: string | null
           slug: string
@@ -1219,6 +1395,7 @@ export type Database = {
           is_demo?: boolean
           is_listed_on_home?: boolean
           is_public_page_enabled?: boolean
+          module?: string
           name: string
           plan_id?: string | null
           slug: string
@@ -1236,6 +1413,7 @@ export type Database = {
           is_demo?: boolean
           is_listed_on_home?: boolean
           is_public_page_enabled?: boolean
+          module?: string
           name?: string
           plan_id?: string | null
           slug?: string
