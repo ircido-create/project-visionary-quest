@@ -37,7 +37,8 @@ export const Route = createFileRoute("/_authenticated/configuracoes")({
 });
 
 function SettingsPage() {
-  const { tenantId, tenants, readOnly, setActive, refetch, profile } = useWorkspace();
+  const { tenantId, tenants, readOnly, setActive, refetch, profile, active } = useWorkspace();
+  const isOnbio = active?.module === "ONBIO";
   const queryClient = useQueryClient();
   const fetchSettings = useServerFn(getSettings);
   const saveBranding = useServerFn(updateBranding);
@@ -242,7 +243,7 @@ function SettingsPage() {
   return (
     <AppShell
       title="Configurações"
-      description="Seu ambiente, sua página de candidatura, sua equipe e seu plano."
+      description={isOnbio ? "Seu perfil e o ambiente exclusivo ONBIO." : "Seu ambiente, sua página de candidatura, sua equipe e seu plano."}
     >
       <div className="grid gap-6 lg:grid-cols-2">
         <section className="glass rounded-xl border border-border/60 p-6 lg:col-span-2">
@@ -361,7 +362,7 @@ function SettingsPage() {
           </section>
         ) : null}
 
-        <section className="glass rounded-xl border border-border/60 p-6">
+        {!isOnbio ? <section className="glass rounded-xl border border-border/60 p-6">
           <h2 className="font-serif text-xl">Página de candidatura</h2>
           {publicUrl ? (
             <div className="mt-1 grid gap-2 text-sm text-muted-foreground">
@@ -462,7 +463,7 @@ function SettingsPage() {
               Salvar página
             </Button>
           </form>
-        </section>
+        </section> : null}
 
         <div className="grid gap-6">
           <section className="glass rounded-xl border border-border/60 p-6">
@@ -471,7 +472,7 @@ function SettingsPage() {
               <div className="mt-3 text-sm">
                 <p className="font-medium">{settings.plan.name}</p>
                 <p className="text-muted-foreground">
-                  {settings.usage.candidates} de {settings.plan.max_candidates} candidatas ·{" "}
+                  {settings.usage.candidates} de {settings.plan.max_candidates} {isOnbio ? "afiliadas" : "candidatas"} ·{" "}
                   {settings.usage.members} de {settings.plan.max_members} pessoas na equipe
                 </p>
                 <p className="mt-2 text-xs text-muted-foreground">
@@ -485,9 +486,9 @@ function SettingsPage() {
             )}
           </section>
 
-          {tenantId && !readOnly ? <AssinaturaSection tenantId={tenantId} /> : null}
+          {tenantId && !readOnly && !isOnbio ? <AssinaturaSection tenantId={tenantId} /> : null}
 
-          <section className="glass rounded-xl border border-border/60 p-6">
+          {!isOnbio ? <section className="glass rounded-xl border border-border/60 p-6">
             <h2 className="font-serif text-xl">Equipe</h2>
             <p className="mt-1 text-sm text-muted-foreground">
               {settings?.members.length ?? 0} pessoa(s) com acesso.
@@ -594,7 +595,7 @@ function SettingsPage() {
                 ))}
               </ul>
             ) : null}
-          </section>
+          </section> : null}
 
           <section className="glass rounded-xl border border-border/60 p-6">
             <h2 className="font-serif text-xl">Privacidade</h2>
@@ -605,7 +606,7 @@ function SettingsPage() {
             </p>
           </section>
 
-          {tenantId && !readOnly && settings?.currentRole === "manager_owner" && settings.tenant ? (
+          {tenantId && !readOnly && !isOnbio && settings?.currentRole === "manager_owner" && settings.tenant ? (
             <EncerrarAmbienteSection
               tenantId={tenantId}
               nome={settings.tenant.name}
@@ -617,7 +618,7 @@ function SettingsPage() {
           ) : null}
         </div>
 
-        {tenantId ? <ModelosTarefaSection tenantId={tenantId} readOnly={readOnly} /> : null}
+        {tenantId && !isOnbio ? <ModelosTarefaSection tenantId={tenantId} readOnly={readOnly} /> : null}
       </div>
     </AppShell>
   );

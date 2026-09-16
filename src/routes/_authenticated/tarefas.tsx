@@ -24,7 +24,8 @@ export const Route = createFileRoute("/_authenticated/tarefas")({
 });
 
 function TasksPage() {
-  const { tenantId, readOnly } = useWorkspace();
+  const { tenantId, readOnly, active } = useWorkspace();
+  const isOnbio = active?.module === "ONBIO";
   const exportar = useServerFn(exportarTarefas);
   const queryClient = useQueryClient();
   const fetchTasks = useServerFn(listTasks);
@@ -89,7 +90,7 @@ function TasksPage() {
   return (
     <AppShell
       title="Tarefas"
-      description="O que precisa acontecer para cada candidata avançar de etapa."
+      description={isOnbio ? "Próximas ações da operação e do relacionamento com cada afiliada." : "O que precisa acontecer para cada candidata avançar de etapa."}
       actions={
         <BotaoExportar
           rotulo="Exportar (CSV)"
