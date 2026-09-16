@@ -519,4 +519,4 @@ Montada em 2026-09-14, com medição antes de mexer.
 - [x] Interface e linguagem por ambiente
 - [x] Cadastro, vínculo e resultados comerciais
 - [x] IA para pautas e auditoria
-- [ ] Testes e validação
+- [x] Testes e validação — cadastro de afiliada, resultado comercial e pauta por IA exercitados de ponta a ponta em 2026-09-16, sem erros no navegador; os dados temporários foram removidos.
