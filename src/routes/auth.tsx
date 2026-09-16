@@ -177,7 +177,7 @@ function AuthPage() {
     }
   }
 
-  async function handleSocial(provider: "google" | "lovable") {
+  async function handleGoogleSignIn() {
     setError(null);
 
     // O endpoint de OAuth (/~oauth/initiate) é servido pela infraestrutura do
@@ -189,7 +189,7 @@ function AuthPage() {
       const probe = await fetch("/~oauth/initiate", { method: "HEAD", redirect: "manual" });
       if (probe.status === 404) {
         setError(
-          `Entrar com ${provider === "lovable" ? "Lovable" : "Google"} só funciona no aplicativo publicado. Neste ambiente, use e-mail e senha.`,
+          "Entrar com Google só funciona no aplicativo publicado. Neste ambiente, use e-mail e senha.",
         );
         return;
       }
@@ -197,13 +197,11 @@ function AuthPage() {
       // Sem rede ou requisição bloqueada: não dá para concluir nada, então segue.
     }
 
-    const result = await lovable.auth.signInWithOAuth(provider, {
+    const result = await lovable.auth.signInWithOAuth("google", {
       redirect_uri: window.location.origin,
     });
     if (result.error) {
-      setError(
-        `Não foi possível entrar com ${provider === "lovable" ? "Lovable" : "Google"} agora.`,
-      );
+      setError("Não foi possível entrar com Google agora.");
       return;
     }
     if (result.redirected) return;
@@ -234,7 +232,7 @@ function AuthPage() {
             type="button"
             variant="outline"
             className="w-full"
-            onClick={() => void handleSocial("google")}
+            onClick={() => void handleGoogleSignIn()}
           >
             Continuar com Google
           </Button>
