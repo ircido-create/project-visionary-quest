@@ -520,3 +520,4 @@ Montada em 2026-09-14, com medição antes de mexer.
 - [x] Cadastro, vínculo e resultados comerciais
 - [x] IA para pautas e auditoria
 - [x] Testes e validação — cadastro de afiliada, resultado comercial e pauta por IA exercitados de ponta a ponta em 2026-09-16, sem erros no navegador; os dados temporários foram removidos.
+- [x] Autorização da própria afiliada no Instagram, validação do @ e exibição de seguidores/publicações na gestão.

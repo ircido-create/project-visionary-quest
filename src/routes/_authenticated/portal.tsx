@@ -77,32 +77,31 @@ function Application({
   const open = application.tarefas.filter((task) => task.status !== "CONCLUIDA");
   const done = application.tarefas.filter((task) => task.status === "CONCLUIDA");
   const evolucao = [...application.evolucao].reverse();
+  const isOnbio = application.modulo === "ONBIO";
 
   return (
     <section className="glass rounded-xl border border-border/60 p-6">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <h2 className="font-serif text-2xl">{application.gestora}</h2>
-          <p className="mt-1 text-sm text-muted-foreground">
-            {STATUS_LABELS[application.status as InfluencerStatus] ?? application.status}
-          </p>
+          <p className="mt-1 text-sm text-muted-foreground">{isOnbio ? "Afiliada ONBIO" : STATUS_LABELS[application.status as InfluencerStatus] ?? application.status}</p>
         </div>
-        <span className="rounded-full border border-border px-3 py-1 text-xs">
+        {!isOnbio ? <span className="rounded-full border border-border px-3 py-1 text-xs">
           Preparação do perfil: {Math.round(Number(application.progresso))}%
-        </span>
+        </span> : null}
       </div>
       {/* A etapa e o índice medem coisas diferentes; lado a lado, sem explicação, uma
           candidata "Qualificada para análise" com 45% achava que algo estava errado. */}
-      <p className="mt-3 text-xs text-muted-foreground">
+      {!isOnbio ? <p className="mt-3 text-xs text-muted-foreground">
         A etapa mostra em que ponto do acompanhamento você está. A preparação do perfil soma os
         requisitos do programa e também nicho, bio, organização do perfil, stories e constância:
         ajuda a acompanhar a sua evolução, mas não decide a qualificação.
-      </p>
+      </p> : <p className="mt-3 text-sm text-muted-foreground">Conecte a conta profissional cadastrada{application.instagram ? ` (@${application.instagram})` : ""} para enviar seguidores e publicações à sua gestora.</p>}
 
-      <RequisitosDoPortal
+      {!isOnbio ? <RequisitosDoPortal
         itens={application.requisitos}
         atualizadoEm={application.metricas.atualizado_em ?? null}
-      />
+      /> : null}
 
       <div className="mt-5">
         <h3 className="text-xs uppercase tracking-[0.15em] text-muted-foreground">Suas tarefas</h3>
@@ -190,7 +189,7 @@ function Application({
       ) : null}
 
       {/* A candidata é a dona da conta, então é aqui que ela conecta. */}
-      <InstagramSection influencerId={application.id} podeGerenciar={true} />
+      <InstagramSection influencerId={application.id} podeGerenciar={true} pessoa={isOnbio ? "afiliada" : "candidata"} />
     </section>
   );
 }
@@ -219,16 +218,16 @@ function Portal() {
     <PortalShell>
       <h1 className="font-serif text-3xl tracking-tight">Seu acompanhamento</h1>
       <p className="mt-1 text-sm text-muted-foreground">
-        Suas tarefas e sua evolução no Método Criadora Blessing.
+        Suas tarefas, seus números e a conexão segura com o Instagram.
       </p>
 
       {query.isLoading ? (
         <p className="mt-8 text-sm text-muted-foreground">Carregando...</p>
       ) : applications.length === 0 ? (
         <div className="glass mt-8 rounded-xl border border-border/60 p-6">
-          <h2 className="font-serif text-xl">Nenhuma candidatura encontrada</h2>
+          <h2 className="font-serif text-xl">Nenhum acompanhamento encontrado</h2>
           <p className="mt-2 text-sm text-muted-foreground">
-            Sua candidatura é localizada pelo e-mail. Duas coisas costumam explicar isso:
+            Seu cadastro é localizado pelo e-mail. Duas coisas costumam explicar isso:
           </p>
           <ul className="mt-3 grid gap-2 text-sm text-muted-foreground">
             <li>

@@ -33,7 +33,9 @@ export type PortalSnapshot = {
 export type PortalApplication = {
   id: string;
   gestora: string;
+  modulo: "YBERA" | "ONBIO";
   nome: string;
+  instagram: string | null;
   status: string;
   nivel: string;
   progresso: number;
@@ -70,20 +72,23 @@ export const getPortal = createServerFn({ method: "POST" })
     return {
       applications: brutas.map((candidatura): PortalApplication => ({
         ...candidatura,
-        requisitos: requisitosParaCandidata(
-          evaluateQualification({
-            followers: candidatura.metricas.seguidores,
-            postsCount: candidatura.metricas.publicacoes,
-            recentPosts6m: candidatura.metricas.recentes_6m ?? null,
-            profileType: candidatura.metricas.tipo_perfil ?? null,
-            femaleAudiencePct:
-              candidatura.metricas.publico_feminino_pct === null
-                ? null
-                : Number(candidatura.metricas.publico_feminino_pct),
-            source: candidatura.metricas.fonte ?? "MANUAL",
-            capturedAt: candidatura.metricas.atualizado_em ?? null,
-          }).requirements,
-        ),
+        requisitos:
+          candidatura.modulo === "ONBIO"
+            ? []
+            : requisitosParaCandidata(
+                evaluateQualification({
+                  followers: candidatura.metricas.seguidores,
+                  postsCount: candidatura.metricas.publicacoes,
+                  recentPosts6m: candidatura.metricas.recentes_6m ?? null,
+                  profileType: candidatura.metricas.tipo_perfil ?? null,
+                  femaleAudiencePct:
+                    candidatura.metricas.publico_feminino_pct === null
+                      ? null
+                      : Number(candidatura.metricas.publico_feminino_pct),
+                  source: candidatura.metricas.fonte ?? "MANUAL",
+                  capturedAt: candidatura.metricas.atualizado_em ?? null,
+                }).requirements,
+              ),
       })),
     };
   });
