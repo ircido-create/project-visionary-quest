@@ -14,6 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      aceites_de_termos: {
+        Row: {
+          aceito_em: string
+          id: string
+          origem: string
+          user_id: string
+          versao_politica: string
+          versao_termos: string
+        }
+        Insert: {
+          aceito_em?: string
+          id?: string
+          origem: string
+          user_id: string
+          versao_politica: string
+          versao_termos: string
+        }
+        Update: {
+          aceito_em?: string
+          id?: string
+          origem?: string
+          user_id?: string
+          versao_politica?: string
+          versao_termos?: string
+        }
+        Relationships: []
+      }
       ai_analyses: {
         Row: {
           completed_at: string | null
@@ -153,77 +180,6 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "audit_logs_tenant_id_fkey"
-            columns: ["tenant_id"]
-            isOneToOne: false
-            referencedRelation: "tenants"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      aceites_de_termos: {
-        Row: {
-          aceito_em: string
-          id: string
-          origem: string
-          user_id: string
-          versao_politica: string
-          versao_termos: string
-        }
-        Insert: {
-          aceito_em?: string
-          id?: string
-          origem: string
-          user_id: string
-          versao_politica: string
-          versao_termos: string
-        }
-        Update: {
-          aceito_em?: string
-          id?: string
-          origem?: string
-          user_id?: string
-          versao_politica?: string
-          versao_termos?: string
-        }
-        Relationships: []
-      }
-      pagamentos: {
-        Row: {
-          forma: string
-          id: string
-          observacao: string | null
-          periodo_fim: string
-          periodo_inicio: string
-          registrado_em: string
-          registrado_por: string | null
-          tenant_id: string
-          valor_centavos: number
-        }
-        Insert: {
-          forma?: string
-          id?: string
-          observacao?: string | null
-          periodo_fim: string
-          periodo_inicio: string
-          registrado_em?: string
-          registrado_por?: string | null
-          tenant_id: string
-          valor_centavos: number
-        }
-        Update: {
-          forma?: string
-          id?: string
-          observacao?: string | null
-          periodo_fim?: string
-          periodo_inicio?: string
-          registrado_em?: string
-          registrado_por?: string | null
-          tenant_id?: string
-          valor_centavos?: number
-        }
-        Relationships: [
-          {
-            foreignKeyName: "pagamentos_tenant_id_fkey"
             columns: ["tenant_id"]
             isOneToOne: false
             referencedRelation: "tenants"
@@ -735,6 +691,50 @@ export type Database = {
           },
           {
             foreignKeyName: "notes_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pagamentos: {
+        Row: {
+          forma: string
+          id: string
+          observacao: string | null
+          periodo_fim: string
+          periodo_inicio: string
+          registrado_em: string
+          registrado_por: string | null
+          tenant_id: string
+          valor_centavos: number
+        }
+        Insert: {
+          forma?: string
+          id?: string
+          observacao?: string | null
+          periodo_fim: string
+          periodo_inicio: string
+          registrado_em?: string
+          registrado_por?: string | null
+          tenant_id: string
+          valor_centavos: number
+        }
+        Update: {
+          forma?: string
+          id?: string
+          observacao?: string | null
+          periodo_fim?: string
+          periodo_inicio?: string
+          registrado_em?: string
+          registrado_por?: string | null
+          tenant_id?: string
+          valor_centavos?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pagamentos_tenant_id_fkey"
             columns: ["tenant_id"]
             isOneToOne: false
             referencedRelation: "tenants"
@@ -1259,7 +1259,25 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      aceitar_convites_pendentes: { Args: never; Returns: number }
+      aceitar_termos: {
+        Args: { p_versao_politica: string; p_versao_termos: string }
+        Returns: undefined
+      }
+      ambiente_gera_avisos: { Args: { _tenant: string }; Returns: boolean }
+      avisar: {
+        Args: {
+          p_influencer: string
+          p_tenant: string
+          p_tipo: string
+          p_titulo: string
+          p_titulo_grupo?: string
+          p_user: string
+        }
+        Returns: undefined
+      }
       can_read_tenant: { Args: { _tenant: string }; Returns: boolean }
+      cancelar_assinatura: { Args: { p_tenant: string }; Returns: Json }
       candidatas_inativas_com_arquivos: {
         Args: never
         Returns: {
@@ -1271,39 +1289,13 @@ export type Database = {
           ultima_atividade: string
         }[]
       }
-      aceitar_termos: {
-        Args: { p_versao_politica: string; p_versao_termos: string }
-        Returns: undefined
-      }
-      aceitar_convites_pendentes: {
-        Args: never
-        Returns: number
-      }
-      cancelar_assinatura: {
-        Args: { p_tenant: string }
-        Returns: Json
-      }
-      plataforma_contatos_das_donas: {
-        Args: never
-        Returns: { email: string; nome: string; tenant_id: string }[]
-      }
-      pode_ser_primeira_dona: {
-        Args: { _tenant: string }
-        Returns: boolean
-      }
-      registrar_pagamento: {
-        Args: {
-          p_forma: string
-          p_meses: number
-          p_observacao: string
-          p_tenant: string
-          p_valor_centavos: number
-        }
-        Returns: string
-      }
-      suspender_vencidos: {
-        Args: never
-        Returns: number
+      candidatas_perto_da_exclusao: {
+        Args: { p_dias_aviso?: number; p_tenant: string }
+        Returns: {
+          influencer_id: string
+          nome: string
+          ultima_atividade: string
+        }[]
       }
       email_ja_na_equipe: {
         Args: { _email: string; _tenant: string }
@@ -1312,14 +1304,6 @@ export type Database = {
       excluir_ambiente: {
         Args: { p_actor: string; p_tenant: string }
         Returns: Json
-      }
-      candidatas_perto_da_exclusao: {
-        Args: { p_dias_aviso?: number; p_tenant: string }
-        Returns: {
-          influencer_id: string
-          nome: string
-          ultima_atividade: string
-        }[]
       }
       excluir_candidata: {
         Args: { p_actor: string; p_influencer_id: string }
@@ -1395,8 +1379,28 @@ export type Database = {
       is_tenant_member_raw: { Args: { _tenant: string }; Returns: boolean }
       limpar_candidatas_inativas: { Args: never; Returns: number }
       link_influencer_account: { Args: never; Returns: number }
+      plataforma_contatos_das_donas: {
+        Args: never
+        Returns: {
+          email: string
+          nome: string
+          tenant_id: string
+        }[]
+      }
+      pode_ser_primeira_dona: { Args: { _tenant: string }; Returns: boolean }
+      registrar_pagamento: {
+        Args: {
+          p_forma: string
+          p_meses: number
+          p_observacao: string
+          p_tenant: string
+          p_valor_centavos: number
+        }
+        Returns: string
+      }
       shares_tenant_with: { Args: { _user: string }; Returns: boolean }
       storage_tenant_id: { Args: { _name: string }; Returns: string }
+      suspender_vencidos: { Args: never; Returns: number }
       tenant_is_demo: { Args: { _tenant: string }; Returns: boolean }
       ultima_atividade_candidata: {
         Args: { p_influencer_id: string }
