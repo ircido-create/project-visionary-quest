@@ -515,8 +515,8 @@ Montada em 2026-09-14, com medição antes de mexer.
       caminho é tornar a análise assíncrona em vez de prender a requisição.
 
 ## Módulo ONBIO
-- [ ] Banco, isolamento e ambiente ONBIO
-- [ ] Interface e linguagem por ambiente
-- [ ] Cadastro, vínculo e resultados comerciais
-- [ ] IA para pautas e auditoria
+- [x] Banco, isolamento e ambiente ONBIO
+- [x] Interface e linguagem por ambiente
+- [x] Cadastro, vínculo e resultados comerciais
+- [x] IA para pautas e auditoria
 - [ ] Testes e validação

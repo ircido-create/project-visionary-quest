@@ -52,12 +52,24 @@ export const createOnbioAffiliate = createServerFn({ method: "POST" })
     if (data.linkExisting) {
       const { data: existing } = await supabase
         .from("influencers")
-        .select("person_id, full_name, email, whatsapp")
+        .select("id, person_id, full_name, email, whatsapp")
         .ilike("email", email)
-        .not("person_id", "is", null)
+        .neq("tenant_id", data.tenantId)
         .limit(1)
         .maybeSingle();
       personId = existing?.person_id ?? null;
+      if (existing && !personId) {
+        const { data: person, error: personError } = await supabase
+          .from("people")
+          .insert({ full_name: existing.full_name, email: existing.email, whatsapp: existing.whatsapp, created_by: userId })
+          .select("id")
+          .single();
+        if (personError) throw new Error(personError.message);
+        personId = person.id;
+        const { error: linkError } = await supabase.from("influencers").update({ person_id: personId }).eq("id", existing.id);
+        if (linkError) throw new Error(linkError.message);
+      }
+      if (!existing) throw new Error("Não encontramos uma pessoa com este e-mail em outro ambiente.");
     }
     if (!personId) {
       const { data: person, error: personError } = await supabase

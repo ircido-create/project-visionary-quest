@@ -130,7 +130,7 @@ function CandidatesPage() {
                 {!isOnbio ? <th className="px-4 py-3">Qualificação</th> : null}
                 <th className="px-4 py-3">Seguidores</th>
                 <th className="px-4 py-3">Posts</th>
-                <th className="px-4 py-3">Público fem.</th>
+                {!isOnbio ? <th className="px-4 py-3">Público fem.</th> : null}
                 {!isOnbio ? <th className="px-4 py-3">Progresso</th> : null}
               </tr>
             </thead>
@@ -150,14 +150,14 @@ function CandidatesPage() {
                   {!isOnbio ? <td className="px-4 py-3">
                     {row.femaleAudiencePct === null ? "—" : `${row.femaleAudiencePct}%`}
                   </td> : null}
-                  <td className="px-4 py-3">
+                  {!isOnbio ? <td className="px-4 py-3">
                     <div className="flex items-center gap-2">
                       <div className="h-2 w-24 rounded-full bg-muted">
                         <div className="h-2 rounded-full bg-primary" style={{ width: `${row.score}%` }} />
                       </div>
                       <span className="text-xs text-muted-foreground">{row.score}%</span>
                     </div>
-                  </td>
+                  </td> : null}
                 </tr>
               ))}
             </tbody>
