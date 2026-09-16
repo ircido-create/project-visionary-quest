@@ -219,6 +219,7 @@ export const concluirConexaoInstagram = createServerFn({ method: "POST" })
     perfilUrl.searchParams.set("access_token", longo.access_token);
     const perfil = lerPerfil(await pedirJson(perfilUrl.toString()));
     if (!perfil) throw new Error("Não foi possível ler o perfil na Meta.");
+    if (!perfil.username) throw new Error("A Meta não informou o @ da conta autorizada.");
 
     const { data: cadastro, error: erroCadastro } = await context.supabase
       .from("influencers")
@@ -318,6 +319,7 @@ export const sincronizarInstagram = createServerFn({ method: "POST" })
       };
 
       const perfil = await lerPerfilDaMeta(emUso);
+      if (!perfil.username) throw new Error("A Meta não informou o @ da conta conectada.");
 
       const { data: cadastro, error: erroCadastro } = await supabase
         .from("influencers")

@@ -15,7 +15,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useRef } from "react";
 import { toast } from "sonner";
 
-import { concluirConexaoInstagram } from "@/lib/mcb/instagram.functions";
+import { concluirConexaoInstagram, sincronizarInstagram } from "@/lib/mcb/instagram.functions";
 
 // `exactOptionalPropertyTypes` está ligado no projeto: `code?: string` recusaria o
 // valor `undefined` explícito que a normalização abaixo produz.
@@ -44,6 +44,7 @@ function Retorno() {
   const { code, state, error, error_description } = Route.useSearch();
   const navigate = useNavigate();
   const concluir = useServerFn(concluirConexaoInstagram);
+  const sincronizar = useServerFn(sincronizarInstagram);
 
   // O código da Meta é de uso único: uma segunda tentativa falharia com uma mensagem
   // confusa. Em desenvolvimento o React monta duas vezes, então sem esta trava o
@@ -51,7 +52,11 @@ function Retorno() {
   const jaTentou = useRef(false);
 
   const troca = useMutation({
-    mutationFn: (input: { code: string; state: string }) => concluir({ data: input }),
+    mutationFn: async (input: { code: string; state: string }) => {
+      const conexao = await concluir({ data: input });
+      await sincronizar({ data: { influencerId: input.state } });
+      return conexao;
+    },
     onSuccess: ({ usuario }) => {
       toast.success(usuario ? `Instagram conectado como @${usuario}.` : "Instagram conectado.");
       void navigate({ to: "/portal" });
