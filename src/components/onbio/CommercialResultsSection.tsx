@@ -63,4 +63,4 @@ export function CommercialResultsSection({ tenantId, influencerId, readOnly }: {
 }
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) { return <div className="grid gap-1.5"><Label>{label}</Label>{children}</div>; }
-function AgendaList({ title, items }: { title: string; items?: string[] }) { if (!items?.length) return null; return <div><h3 className="font-semibold">{title}</h3><ul className="mt-1 list-disc space-y-1 pl-5">{items.map((item) => <li key={item}>{item}</li>)}</ul></div>; }
+function AgendaList({ title, items }: { title: string; items: string[] | undefined }) { if (!items?.length) return null; return <div><h3 className="font-semibold">{title}</h3><ul className="mt-1 list-disc space-y-1 pl-5">{items.map((item) => <li key={item}>{item}</li>)}</ul></div>; }

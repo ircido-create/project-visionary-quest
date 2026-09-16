@@ -4,6 +4,7 @@ import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import type { Json } from "@/integrations/supabase/types";
 import { audit } from "@/lib/mcb/audit";
+import { gerarAnalise } from "@/lib/mcb/ai-gateway";
 
 const tenantInput = z.object({ tenantId: z.string().uuid() });
 
@@ -200,22 +201,6 @@ const agendaSchema = z.object({
   proximos_passos: z.array(z.string()),
 });
 
-function extractSseText(source: string): string {
-  let output = "";
-  for (const line of source.split("\n")) {
-    if (!line.startsWith("data: ")) continue;
-    const raw = line.slice(6);
-    if (raw === "[DONE]") continue;
-    try {
-      const event = JSON.parse(raw) as { type?: string; delta?: string };
-      if (event.type === "response.output_text.delta" && typeof event.delta === "string") output += event.delta;
-    } catch {
-      // Eventos incompletos não fazem parte da resposta final.
-    }
-  }
-  return output;
-}
-
 export const generateMeetingAgenda = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) =>
@@ -232,7 +217,7 @@ export const generateMeetingAgenda = createServerFn({ method: "POST" })
 
     const input = { affiliate, period: { start: data.periodStart, end: data.periodEnd }, results };
     const agendaId = crypto.randomUUID();
-    const model = "openai/gpt-6-astra";
+    const model = "google/gemini-2.5-flash";
     const { error: insertError } = await context.supabase.from("meeting_agendas").insert({
       id: agendaId,
       tenant_id: data.tenantId,
@@ -249,22 +234,26 @@ export const generateMeetingAgenda = createServerFn({ method: "POST" })
     try {
       const apiKey = process.env["LOVABLE_API_KEY"];
       if (!apiKey) throw new Error("A inteligência artificial não está configurada neste projeto.");
-      const response = await fetch("https://ai.gateway.lovable.dev/v1/responses", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "Lovable-API-Key": apiKey, "X-Lovable-AIG-SDK": "fetch" },
-        body: JSON.stringify({
-          model,
-          stream: true,
-          reasoning: { effort: "medium", summary: "auto" },
-          input: `Crie uma pauta objetiva em português para a reunião com a afiliada ONBIO. Use somente estes resultados comerciais: ${JSON.stringify(input)}. Retorne somente JSON com resumo_executivo e listas conquistas, pontos_de_atencao, perguntas, decisoes_necessarias e proximos_passos. Não invente números.`,
-          text: { format: { type: "json_schema", name: "pauta_reuniao", strict: true, schema: { type: "object", additionalProperties: false, properties: { resumo_executivo: { type: "string" }, conquistas: { type: "array", items: { type: "string" } }, pontos_de_atencao: { type: "array", items: { type: "string" } }, perguntas: { type: "array", items: { type: "string" } }, decisoes_necessarias: { type: "array", items: { type: "string" } }, proximos_passos: { type: "array", items: { type: "string" } } }, required: ["resumo_executivo", "conquistas", "pontos_de_atencao", "perguntas", "decisoes_necessarias", "proximos_passos"] } } },
-        }),
+      const text = await gerarAnalise({
+        apiKey,
+        modelo: model,
+        sistema: "Você apoia a gestão de afiliadas ONBIO. Produza pautas objetivas, humanas e comerciais. Use somente os dados recebidos, não invente números e não avalie requisitos de afiliação.",
+        usuario: `Crie a pauta da reunião com base nestes resultados comerciais: ${JSON.stringify(input)}.`,
+        schema: {
+          type: "object",
+          additionalProperties: false,
+          properties: {
+            resumo_executivo: { type: "string" },
+            conquistas: { type: "array", items: { type: "string" } },
+            pontos_de_atencao: { type: "array", items: { type: "string" } },
+            perguntas: { type: "array", items: { type: "string" } },
+            decisoes_necessarias: { type: "array", items: { type: "string" } },
+            proximos_passos: { type: "array", items: { type: "string" } },
+          },
+          required: ["resumo_executivo", "conquistas", "pontos_de_atencao", "perguntas", "decisoes_necessarias", "proximos_passos"],
+        },
       });
-      if (!response.ok) {
-        const detail = await response.text();
-        throw new Error(detail || `A inteligência artificial respondeu ${response.status}.`);
-      }
-      const text = extractSseText(await response.text());
+      if (!text) throw new Error("A inteligência artificial não retornou uma pauta válida.");
       const parsed = agendaSchema.parse(JSON.parse(text));
       await context.supabase.from("meeting_agendas").update({ status: "CONCLUIDA", output: parsed as unknown as Json, completed_at: new Date().toISOString() }).eq("id", agendaId);
       await audit(context.supabase, { tenant_id: data.tenantId, actor_id: context.userId, action: "onbio.agenda_generated", entity: "meeting_agendas", entity_id: agendaId });
@@ -274,6 +263,27 @@ export const generateMeetingAgenda = createServerFn({ method: "POST" })
       await context.supabase.from("meeting_agendas").update({ status: "ERRO", error: message.slice(0, 1000), completed_at: new Date().toISOString() }).eq("id", agendaId);
       throw new Error(message);
     }
+  });
+
+export const getOnbioDashboard = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => tenantInput.parse(input))
+  .handler(async ({ data, context }) => {
+    await requireOnbio(context.supabase, data.tenantId);
+    const [{ data: affiliates, error: affiliateError }, { data: results, error: resultError }, { data: tasks, error: taskError }] = await Promise.all([
+      context.supabase.from("influencers").select("id, full_name").eq("tenant_id", data.tenantId).is("archived_at", null),
+      context.supabase.from("commercial_results").select("influencer_id, revenue_cents, orders, commission_cents, period_end").eq("tenant_id", data.tenantId).order("period_end", { ascending: false }),
+      context.supabase.from("tasks").select("id, status, due_date").eq("tenant_id", data.tenantId).neq("status", "CANCELADA"),
+    ]);
+    if (affiliateError || resultError || taskError) throw new Error(affiliateError?.message ?? resultError?.message ?? taskError?.message ?? "Não foi possível carregar os indicadores.");
+    const names = new Map((affiliates ?? []).map((row) => [row.id, row.full_name]));
+    const revenue = (results ?? []).reduce((sum, row) => sum + row.revenue_cents, 0);
+    const orders = (results ?? []).reduce((sum, row) => sum + row.orders, 0);
+    const commission = (results ?? []).reduce((sum, row) => sum + row.commission_cents, 0);
+    const today = new Date().toISOString().slice(0, 10);
+    const lateTasks = (tasks ?? []).filter((task) => task.status !== "CONCLUIDA" && task.due_date && task.due_date < today).length;
+    const latest = (results ?? []).slice(0, 8).map((row) => ({ ...row, name: names.get(row.influencer_id) ?? "Afiliada" }));
+    return { affiliates: affiliates?.length ?? 0, revenue, orders, commission, lateTasks, latest };
   });
 
 export const listMeetingAgendas = createServerFn({ method: "POST" })

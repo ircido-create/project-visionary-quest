@@ -28,6 +28,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { CommercialResultsSection } from "@/components/onbio/CommercialResultsSection";
 
 export const Route = createFileRoute("/_authenticated/candidatas/$id")({
   head: () => ({
@@ -49,7 +50,7 @@ const REQUIREMENT_TONE: Record<string, string> = {
 
 function CandidateDetail() {
   const { id } = Route.useParams();
-  const { tenantId, readOnly, profile } = useWorkspace();
+  const { tenantId, readOnly, profile, active } = useWorkspace();
   const queryClient = useQueryClient();
 
   const fetchDetail = useServerFn(getInfluencer);
@@ -239,6 +240,37 @@ function CandidateDetail() {
   }
 
   const { influencer, evaluation } = detail;
+
+  if (active?.module === "ONBIO") {
+    return (
+      <AppShell title={influencer.full_name} description={`Afiliada ONBIO${influencer.instagram_handle ? ` · @${influencer.instagram_handle}` : ""}`}>
+        <div className="grid gap-6 lg:grid-cols-3">
+          <section className="glass rounded-xl border border-border/60 p-6">
+            <h2 className="text-xl font-semibold">Identidade e contato</h2>
+            <form className="mt-4 grid gap-3" onSubmit={(event) => { event.preventDefault(); if (guard()) profileMutation.mutate(); }}>
+              <div className="grid gap-1.5"><Label htmlFor="onbio-name">Nome completo</Label><Input id="onbio-name" required value={profileForm.fullName} onChange={(e) => setProfileForm((prev) => ({ ...prev, fullName: e.target.value }))} /></div>
+              <div className="grid gap-1.5"><Label htmlFor="onbio-email">E-mail</Label><Input id="onbio-email" type="email" required value={profileForm.email} onChange={(e) => setProfileForm((prev) => ({ ...prev, email: e.target.value }))} /></div>
+              <div className="grid gap-1.5"><Label htmlFor="onbio-whatsapp">WhatsApp</Label><Input id="onbio-whatsapp" value={profileForm.whatsapp} onChange={(e) => setProfileForm((prev) => ({ ...prev, whatsapp: e.target.value }))} /></div>
+              <div className="grid gap-1.5"><Label htmlFor="onbio-instagram">Instagram</Label><Input id="onbio-instagram" value={profileForm.instagramHandle} onChange={(e) => setProfileForm((prev) => ({ ...prev, instagramHandle: e.target.value }))} /></div>
+              <Button type="submit" disabled={readOnly || profileMutation.isPending}>Salvar contato</Button>
+            </form>
+          </section>
+          <section className="glass rounded-xl border border-border/60 p-6">
+            <h2 className="text-xl font-semibold">Tarefas</h2>
+            <form className="mt-3 grid gap-2" onSubmit={(event) => { event.preventDefault(); if (guard()) taskMutation.mutate(); }}><Input aria-label="Título da nova tarefa" placeholder="Nova tarefa" value={taskForm.title} onChange={(e) => setTaskForm((prev) => ({ ...prev, title: e.target.value }))} required minLength={3} /><div className="flex gap-2"><Input aria-label="Prazo da tarefa" type="date" value={taskForm.dueDate} onChange={(e) => setTaskForm((prev) => ({ ...prev, dueDate: e.target.value }))} /><select aria-label="Prioridade da tarefa" className="h-10 rounded-md border border-input bg-background px-3 text-sm" value={taskForm.priority} onChange={(e) => setTaskForm((prev) => ({ ...prev, priority: e.target.value as typeof prev.priority }))}><option value="ALTA">Alta</option><option value="MEDIA">Média</option><option value="BAIXA">Baixa</option></select></div><Button type="submit" variant="outline" disabled={readOnly || taskMutation.isPending}>Adicionar tarefa</Button></form>
+            <ul className="mt-4 grid gap-2 text-sm">{detail.tasks.map((task) => <li key={task.id} className="flex items-start gap-2"><input type="checkbox" className="mt-1" aria-label={`Concluir tarefa: ${task.title}`} checked={task.status === "CONCLUIDA"} onChange={(event) => { if (guard()) taskStatusMutation.mutate({ taskId: task.id, status: event.target.checked ? "CONCLUIDA" : "PENDENTE" }); }} /><span className={task.status === "CONCLUIDA" ? "text-muted-foreground line-through" : ""}>{task.title}</span></li>)}</ul>
+          </section>
+          <section className="glass rounded-xl border border-border/60 p-6">
+            <h2 className="text-xl font-semibold">Notas de relacionamento</h2>
+            <form className="mt-3 grid gap-2" onSubmit={(event) => { event.preventDefault(); if (guard()) noteMutation.mutate({ body: noteBody, kind: "note" }); }}><Textarea rows={3} value={noteBody} onChange={(e) => setNoteBody(e.target.value)} required minLength={3} /><Button type="submit" variant="outline" disabled={readOnly || noteMutation.isPending}>Salvar nota</Button></form>
+            <ul className="mt-4 grid gap-3 text-sm">{detail.notes.map((note) => <li key={note.id} className="rounded-lg border border-border/60 p-3"><p>{note.body}</p><p className="mt-1 text-xs text-muted-foreground">{new Date(note.created_at).toLocaleString("pt-BR")}</p></li>)}</ul>
+          </section>
+          <CommercialResultsSection tenantId={tenantId!} influencerId={id} readOnly={readOnly} />
+          <EvidenceSection tenantId={tenantId!} influencerId={id} readOnly={readOnly} />
+        </div>
+      </AppShell>
+    );
+  }
 
   return (
     <AppShell
