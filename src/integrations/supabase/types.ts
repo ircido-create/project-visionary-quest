@@ -1482,6 +1482,10 @@ export type Database = {
         Args: { _email: string; _tenant: string }
         Returns: boolean
       }
+      excluir_afiliada_onbio: {
+        Args: { p_actor: string; p_influencer_id: string }
+        Returns: Json
+      }
       excluir_ambiente: {
         Args: { p_actor: string; p_tenant: string }
         Returns: Json

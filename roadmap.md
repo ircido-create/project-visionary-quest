@@ -533,5 +533,8 @@ Montada em 2026-09-14, com medição antes de mexer.
 - [x] Relatório por período exportado em CSV (abre no Excel).
 - [x] Número manual marcado como "informado manualmente", fora da soma da Meta.
 - [x] A própria afiliada pode desconectar a conta (token apagado do Vault); o histórico permanece.
+- [x] Exclusão definitiva pela dona ou administradora, com confirmação pelo e-mail: apaga
+      os dados e arquivos da afiliada na ONBIO, mas preserva a conta de acesso e vínculos
+      de identidade com outros ambientes.
 - [ ] Validar com uma conta real: depende de `META_APP_ID`/`META_APP_SECRET` no Vault e do
       app aprovado pela Meta. Sem isso, o portal não mostra "Conectar Instagram".
