@@ -36,6 +36,11 @@ export function useWorkspace() {
     if (tenants.length === 0) return null;
     return tenants.find((t) => t.id === stored) ?? tenants[0]!;
   }, [tenants, stored]);
+  const activeRole = useMemo(
+    () =>
+      query.data?.memberships.find((membership) => membership.tenantId === active?.id)?.role ?? null,
+    [active?.id, query.data?.memberships],
+  );
 
   const setActive = useCallback((tenantId: string) => {
     window.localStorage.setItem(STORAGE_KEY, tenantId);
@@ -49,6 +54,7 @@ export function useWorkspace() {
     profile: query.data?.profile ?? null,
     tenants,
     active,
+    activeRole,
     tenantId: active?.id ?? null,
     readOnly: active?.readOnly ?? false,
     /** Ambiente suspenso pela administração: leitura continua, escrita não. */

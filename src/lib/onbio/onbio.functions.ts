@@ -1,8 +1,9 @@
 import { createServerFn } from "@tanstack/react-start";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { z } from "zod";
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import type { Json } from "@/integrations/supabase/types";
+import type { Database, Json } from "@/integrations/supabase/types";
 import { audit } from "@/lib/mcb/audit";
 import { gerarAnalise } from "@/lib/mcb/ai-gateway";
 import { EVIDENCE_BUCKET } from "@/lib/mcb/evidence";
@@ -21,10 +22,7 @@ async function requireOnbio(supabase: { from: (table: "tenants") => any }, tenan
 }
 
 async function requireOnbioManager(
-  supabase: {
-    from: (table: "tenants") => any;
-    rpc: (name: "has_tenant_role", args: { _tenant: string; _roles: string[] }) => any;
-  },
+  supabase: SupabaseClient<Database>,
   tenantId: string,
 ) {
   await requireOnbio(supabase, tenantId);

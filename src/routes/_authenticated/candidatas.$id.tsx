@@ -64,7 +64,7 @@ const REQUIREMENT_TONE: Record<string, string> = {
 
 function CandidateDetail() {
   const { id } = Route.useParams();
-  const { tenantId, readOnly, profile, active } = useWorkspace();
+  const { tenantId, readOnly, profile, active, activeRole } = useWorkspace();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
@@ -309,7 +309,7 @@ function CandidateDetail() {
               <Copy aria-hidden="true" />
               Copiar acesso da afiliada
             </Button>
-            {!readOnly ? (
+            {!readOnly && (activeRole === "manager_owner" || activeRole === "manager_admin") ? (
               <AlertDialog
                 open={deleteDialogOpen}
                 onOpenChange={(open) => {
