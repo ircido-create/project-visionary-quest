@@ -18,20 +18,11 @@ export const ROTULO_SITUACAO: Record<SituacaoIntegracao, string> = {
 export type Fonte = "META_API" | "MANUAL" | "SCREENSHOT" | "INTERNAL";
 
 export const ROTULO_FONTE: Record<Fonte, string> = {
-  META_API: "Consulta automática (Meta)",
+  META_API: "Consulta oficial (Meta)",
   MANUAL: "Informado manualmente",
   SCREENSHOT: "Conferido por print",
   INTERNAL: "Registro interno",
 };
-
-/** Opções de intervalo aceitas pelo banco (`tenants.instagram_intervalo_horas`). */
-export const INTERVALOS_HORAS = [
-  { horas: 6, rotulo: "A cada 6 horas" },
-  { horas: 12, rotulo: "A cada 12 horas" },
-  { horas: 24, rotulo: "Uma vez por dia" },
-  { horas: 48, rotulo: "A cada 2 dias" },
-  { horas: 168, rotulo: "Uma vez por semana" },
-] as const;
 
 /** Sem conexão ativa é Pendente; conexão cuja última consulta falhou é Erro. */
 export function situacaoDaIntegracao(

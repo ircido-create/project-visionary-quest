@@ -28,12 +28,12 @@ const periodoSchema = z.union([
 async function exigirOnbio(supabase: Cliente, tenantId: string) {
   const { data } = await supabase
     .from("tenants")
-    .select("id, instagram_intervalo_horas")
+    .select("id")
     .eq("id", tenantId)
     .eq("module", "ONBIO")
     .maybeSingle();
   if (!data) throw new Error("Este recurso está disponível somente no ambiente ONBIO.");
-  return data as { id: string; instagram_intervalo_horas: number };
+  return data as { id: string };
 }
 
 type Conexao = {
@@ -57,7 +57,7 @@ async function montarPainel(
   tenantId: string,
   periodo: z.infer<typeof periodoSchema>,
 ) {
-  const ambiente = await exigirOnbio(supabase, tenantId);
+  await exigirOnbio(supabase, tenantId);
   const { inicio, fim } = intervaloDoPeriodo(periodo);
 
   const [afiliadas, registros, conexoes] = await Promise.all([
@@ -125,7 +125,6 @@ async function montarPainel(
   return {
     inicio: inicio.toISOString(),
     fim: fim.toISOString(),
-    intervaloHoras: ambiente.instagram_intervalo_horas,
     resumo: resumoDoPainel(linhas),
     afiliadas: linhas,
   };
@@ -149,7 +148,7 @@ export const getHistoricoSeguidores = createServerFn({ method: "POST" })
   )
   .handler(async ({ data, context }) => {
     const supabase = context.supabase as unknown as Cliente;
-    const ambiente = await exigirOnbio(supabase, data.tenantId);
+    await exigirOnbio(supabase, data.tenantId);
     const [registros, conexoes] = await Promise.all([
       supabase
         .from("metric_snapshots")
@@ -169,7 +168,6 @@ export const getHistoricoSeguidores = createServerFn({ method: "POST" })
     ).map((s) => ({ capturedAt: s.captured_at, followers: s.followers, source: s.source }));
     const conexao = conexoes.get(data.influencerId) ?? null;
     return {
-      intervaloHoras: ambiente.instagram_intervalo_horas,
       situacao: situacaoDaIntegracao(conexao ? { ultimoErro: conexao.ultimo_erro } : null),
       conexao: conexao
         ? {
@@ -190,51 +188,6 @@ export const getHistoricoSeguidores = createServerFn({ method: "POST" })
           seguidores: s.followers,
         })),
     };
-  });
-
-export const atualizarSeguidoresAgora = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) =>
-    z.object({ tenantId: z.string().uuid(), influencerId: z.string().uuid() }).parse(input),
-  )
-  .handler(async ({ data, context }) => {
-    const supabase = context.supabase as unknown as Cliente;
-    await exigirOnbio(supabase, data.tenantId);
-
-    // Membro do ambiente: a leitura da afiliada passa pela RLS do usuário.
-    const { data: afiliada } = await supabase
-      .from("influencers")
-      .select("id, instagram_handle")
-      .eq("tenant_id", data.tenantId)
-      .eq("id", data.influencerId)
-      .maybeSingle();
-    if (!afiliada) throw new Error("Afiliada não encontrada neste ambiente.");
-    const { data: membro } = await supabase.rpc("is_tenant_member", { _tenant: data.tenantId });
-    if (!membro) throw new Error("Só a equipe do ambiente atualiza seguidores.");
-
-    const conexao = (await conexoesDoAmbiente(supabase, data.tenantId)).get(data.influencerId);
-    if (!conexao) {
-      throw new Error(
-        "Esta afiliada ainda não autorizou o Instagram. Informe o número manualmente ou envie o acesso a ela.",
-      );
-    }
-    // Evita consultas repetidas: a Meta limita requisições por conta.
-    if (conexao.ultimo_sync && Date.now() - new Date(conexao.ultimo_sync).getTime() < 5 * 60_000) {
-      throw new Error(
-        "Esta conta foi consultada há menos de 5 minutos. Aguarde um pouco para atualizar de novo.",
-      );
-    }
-
-    const { consultarSeguidores } = await import("@/lib/onbio/rotinaInstagram.server");
-    const resultado = await consultarSeguidores({
-      influencerId: data.influencerId,
-      usuarioCadastrado:
-        (afiliada as { instagram_handle: string | null }).instagram_handle ?? conexao.usuario,
-      expiraEm: conexao.expira_em,
-      ator: context.userId,
-    });
-    if (!resultado.ok) throw new Error(resultado.erro);
-    return resultado;
   });
 
 export const registrarSeguidoresManual = createServerFn({ method: "POST" })
@@ -283,42 +236,6 @@ export const registrarSeguidoresManual = createServerFn({ method: "POST" })
       entity_id: data.influencerId,
       meta: { seguidores: data.followers, publicacoes: data.postsCount },
     });
-    return { ok: true };
-  });
-
-export const definirIntervaloInstagram = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) =>
-    z
-      .object({
-        tenantId: z.string().uuid(),
-        horas: z.union([z.literal(6), z.literal(12), z.literal(24), z.literal(48), z.literal(168)]),
-      })
-      .parse(input),
-  )
-  .handler(async ({ data, context }) => {
-    const supabase = context.supabase as unknown as Cliente;
-    await exigirOnbio(supabase, data.tenantId);
-    const { error } = await supabase.rpc("instagram_definir_intervalo", {
-      p_tenant: data.tenantId,
-      p_horas: data.horas,
-    });
-    if (error) throw new Error(error.message);
-    return { ok: true };
-  });
-
-export const desconectarInstagramPelaGestora = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) =>
-    z.object({ tenantId: z.string().uuid(), influencerId: z.string().uuid() }).parse(input),
-  )
-  .handler(async ({ data, context }) => {
-    const supabase = context.supabase as unknown as Cliente;
-    await exigirOnbio(supabase, data.tenantId);
-    const { error } = await supabase.rpc("instagram_desconectar_pela_gestora", {
-      p_influencer_id: data.influencerId,
-    });
-    if (error) throw new Error(error.message);
     return { ok: true };
   });
 

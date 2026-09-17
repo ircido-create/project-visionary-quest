@@ -25,7 +25,6 @@ import { Route as AuthenticatedCandidatasIndexRouteImport } from './routes/_auth
 import { Route as AuthenticatedCandidatasIdRouteImport } from './routes/_authenticated/candidatas.$id'
 import { Route as AuthenticatedInstagramRetornoRouteImport } from './routes/_authenticated/instagram.retorno'
 import { Route as AuthenticatedRelatorioIdRouteImport } from './routes/_authenticated/relatorio.$id'
-import { Route as ApiRotinasInstagramRouteImport } from './routes/api/rotinas/instagram'
 import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
 import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
 
@@ -113,11 +112,6 @@ const AuthenticatedRelatorioIdRoute =
     path: '/relatorio/$id',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const ApiRotinasInstagramRoute = ApiRotinasInstagramRouteImport.update({
-  id: '/api/rotinas/instagram',
-  path: '/api/rotinas/instagram',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const LovableEmailAuthPreviewRoute = LovableEmailAuthPreviewRouteImport.update({
   id: '/lovable/email/auth/preview',
   path: '/lovable/email/auth/preview',
@@ -144,7 +138,6 @@ export interface FileRoutesByFullPath {
   '/candidatas/$id': typeof AuthenticatedCandidatasIdRoute
   '/instagram/retorno': typeof AuthenticatedInstagramRetornoRoute
   '/relatorio/$id': typeof AuthenticatedRelatorioIdRoute
-  '/api/rotinas/instagram': typeof ApiRotinasInstagramRoute
   '/candidatas/': typeof AuthenticatedCandidatasIndexRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
@@ -164,7 +157,6 @@ export interface FileRoutesByTo {
   '/candidatas/$id': typeof AuthenticatedCandidatasIdRoute
   '/instagram/retorno': typeof AuthenticatedInstagramRetornoRoute
   '/relatorio/$id': typeof AuthenticatedRelatorioIdRoute
-  '/api/rotinas/instagram': typeof ApiRotinasInstagramRoute
   '/candidatas': typeof AuthenticatedCandidatasIndexRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
@@ -186,7 +178,6 @@ export interface FileRoutesById {
   '/_authenticated/candidatas/$id': typeof AuthenticatedCandidatasIdRoute
   '/_authenticated/instagram/retorno': typeof AuthenticatedInstagramRetornoRoute
   '/_authenticated/relatorio/$id': typeof AuthenticatedRelatorioIdRoute
-  '/api/rotinas/instagram': typeof ApiRotinasInstagramRoute
   '/_authenticated/candidatas/': typeof AuthenticatedCandidatasIndexRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
@@ -208,7 +199,6 @@ export interface FileRouteTypes {
     | '/candidatas/$id'
     | '/instagram/retorno'
     | '/relatorio/$id'
-    | '/api/rotinas/instagram'
     | '/candidatas/'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
@@ -228,7 +218,6 @@ export interface FileRouteTypes {
     | '/candidatas/$id'
     | '/instagram/retorno'
     | '/relatorio/$id'
-    | '/api/rotinas/instagram'
     | '/candidatas'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
@@ -249,7 +238,6 @@ export interface FileRouteTypes {
     | '/_authenticated/candidatas/$id'
     | '/_authenticated/instagram/retorno'
     | '/_authenticated/relatorio/$id'
-    | '/api/rotinas/instagram'
     | '/_authenticated/candidatas/'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
@@ -263,7 +251,6 @@ export interface RootRouteChildren {
   ResetPasswordRoute: typeof ResetPasswordRoute
   TermosRoute: typeof TermosRoute
   GSlugRoute: typeof GSlugRoute
-  ApiRotinasInstagramRoute: typeof ApiRotinasInstagramRoute
   LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
   LovableEmailAuthWebhookRoute: typeof LovableEmailAuthWebhookRoute
 }
@@ -382,13 +369,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRelatorioIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/api/rotinas/instagram': {
-      id: '/api/rotinas/instagram'
-      path: '/api/rotinas/instagram'
-      fullPath: '/api/rotinas/instagram'
-      preLoaderRoute: typeof ApiRotinasInstagramRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/lovable/email/auth/preview': {
       id: '/lovable/email/auth/preview'
       path: '/lovable/email/auth/preview'
@@ -441,7 +421,6 @@ const rootRouteChildren: RootRouteChildren = {
   ResetPasswordRoute: ResetPasswordRoute,
   TermosRoute: TermosRoute,
   GSlugRoute: GSlugRoute,
-  ApiRotinasInstagramRoute: ApiRotinasInstagramRoute,
   LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,
   LovableEmailAuthWebhookRoute: LovableEmailAuthWebhookRoute,
 }
