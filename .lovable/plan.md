@@ -1,8 +1,8 @@
-# Plano — acompanhamento automático do Instagram na ONBIO
+# Plano — acompanhamento autorizado do Instagram na ONBIO
 
 ## Objetivo
 
-Completar o acompanhamento de seguidores das afiliadas ONBIO usando somente a API oficial da Meta. Cada afiliada autoriza a própria conta profissional; depois disso, o sistema atualiza os números diariamente, mantém histórico, mostra crescimento e oferece relatórios. Perfis sem autorização continuam com atualização manual claramente identificada.
+Completar o acompanhamento de seguidores das afiliadas ONBIO usando somente a API oficial da Meta. Cada afiliada autoriza a própria conta profissional; os números são importados na autorização e atualizados quando ela solicitar pelo portal. O sistema mantém histórico, mostra crescimento e oferece relatórios. Perfis sem autorização continuam com atualização manual claramente identificada.
 
 ## O que já existe e será preservado
 
@@ -32,14 +32,13 @@ Completar o acompanhamento de seguidores das afiliadas ONBIO usando somente a AP
 - Criar operações específicas da ONBIO para lançamento manual, sempre gravando origem `MANUAL`, data, autora e novo ponto no histórico.
 - Impedir que uma edição manual seja marcada como `META_API`.
 
-### 2. Atualização automática diária
+### 2. Atualização pela afiliada
 
-- Criar uma rota interna de agendamento protegida pelo segredo já gerenciado pela plataforma; chamadas sem autenticação serão recusadas.
-- Configurar uma execução diária consolidada para todas as contas ONBIO conectadas, evitando consultas repetidas no mesmo período.
-- Processar somente autorizações ativas, em lotes controlados, respeitando respostas de limite da Meta.
-- Reutilizar a leitura oficial de `followers_count` e `media_count`, renovando tokens próximos do vencimento e sem expor tokens ao navegador, respostas ou logs.
-- Registrar cada sucesso no histórico e guardar data/erro da última tentativa. Uma falha em uma conta não interromperá as demais.
-- Manter o botão **Atualizar seguidores** no portal da afiliada; na gestão, apresentar a ação adequada sem conceder à gestora acesso ao token.
+- Reutilizar a leitura oficial de `followers_count` e `media_count` na autorização inicial e no botão **Atualizar seguidores** do portal.
+- Renovar o token quando estiver próximo do vencimento, sem expô-lo ao navegador, respostas ou logs.
+- Registrar cada atualização bem-sucedida no histórico e guardar a data e o erro da última tentativa.
+- Não criar rotina diária, agendamento em segundo plano ou consulta sem ação da afiliada.
+- Na gestão, mostrar o estado e a idade do dado, sem conceder à gestora acesso ao token nem permitir que ela consulte a Meta em nome da afiliada.
 
 ### 3. Histórico e cálculos
 
@@ -68,7 +67,7 @@ Adicionar indicadores calculados somente sobre dados válidos:
 - perfis com erro;
 - soma de seguidores das contas com valor conhecido;
 - crescimento total no período selecionado;
-- data da consulta mais recente.
+- data da atualização mais recente.
 
 Valores ausentes permanecerão ausentes e não entrarão na soma como zero. O painel terá filtro de período e acesso rápido às afiliadas que precisam conectar ou corrigir a integração.
 
@@ -82,7 +81,6 @@ Valores ausentes permanecerão ausentes e não entrarão na soma como zero. O pa
 ### 7. Segurança e LGPD
 
 - Manter tokens cifrados e acessíveis apenas ao processamento interno autorizado.
-- Criar funções internas mínimas para o agendamento ler conexões elegíveis e registrar resultados; retirar execução de usuários comuns e liberar somente ao serviço do servidor.
 - Validar em todas as leituras e ações que o ambiente é ONBIO e que a gestora possui o papel permitido.
 - Preservar a desconexão pela afiliada, removendo o token armazenado; após desconectar, o histórico permanece para acompanhamento, mas novas consultas param.
 - Não registrar tokens, códigos OAuth ou segredos em auditoria e mensagens de erro.
@@ -90,8 +88,8 @@ Valores ausentes permanecerão ausentes e não entrarão na soma como zero. O pa
 ### 8. Testes e validação
 
 - Testes unitários para variação absoluta/percentual, zero, ausência de dados, estados e filtros.
-- Testes de segurança para isolamento entre ambientes, impossibilidade de a gestora ler tokens, recusa do agendamento sem segredo e bloqueio de origem `META_API` em edição manual.
-- Testes do processamento diário: sucesso, token renovado, token expirado, limite da Meta, conta indisponível e continuidade após erro individual.
+- Testes de segurança para isolamento entre ambientes, impossibilidade de a gestora ler tokens ou sincronizar em nome da afiliada e bloqueio de origem `META_API` em edição manual.
+- Testes da atualização solicitada: sucesso, token renovado, token expirado, limite da Meta e conta indisponível.
 - Testes das telas em computador e celular: lista, filtros, histórico, painel, lançamento manual, exportação e estados vazios/erro.
 - Regressão do portal da afiliada, do módulo Ybera e dos resultados comerciais ONBIO.
 - Validar o fluxo completo com uma conta profissional real autorizada quando as credenciais da Meta, a revisão do aplicativo e essa conta estiverem disponíveis.
@@ -104,4 +102,4 @@ A entrega técnica incluirá tudo que pode ser implementado e testado localmente
 
 ## Resultado esperado
 
-A gestão ONBIO passará a acompanhar diariamente seguidores e crescimento das contas autorizadas, identificar pendências e erros, consultar o histórico, registrar valores manuais com origem correta e exportar um relatório consistente, sem scraping e sem alterar áreas não relacionadas.
+A gestão ONBIO passará a acompanhar seguidores e crescimento das contas autorizadas, identificar pendências, dados desatualizados e erros, consultar o histórico, registrar valores manuais com origem correta e exportar um relatório consistente. A consulta oficial ocorrerá na autorização e quando a afiliada tocar em **Atualizar seguidores**, sem scraping, rotina diária ou alterações em áreas não relacionadas.
