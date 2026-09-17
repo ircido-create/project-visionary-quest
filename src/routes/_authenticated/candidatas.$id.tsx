@@ -1,9 +1,9 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Copy } from "lucide-react";
+import { Copy, Trash2 } from "lucide-react";
 
 import { AppShell } from "@/components/mcb/AppShell";
 import { AnalysisSection } from "@/components/mcb/AnalysisSection";
@@ -26,11 +26,23 @@ import { STATUS_LABELS, STATUS_ORDER, type InfluencerStatus } from "@/lib/mcb/la
 import { motivoBloqueioSeletor } from "@/lib/mcb/auditoria";
 import { QUALIFICATION_LABELS, formatarValorAtual } from "@/lib/mcb/qualification";
 import { Button } from "@/components/ui/button";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { CommercialResultsSection } from "@/components/onbio/CommercialResultsSection";
 import { SeguidoresDaAfiliada } from "@/components/onbio/SeguidoresDaAfiliada";
+import { deleteOnbioAffiliate } from "@/lib/onbio/onbio.functions";
 
 export const Route = createFileRoute("/_authenticated/candidatas/$id")({
   head: () => ({
@@ -53,6 +65,7 @@ const REQUIREMENT_TONE: Record<string, string> = {
 function CandidateDetail() {
   const { id } = Route.useParams();
   const { tenantId, readOnly, profile, active } = useWorkspace();
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
 
   const fetchDetail = useServerFn(getInfluencer);
@@ -62,6 +75,7 @@ function CandidateDetail() {
   const saveNote = useServerFn(addNote);
   const saveTask = useServerFn(createTask);
   const toggleTask = useServerFn(setTaskStatus);
+  const deleteAffiliate = useServerFn(deleteOnbioAffiliate);
 
   const query = useQuery({
     queryKey: ["mcb", "influencer", tenantId, id],
@@ -80,6 +94,8 @@ function CandidateDetail() {
   });
   const [noteBody, setNoteBody] = useState("");
   const [feedbackBody, setFeedbackBody] = useState("");
+  const [deleteConfirmation, setDeleteConfirmation] = useState("");
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [taskForm, setTaskForm] = useState({
     title: "",
     dueDate: "",
@@ -225,6 +241,29 @@ function CandidateDetail() {
     onError: () => toast.error("Não foi possível atualizar a tarefa."),
   });
 
+  const deleteAffiliateMutation = useMutation({
+    mutationFn: () =>
+      deleteAffiliate({
+        data: {
+          tenantId: tenantId!,
+          influencerId: id,
+          confirmation: deleteConfirmation,
+        },
+      }),
+    onSuccess: async () => {
+      setDeleteDialogOpen(false);
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["mcb", "influencers", tenantId] }),
+        queryClient.invalidateQueries({ queryKey: ["onbio", "dashboard", tenantId] }),
+        queryClient.invalidateQueries({ queryKey: ["onbio", "seguidores", tenantId] }),
+      ]);
+      toast.success("Afiliada excluída. A conta de acesso foi preservada.");
+      await navigate({ to: "/candidatas" });
+    },
+    onError: (error: Error) =>
+      toast.error(error.message || "Não foi possível excluir a afiliada."),
+  });
+
   if (query.isLoading) {
     return (
       <AppShell title="Candidata">
@@ -265,10 +304,69 @@ function CandidateDetail() {
         title={influencer.full_name}
         description={`Afiliada ONBIO${influencer.instagram_handle ? ` · @${influencer.instagram_handle}` : ""}`}
         actions={
-          <Button type="button" variant="outline" size="sm" onClick={() => void copiarAcesso()}>
-            <Copy aria-hidden="true" />
-            Copiar acesso da afiliada
-          </Button>
+          <div className="flex flex-wrap items-center justify-end gap-2">
+            <Button type="button" variant="outline" size="sm" onClick={() => void copiarAcesso()}>
+              <Copy aria-hidden="true" />
+              Copiar acesso da afiliada
+            </Button>
+            {!readOnly ? (
+              <AlertDialog
+                open={deleteDialogOpen}
+                onOpenChange={(open) => {
+                  setDeleteDialogOpen(open);
+                  if (!open) setDeleteConfirmation("");
+                }}
+              >
+                <AlertDialogTrigger asChild>
+                  <Button type="button" variant="destructive" size="sm">
+                    <Trash2 aria-hidden="true" />
+                    Excluir afiliada
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Excluir {influencer.full_name}?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Esta ação é definitiva. Resultados, pautas, tarefas, histórico, conexão do
+                      Instagram e arquivos desta afiliada serão apagados. A conta de acesso e os
+                      vínculos em outros ambientes serão mantidos.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <div className="grid gap-1.5">
+                    <Label htmlFor="delete-affiliate-confirmation">
+                      Digite {influencer.email} para confirmar
+                    </Label>
+                    <Input
+                      id="delete-affiliate-confirmation"
+                      type="email"
+                      autoComplete="off"
+                      value={deleteConfirmation}
+                      onChange={(event) => setDeleteConfirmation(event.target.value)}
+                    />
+                  </div>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel disabled={deleteAffiliateMutation.isPending}>
+                      Cancelar
+                    </AlertDialogCancel>
+                    <AlertDialogAction
+                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                      disabled={
+                        deleteAffiliateMutation.isPending ||
+                        deleteConfirmation.trim().toLowerCase() !==
+                          influencer.email.trim().toLowerCase()
+                      }
+                      onClick={(event) => {
+                        event.preventDefault();
+                        deleteAffiliateMutation.mutate();
+                      }}
+                    >
+                      {deleteAffiliateMutation.isPending ? "Excluindo…" : "Excluir definitivamente"}
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            ) : null}
+          </div>
         }
       >
         <div className="grid gap-6 lg:grid-cols-3">

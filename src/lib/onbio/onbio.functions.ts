@@ -5,6 +5,8 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import type { Json } from "@/integrations/supabase/types";
 import { audit } from "@/lib/mcb/audit";
 import { gerarAnalise } from "@/lib/mcb/ai-gateway";
+import { EVIDENCE_BUCKET } from "@/lib/mcb/evidence";
+import { caminhosDeEvidencia, confirmacaoConfere } from "@/lib/mcb/exclusao";
 
 const tenantInput = z.object({ tenantId: z.string().uuid() });
 
@@ -16,6 +18,22 @@ async function requireOnbio(supabase: { from: (table: "tenants") => any }, tenan
     .eq("module", "ONBIO")
     .maybeSingle();
   if (!data) throw new Error("Este recurso está disponível somente no ambiente ONBIO.");
+}
+
+async function requireOnbioManager(
+  supabase: {
+    from: (table: "tenants") => any;
+    rpc: (name: "has_tenant_role", args: { _tenant: string; _roles: string[] }) => any;
+  },
+  tenantId: string,
+) {
+  await requireOnbio(supabase, tenantId);
+  const { data: allowed, error } = await supabase.rpc("has_tenant_role", {
+    _tenant: tenantId,
+    _roles: ["manager_owner", "manager_admin"],
+  });
+  if (error) throw new Error(error.message);
+  if (!allowed) throw new Error("Somente a dona ou uma administradora pode excluir afiliadas.");
 }
 
 export const createOnbioAffiliate = createServerFn({ method: "POST" })
@@ -138,6 +156,76 @@ export const createOnbioAffiliate = createServerFn({ method: "POST" })
       meta: { linked: data.linkExisting },
     });
     return affiliate;
+  });
+
+export const deleteOnbioAffiliate = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) =>
+    z
+      .object({
+        tenantId: z.string().uuid(),
+        influencerId: z.string().uuid(),
+        confirmation: z.string().max(200),
+      })
+      .parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    await requireOnbioManager(context.supabase, data.tenantId);
+
+    const { data: affiliate, error: affiliateError } = await context.supabase
+      .from("influencers")
+      .select("id, email")
+      .eq("id", data.influencerId)
+      .eq("tenant_id", data.tenantId)
+      .maybeSingle();
+    if (affiliateError) throw new Error(affiliateError.message);
+    if (!affiliate) throw new Error("Afiliada não encontrada neste ambiente.");
+    if (!confirmacaoConfere(data.confirmation, affiliate.email)) {
+      throw new Error("O e-mail digitado não confere. Nada foi excluído.");
+    }
+
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const [listing, registeredFiles] = await Promise.all([
+      supabaseAdmin.storage
+        .from(EVIDENCE_BUCKET)
+        .list(`${data.tenantId}/${data.influencerId}`, { limit: 1000 }),
+      supabaseAdmin.from("files").select("storage_path").eq("influencer_id", data.influencerId),
+    ]);
+    if (listing.error) {
+      throw new Error(`Não foi possível verificar os arquivos. Nada foi excluído.`);
+    }
+    if (registeredFiles.error) throw new Error(registeredFiles.error.message);
+
+    const paths = [
+      ...new Set([
+        ...caminhosDeEvidencia(
+          data.tenantId,
+          data.influencerId,
+          (listing.data ?? []).map((item) => item.name),
+        ),
+        ...(registeredFiles.data ?? []).map((item) => item.storage_path),
+      ]),
+    ];
+    if (paths.length > 0) {
+      const { error: storageError } = await supabaseAdmin.storage
+        .from(EVIDENCE_BUCKET)
+        .remove(paths);
+      if (storageError) {
+        throw new Error("Não foi possível apagar os arquivos. Nada foi excluído do cadastro.");
+      }
+    }
+
+    const { error: deleteError } = await supabaseAdmin.rpc("excluir_afiliada_onbio", {
+      p_influencer_id: data.influencerId,
+      p_actor: context.userId,
+    });
+    if (deleteError) {
+      throw new Error(
+        `Os arquivos foram apagados, mas o cadastro não pôde ser excluído. Tente novamente.`,
+      );
+    }
+
+    return { ok: true, deletedFiles: paths.length };
   });
 
 export const listCommercialResults = createServerFn({ method: "POST" })
