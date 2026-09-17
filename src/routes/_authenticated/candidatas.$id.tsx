@@ -30,6 +30,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { CommercialResultsSection } from "@/components/onbio/CommercialResultsSection";
+import { SeguidoresDaAfiliada } from "@/components/onbio/SeguidoresDaAfiliada";
 
 export const Route = createFileRoute("/_authenticated/candidatas/$id")({
   head: () => ({
@@ -79,7 +80,11 @@ function CandidateDetail() {
   });
   const [noteBody, setNoteBody] = useState("");
   const [feedbackBody, setFeedbackBody] = useState("");
-  const [taskForm, setTaskForm] = useState({ title: "", dueDate: "", priority: "MEDIA" as "BAIXA" | "MEDIA" | "ALTA" });
+  const [taskForm, setTaskForm] = useState({
+    title: "",
+    dueDate: "",
+    priority: "MEDIA" as "BAIXA" | "MEDIA" | "ALTA",
+  });
   const [profileForm, setProfileForm] = useState({
     fullName: "",
     email: "",
@@ -147,7 +152,8 @@ function CandidateDetail() {
           influencerId: id,
           followers: metrics.followers === "" ? null : Number(metrics.followers),
           postsCount: metrics.postsCount === "" ? null : Number(metrics.postsCount),
-          femaleAudiencePct: metrics.femaleAudiencePct === "" ? null : Number(metrics.femaleAudiencePct),
+          femaleAudiencePct:
+            metrics.femaleAudiencePct === "" ? null : Number(metrics.femaleAudiencePct),
           recentPosts6m: metrics.recentPosts6m,
           profileType: metrics.profileType,
           source: metrics.source,
@@ -161,14 +167,14 @@ function CandidateDetail() {
   });
 
   const profileMutation = useMutation({
-    mutationFn: () => saveProfileData({ data: { tenantId: tenantId!, influencerId: id, ...profileForm } }),
+    mutationFn: () =>
+      saveProfileData({ data: { tenantId: tenantId!, influencerId: id, ...profileForm } }),
     onSuccess: () => {
       toast.success("Dados da candidata atualizados.");
       invalidate();
     },
     onError: () => toast.error("Não foi possível salvar os dados."),
   });
-
 
   const statusMutation = useMutation({
     mutationFn: (status: InfluencerStatus) =>
@@ -268,32 +274,167 @@ function CandidateDetail() {
         <div className="grid gap-6 lg:grid-cols-3">
           <section className="glass rounded-xl border border-border/60 p-6">
             <h2 className="text-xl font-semibold">Identidade e contato</h2>
-            <form className="mt-4 grid gap-3" onSubmit={(event) => { event.preventDefault(); if (guard()) profileMutation.mutate(); }}>
-              <div className="grid gap-1.5"><Label htmlFor="onbio-name">Nome completo</Label><Input id="onbio-name" required value={profileForm.fullName} onChange={(e) => setProfileForm((prev) => ({ ...prev, fullName: e.target.value }))} /></div>
-              <div className="grid gap-1.5"><Label htmlFor="onbio-email">E-mail</Label><Input id="onbio-email" type="email" required value={profileForm.email} onChange={(e) => setProfileForm((prev) => ({ ...prev, email: e.target.value }))} /></div>
-              <div className="grid gap-1.5"><Label htmlFor="onbio-whatsapp">WhatsApp</Label><Input id="onbio-whatsapp" value={profileForm.whatsapp} onChange={(e) => setProfileForm((prev) => ({ ...prev, whatsapp: e.target.value }))} /></div>
-              <div className="grid gap-1.5"><Label htmlFor="onbio-instagram">Instagram</Label><Input id="onbio-instagram" value={profileForm.instagramHandle} onChange={(e) => setProfileForm((prev) => ({ ...prev, instagramHandle: e.target.value }))} /></div>
-              <Button type="submit" disabled={readOnly || profileMutation.isPending}>Salvar contato</Button>
+            <form
+              className="mt-4 grid gap-3"
+              onSubmit={(event) => {
+                event.preventDefault();
+                if (guard()) profileMutation.mutate();
+              }}
+            >
+              <div className="grid gap-1.5">
+                <Label htmlFor="onbio-name">Nome completo</Label>
+                <Input
+                  id="onbio-name"
+                  required
+                  value={profileForm.fullName}
+                  onChange={(e) =>
+                    setProfileForm((prev) => ({ ...prev, fullName: e.target.value }))
+                  }
+                />
+              </div>
+              <div className="grid gap-1.5">
+                <Label htmlFor="onbio-email">E-mail</Label>
+                <Input
+                  id="onbio-email"
+                  type="email"
+                  required
+                  value={profileForm.email}
+                  onChange={(e) => setProfileForm((prev) => ({ ...prev, email: e.target.value }))}
+                />
+              </div>
+              <div className="grid gap-1.5">
+                <Label htmlFor="onbio-whatsapp">WhatsApp</Label>
+                <Input
+                  id="onbio-whatsapp"
+                  value={profileForm.whatsapp}
+                  onChange={(e) =>
+                    setProfileForm((prev) => ({ ...prev, whatsapp: e.target.value }))
+                  }
+                />
+              </div>
+              <div className="grid gap-1.5">
+                <Label htmlFor="onbio-instagram">Instagram</Label>
+                <Input
+                  id="onbio-instagram"
+                  value={profileForm.instagramHandle}
+                  onChange={(e) =>
+                    setProfileForm((prev) => ({ ...prev, instagramHandle: e.target.value }))
+                  }
+                />
+              </div>
+              <Button type="submit" disabled={readOnly || profileMutation.isPending}>
+                Salvar contato
+              </Button>
             </form>
             <InstagramSection influencerId={id} podeGerenciar={false} pessoa="afiliada" />
           </section>
-          <section className="glass rounded-xl border border-border/60 p-6">
-            <h2 className="text-xl font-semibold">Instagram</h2>
-            <div className="mt-4 grid grid-cols-2 gap-4">
-              <div><p className="text-xs text-muted-foreground">Seguidores</p><p className="mt-1 text-2xl font-semibold">{influencer.followers?.toLocaleString("pt-BR") ?? "—"}</p></div>
-              <div><p className="text-xs text-muted-foreground">Publicações</p><p className="mt-1 text-2xl font-semibold">{influencer.posts_count?.toLocaleString("pt-BR") ?? "—"}</p></div>
-            </div>
-            <p className="mt-4 text-xs text-muted-foreground">Os números são atualizados quando a afiliada autoriza e sincroniza a conta profissional.</p>
-          </section>
+          <SeguidoresDaAfiliada
+            tenantId={tenantId!}
+            influencerId={id}
+            instagram={influencer.instagram_handle}
+            readOnly={readOnly}
+          />
           <section className="glass rounded-xl border border-border/60 p-6">
             <h2 className="text-xl font-semibold">Tarefas</h2>
-            <form className="mt-3 grid gap-2" onSubmit={(event) => { event.preventDefault(); if (guard()) taskMutation.mutate(); }}><Input aria-label="Título da nova tarefa" placeholder="Nova tarefa" value={taskForm.title} onChange={(e) => setTaskForm((prev) => ({ ...prev, title: e.target.value }))} required minLength={3} /><div className="flex gap-2"><Input aria-label="Prazo da tarefa" type="date" value={taskForm.dueDate} onChange={(e) => setTaskForm((prev) => ({ ...prev, dueDate: e.target.value }))} /><select aria-label="Prioridade da tarefa" className="h-10 rounded-md border border-input bg-background px-3 text-sm" value={taskForm.priority} onChange={(e) => setTaskForm((prev) => ({ ...prev, priority: e.target.value as typeof prev.priority }))}><option value="ALTA">Alta</option><option value="MEDIA">Média</option><option value="BAIXA">Baixa</option></select></div><Button type="submit" variant="outline" disabled={readOnly || taskMutation.isPending}>Adicionar tarefa</Button></form>
-            <ul className="mt-4 grid gap-2 text-sm">{detail.tasks.map((task) => <li key={task.id} className="flex items-start gap-2"><input type="checkbox" className="mt-1" aria-label={`Concluir tarefa: ${task.title}`} checked={task.status === "CONCLUIDA"} onChange={(event) => { if (guard()) taskStatusMutation.mutate({ taskId: task.id, status: event.target.checked ? "CONCLUIDA" : "PENDENTE" }); }} /><span className={task.status === "CONCLUIDA" ? "text-muted-foreground line-through" : ""}>{task.title}</span></li>)}</ul>
+            <form
+              className="mt-3 grid gap-2"
+              onSubmit={(event) => {
+                event.preventDefault();
+                if (guard()) taskMutation.mutate();
+              }}
+            >
+              <Input
+                aria-label="Título da nova tarefa"
+                placeholder="Nova tarefa"
+                value={taskForm.title}
+                onChange={(e) => setTaskForm((prev) => ({ ...prev, title: e.target.value }))}
+                required
+                minLength={3}
+              />
+              <div className="flex gap-2">
+                <Input
+                  aria-label="Prazo da tarefa"
+                  type="date"
+                  value={taskForm.dueDate}
+                  onChange={(e) => setTaskForm((prev) => ({ ...prev, dueDate: e.target.value }))}
+                />
+                <select
+                  aria-label="Prioridade da tarefa"
+                  className="h-10 rounded-md border border-input bg-background px-3 text-sm"
+                  value={taskForm.priority}
+                  onChange={(e) =>
+                    setTaskForm((prev) => ({
+                      ...prev,
+                      priority: e.target.value as typeof prev.priority,
+                    }))
+                  }
+                >
+                  <option value="ALTA">Alta</option>
+                  <option value="MEDIA">Média</option>
+                  <option value="BAIXA">Baixa</option>
+                </select>
+              </div>
+              <Button type="submit" variant="outline" disabled={readOnly || taskMutation.isPending}>
+                Adicionar tarefa
+              </Button>
+            </form>
+            <ul className="mt-4 grid gap-2 text-sm">
+              {detail.tasks.map((task) => (
+                <li key={task.id} className="flex items-start gap-2">
+                  <input
+                    type="checkbox"
+                    className="mt-1"
+                    aria-label={`Concluir tarefa: ${task.title}`}
+                    checked={task.status === "CONCLUIDA"}
+                    onChange={(event) => {
+                      if (guard())
+                        taskStatusMutation.mutate({
+                          taskId: task.id,
+                          status: event.target.checked ? "CONCLUIDA" : "PENDENTE",
+                        });
+                    }}
+                  />
+                  <span
+                    className={
+                      task.status === "CONCLUIDA" ? "text-muted-foreground line-through" : ""
+                    }
+                  >
+                    {task.title}
+                  </span>
+                </li>
+              ))}
+            </ul>
           </section>
           <section className="glass rounded-xl border border-border/60 p-6">
             <h2 className="text-xl font-semibold">Notas de relacionamento</h2>
-            <form className="mt-3 grid gap-2" onSubmit={(event) => { event.preventDefault(); if (guard()) noteMutation.mutate({ body: noteBody, kind: "note" }); }}><Textarea rows={3} value={noteBody} onChange={(e) => setNoteBody(e.target.value)} required minLength={3} /><Button type="submit" variant="outline" disabled={readOnly || noteMutation.isPending}>Salvar nota</Button></form>
-            <ul className="mt-4 grid gap-3 text-sm">{detail.notes.map((note) => <li key={note.id} className="rounded-lg border border-border/60 p-3"><p>{note.body}</p><p className="mt-1 text-xs text-muted-foreground">{new Date(note.created_at).toLocaleString("pt-BR")}</p></li>)}</ul>
+            <form
+              className="mt-3 grid gap-2"
+              onSubmit={(event) => {
+                event.preventDefault();
+                if (guard()) noteMutation.mutate({ body: noteBody, kind: "note" });
+              }}
+            >
+              <Textarea
+                rows={3}
+                value={noteBody}
+                onChange={(e) => setNoteBody(e.target.value)}
+                required
+                minLength={3}
+              />
+              <Button type="submit" variant="outline" disabled={readOnly || noteMutation.isPending}>
+                Salvar nota
+              </Button>
+            </form>
+            <ul className="mt-4 grid gap-3 text-sm">
+              {detail.notes.map((note) => (
+                <li key={note.id} className="rounded-lg border border-border/60 p-3">
+                  <p>{note.body}</p>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    {new Date(note.created_at).toLocaleString("pt-BR")}
+                  </p>
+                </li>
+              ))}
+            </ul>
           </section>
           <CommercialResultsSection tenantId={tenantId!} influencerId={id} readOnly={readOnly} />
           <EvidenceSection tenantId={tenantId!} influencerId={id} readOnly={readOnly} />
@@ -375,14 +516,16 @@ function CandidateDetail() {
                   {requirement.gap ? ` · ${requirement.gap}` : ""}
                 </p>
                 <p className="mt-1 text-xs text-muted-foreground">
-                  Origem: {requirement.source === "MANUAL" ? "informado manualmente" : requirement.source}
+                  Origem:{" "}
+                  {requirement.source === "MANUAL" ? "informado manualmente" : requirement.source}
                 </p>
               </li>
             ))}
           </ul>
           <p className="mt-4 text-xs text-muted-foreground">
-            Estes critérios são fixos e auditáveis. Nenhuma análise assistida substitui a verificação humana, e
-            atender aos requisitos não garante aprovação em programas de terceiros.
+            Estes critérios são fixos e auditáveis. Nenhuma análise assistida substitui a
+            verificação humana, e atender aos requisitos não garante aprovação em programas de
+            terceiros.
           </p>
         </section>
 
@@ -443,7 +586,9 @@ function CandidateDetail() {
                 min={0}
                 max={100}
                 value={metrics.femaleAudiencePct}
-                onChange={(e) => setMetrics((prev) => ({ ...prev, femaleAudiencePct: e.target.value }))}
+                onChange={(e) =>
+                  setMetrics((prev) => ({ ...prev, femaleAudiencePct: e.target.value }))
+                }
               />
             </div>
             <div className="grid gap-1.5">
@@ -453,7 +598,10 @@ function CandidateDetail() {
                 className="h-10 rounded-md border border-input bg-background px-3 text-sm"
                 value={metrics.recentPosts6m}
                 onChange={(e) =>
-                  setMetrics((prev) => ({ ...prev, recentPosts6m: e.target.value as typeof prev.recentPosts6m }))
+                  setMetrics((prev) => ({
+                    ...prev,
+                    recentPosts6m: e.target.value as typeof prev.recentPosts6m,
+                  }))
                 }
               >
                 <option value="SIM">Sim</option>
@@ -468,7 +616,10 @@ function CandidateDetail() {
                 className="h-10 rounded-md border border-input bg-background px-3 text-sm"
                 value={metrics.profileType}
                 onChange={(e) =>
-                  setMetrics((prev) => ({ ...prev, profileType: e.target.value as typeof prev.profileType }))
+                  setMetrics((prev) => ({
+                    ...prev,
+                    profileType: e.target.value as typeof prev.profileType,
+                  }))
                 }
               >
                 <option value="CRIADOR">Criadora de conteúdo</option>
@@ -483,7 +634,9 @@ function CandidateDetail() {
                 id="source"
                 className="h-10 rounded-md border border-input bg-background px-3 text-sm"
                 value={metrics.source}
-                onChange={(e) => setMetrics((prev) => ({ ...prev, source: e.target.value as typeof prev.source }))}
+                onChange={(e) =>
+                  setMetrics((prev) => ({ ...prev, source: e.target.value as typeof prev.source }))
+                }
               >
                 <option value="MANUAL">Informado manualmente</option>
                 <option value="SCREENSHOT">Print confirmado</option>
@@ -545,7 +698,9 @@ function CandidateDetail() {
               <Input
                 id="pf-instagram"
                 value={profileForm.instagramHandle}
-                onChange={(e) => setProfileForm((prev) => ({ ...prev, instagramHandle: e.target.value }))}
+                onChange={(e) =>
+                  setProfileForm((prev) => ({ ...prev, instagramHandle: e.target.value }))
+                }
               />
             </div>
             <div className="grid gap-1.5">
@@ -571,7 +726,10 @@ function CandidateDetail() {
                 className="h-10 rounded-md border border-input bg-background px-3 text-sm"
                 value={profileForm.profileType}
                 onChange={(e) =>
-                  setProfileForm((prev) => ({ ...prev, profileType: e.target.value as typeof prev.profileType }))
+                  setProfileForm((prev) => ({
+                    ...prev,
+                    profileType: e.target.value as typeof prev.profileType,
+                  }))
                 }
               >
                 <option value="CRIADOR">Criadora de conteúdo</option>
@@ -585,7 +743,9 @@ function CandidateDetail() {
               <Input
                 id="pf-stories"
                 value={profileForm.storiesFrequency}
-                onChange={(e) => setProfileForm((prev) => ({ ...prev, storiesFrequency: e.target.value }))}
+                onChange={(e) =>
+                  setProfileForm((prev) => ({ ...prev, storiesFrequency: e.target.value }))
+                }
               />
             </div>
             <div className="grid gap-1.5">
@@ -593,7 +753,9 @@ function CandidateDetail() {
               <Input
                 id="pf-reels"
                 value={profileForm.reelsFrequency}
-                onChange={(e) => setProfileForm((prev) => ({ ...prev, reelsFrequency: e.target.value }))}
+                onChange={(e) =>
+                  setProfileForm((prev) => ({ ...prev, reelsFrequency: e.target.value }))
+                }
               />
             </div>
             <div className="grid gap-1.5">
@@ -610,7 +772,9 @@ function CandidateDetail() {
                 id="pf-goal"
                 rows={2}
                 value={profileForm.profileGoal}
-                onChange={(e) => setProfileForm((prev) => ({ ...prev, profileGoal: e.target.value }))}
+                onChange={(e) =>
+                  setProfileForm((prev) => ({ ...prev, profileGoal: e.target.value }))
+                }
               />
             </div>
             <div className="grid gap-1.5 sm:col-span-2">
@@ -619,7 +783,9 @@ function CandidateDetail() {
                 id="pf-difficulty"
                 rows={2}
                 value={profileForm.mainDifficulty}
-                onChange={(e) => setProfileForm((prev) => ({ ...prev, mainDifficulty: e.target.value }))}
+                onChange={(e) =>
+                  setProfileForm((prev) => ({ ...prev, mainDifficulty: e.target.value }))
+                }
               />
             </div>
             <div className="sm:col-span-2">
@@ -688,7 +854,10 @@ function CandidateDetail() {
                 className="h-10 rounded-md border border-input bg-background px-3 text-sm"
                 value={taskForm.priority}
                 onChange={(e) =>
-                  setTaskForm((prev) => ({ ...prev, priority: e.target.value as typeof prev.priority }))
+                  setTaskForm((prev) => ({
+                    ...prev,
+                    priority: e.target.value as typeof prev.priority,
+                  }))
                 }
               >
                 <option value="ALTA">Alta</option>
@@ -716,7 +885,11 @@ function CandidateDetail() {
                     });
                   }}
                 />
-                <span className={task.status === "CONCLUIDA" ? "text-muted-foreground line-through" : ""}>
+                <span
+                  className={
+                    task.status === "CONCLUIDA" ? "text-muted-foreground line-through" : ""
+                  }
+                >
                   {task.title}
                   {task.due_date ? (
                     <span className="ml-1 text-xs text-muted-foreground">({task.due_date})</span>
@@ -737,7 +910,13 @@ function CandidateDetail() {
               noteMutation.mutate({ body: noteBody, kind: "note" });
             }}
           >
-            <Textarea rows={3} value={noteBody} onChange={(e) => setNoteBody(e.target.value)} required minLength={3} />
+            <Textarea
+              rows={3}
+              value={noteBody}
+              onChange={(e) => setNoteBody(e.target.value)}
+              required
+              minLength={3}
+            />
             <Button type="submit" variant="outline" disabled={noteMutation.isPending}>
               Salvar nota
             </Button>

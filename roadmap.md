@@ -521,3 +521,18 @@ Montada em 2026-09-14, com medição antes de mexer.
 - [x] IA para pautas e auditoria
 - [x] Testes e validação — cadastro de afiliada, resultado comercial e pauta por IA exercitados de ponta a ponta em 2026-09-16, sem erros no navegador; os dados temporários foram removidos.
 - [x] Autorização da própria afiliada no Instagram, validação do @ e exibição de seguidores/publicações na gestão.
+
+### ONBIO — seguidores automáticos (2026-09-17)
+- [x] Situação da integração por afiliada: Conectado, Pendente ou Erro (sem expor token).
+- [x] Rotina agendada: `pg_cron` chama `/api/rotinas/instagram` de hora em hora, com segredo
+      `MCB_ROTINA_INSTAGRAM` do Vault; cada conta só é consultada quando passa o intervalo
+      do ambiente (6 h a 7 dias, padrão 24 h). Renova o token perto do vencimento.
+- [x] Botão "Atualizar seguidores" (limite de uma consulta a cada 5 min por conta).
+- [x] Histórico com anterior, atual, variação absoluta e percentual (sem percentual sobre zero).
+- [x] Painel: afiliadas, conectadas, pendentes, soma só das contas lidas na Meta, crescimento
+      no período, última atualização; filtros por nome, @, período e integração.
+- [x] Relatório por período exportado em CSV (abre no Excel).
+- [x] Número manual marcado como "informado manualmente", fora da soma da Meta.
+- [x] Gestora pode desconectar uma conta (token apagado do Vault).
+- [ ] Validar com uma conta real: depende de `META_APP_ID`/`META_APP_SECRET` no Vault e do
+      app aprovado pela Meta. Sem isso, o portal não mostra "Conectar Instagram".
