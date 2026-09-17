@@ -18,7 +18,7 @@ export const ROTULO_SITUACAO: Record<SituacaoIntegracao, string> = {
 export type Fonte = "META_API" | "MANUAL" | "SCREENSHOT" | "INTERNAL";
 
 export const ROTULO_FONTE: Record<Fonte, string> = {
-  META_API: "Consulta automática (Meta)",
+  META_API: "Consulta oficial (Meta)",
   MANUAL: "Informado manualmente",
   SCREENSHOT: "Conferido por print",
   INTERNAL: "Registro interno",

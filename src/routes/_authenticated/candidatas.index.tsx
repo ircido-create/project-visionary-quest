@@ -198,8 +198,8 @@ function CandidatesPage() {
                 >
                   @{affiliate.instagramHandle.trim().replace(/^@/, "")}
                 </a>
-                . Quando a afiliada conectar o Instagram no portal, eles passam a ser atualizados
-                automaticamente.
+                . Quando a afiliada conectar o Instagram no portal, esses números serão importados
+                pela Meta e ela poderá atualizá-los pelo próprio acompanhamento.
               </p>
             </>
           ) : null}
