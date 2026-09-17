@@ -29,6 +29,13 @@
       "when": 1789645406577,
       "tag": "0003_disable_onbio_scheduled_instagram_updates",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1789646883867,
+      "tag": "0004_delete_onbio_affiliate",
+      "breakpoints": true
     }
   ]
 }
