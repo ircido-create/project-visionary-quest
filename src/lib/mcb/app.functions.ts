@@ -457,6 +457,9 @@ export const updateInfluencerMetrics = createServerFn({ method: "POST" })
   )
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
+    if (data.source === "META_API") {
+      throw new Error("Dados digitados manualmente não podem ser marcados como consulta da Meta.");
+    }
     const { data: updated, error } = await supabase
       .from("influencers")
       .update({
