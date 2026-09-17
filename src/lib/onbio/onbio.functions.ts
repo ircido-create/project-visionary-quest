@@ -8,10 +8,7 @@ import { gerarAnalise } from "@/lib/mcb/ai-gateway";
 
 const tenantInput = z.object({ tenantId: z.string().uuid() });
 
-async function requireOnbio(
-  supabase: { from: (table: "tenants") => any },
-  tenantId: string,
-) {
+async function requireOnbio(supabase: { from: (table: "tenants") => any }, tenantId: string) {
   const { data } = await supabase
     .from("tenants")
     .select("id, module")
@@ -31,6 +28,8 @@ export const createOnbioAffiliate = createServerFn({ method: "POST" })
         email: z.string().trim().email().max(160),
         whatsapp: z.string().trim().max(30).nullable(),
         instagramHandle: z.string().trim().max(60).nullable(),
+        followers: z.number().int().min(0).max(1_000_000_000).nullable().optional(),
+        postsCount: z.number().int().min(0).max(1_000_000).nullable().optional(),
         linkExisting: z.boolean(),
       })
       .parse(input),
@@ -61,15 +60,24 @@ export const createOnbioAffiliate = createServerFn({ method: "POST" })
       if (existing && !personId) {
         const { data: person, error: personError } = await supabase
           .from("people")
-          .insert({ full_name: existing.full_name, email: existing.email, whatsapp: existing.whatsapp, created_by: userId })
+          .insert({
+            full_name: existing.full_name,
+            email: existing.email,
+            whatsapp: existing.whatsapp,
+            created_by: userId,
+          })
           .select("id")
           .single();
         if (personError) throw new Error(personError.message);
         personId = person.id;
-        const { error: linkError } = await supabase.from("influencers").update({ person_id: personId }).eq("id", existing.id);
+        const { error: linkError } = await supabase
+          .from("influencers")
+          .update({ person_id: personId })
+          .eq("id", existing.id);
         if (linkError) throw new Error(linkError.message);
       }
-      if (!existing) throw new Error("Não encontramos uma pessoa com este e-mail em outro ambiente.");
+      if (!existing)
+        throw new Error("Não encontramos uma pessoa com este e-mail em outro ambiente.");
     }
     if (!personId) {
       const { data: person, error: personError } = await supabase
@@ -97,6 +105,9 @@ export const createOnbioAffiliate = createServerFn({ method: "POST" })
         whatsapp: data.whatsapp,
         instagram_handle: handle,
         instagram_url: handle ? `https://instagram.com/${handle}` : null,
+        followers: data.followers ?? null,
+        posts_count: data.postsCount ?? null,
+        data_source: "MANUAL",
         status: "EM_PRODUCAO",
         level: "Afiliada ativa",
         progress_score: 100,
@@ -105,6 +116,18 @@ export const createOnbioAffiliate = createServerFn({ method: "POST" })
       .select("id")
       .single();
     if (error) throw new Error(error.message);
+
+    // Os números informados no cadastro viram o primeiro ponto da evolução.
+    if (data.followers != null || data.postsCount != null) {
+      await supabase.from("metric_snapshots").insert({
+        tenant_id: data.tenantId,
+        influencer_id: affiliate.id,
+        followers: data.followers ?? null,
+        posts_count: data.postsCount ?? null,
+        source: "MANUAL",
+        created_by: userId,
+      });
+    }
 
     await audit(supabase, {
       tenant_id: data.tenantId,
@@ -169,7 +192,11 @@ export const saveCommercialResult = createServerFn({ method: "POST" })
       created_by: context.userId,
     };
     const query = data.id
-      ? context.supabase.from("commercial_results").update(values).eq("id", data.id).eq("tenant_id", data.tenantId)
+      ? context.supabase
+          .from("commercial_results")
+          .update(values)
+          .eq("id", data.id)
+          .eq("tenant_id", data.tenantId)
       : context.supabase.from("commercial_results").insert(values);
     const { error } = await query;
     if (error) throw new Error(error.message);
@@ -216,16 +243,36 @@ const agendaSchema = z.object({
 export const generateMeetingAgenda = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) =>
-    tenantInput.extend({ influencerId: z.string().uuid(), periodStart: z.string().nullable(), periodEnd: z.string().nullable() }).parse(input),
+    tenantInput
+      .extend({
+        influencerId: z.string().uuid(),
+        periodStart: z.string().nullable(),
+        periodEnd: z.string().nullable(),
+      })
+      .parse(input),
   )
   .handler(async ({ data, context }) => {
     await requireOnbio(context.supabase, data.tenantId);
     const [{ data: affiliate }, { data: results }] = await Promise.all([
-      context.supabase.from("influencers").select("full_name, instagram_handle").eq("tenant_id", data.tenantId).eq("id", data.influencerId).single(),
-      context.supabase.from("commercial_results").select("period_start, period_end, revenue_cents, orders, commission_cents, goal_cents, campaign, notes").eq("tenant_id", data.tenantId).eq("influencer_id", data.influencerId).order("period_end", { ascending: false }).limit(12),
+      context.supabase
+        .from("influencers")
+        .select("full_name, instagram_handle")
+        .eq("tenant_id", data.tenantId)
+        .eq("id", data.influencerId)
+        .single(),
+      context.supabase
+        .from("commercial_results")
+        .select(
+          "period_start, period_end, revenue_cents, orders, commission_cents, goal_cents, campaign, notes",
+        )
+        .eq("tenant_id", data.tenantId)
+        .eq("influencer_id", data.influencerId)
+        .order("period_end", { ascending: false })
+        .limit(12),
     ]);
     if (!affiliate) throw new Error("Afiliada não encontrada.");
-    if (!results?.length) throw new Error("Cadastre ao menos um resultado comercial antes de gerar a pauta.");
+    if (!results?.length)
+      throw new Error("Cadastre ao menos um resultado comercial antes de gerar a pauta.");
 
     const input = { affiliate, period: { start: data.periodStart, end: data.periodEnd }, results };
     const agendaId = crypto.randomUUID();
@@ -249,7 +296,8 @@ export const generateMeetingAgenda = createServerFn({ method: "POST" })
       const text = await gerarAnalise({
         apiKey,
         modelo: model,
-        sistema: "Você apoia a gestão de afiliadas ONBIO. Produza pautas objetivas, humanas e comerciais. Use somente os dados recebidos, não invente números e não avalie requisitos de afiliação.",
+        sistema:
+          "Você apoia a gestão de afiliadas ONBIO. Produza pautas objetivas, humanas e comerciais. Use somente os dados recebidos, não invente números e não avalie requisitos de afiliação.",
         usuario: `Crie a pauta da reunião com base nestes resultados comerciais: ${JSON.stringify(input)}.`,
         schema: {
           type: "object",
@@ -262,17 +310,44 @@ export const generateMeetingAgenda = createServerFn({ method: "POST" })
             decisoes_necessarias: { type: "array", items: { type: "string" } },
             proximos_passos: { type: "array", items: { type: "string" } },
           },
-          required: ["resumo_executivo", "conquistas", "pontos_de_atencao", "perguntas", "decisoes_necessarias", "proximos_passos"],
+          required: [
+            "resumo_executivo",
+            "conquistas",
+            "pontos_de_atencao",
+            "perguntas",
+            "decisoes_necessarias",
+            "proximos_passos",
+          ],
         },
       });
       if (!text) throw new Error("A inteligência artificial não retornou uma pauta válida.");
       const parsed = agendaSchema.parse(JSON.parse(text));
-      await context.supabase.from("meeting_agendas").update({ status: "CONCLUIDA", output: parsed as unknown as Json, completed_at: new Date().toISOString() }).eq("id", agendaId);
-      await audit(context.supabase, { tenant_id: data.tenantId, actor_id: context.userId, action: "onbio.agenda_generated", entity: "meeting_agendas", entity_id: agendaId });
+      await context.supabase
+        .from("meeting_agendas")
+        .update({
+          status: "CONCLUIDA",
+          output: parsed as unknown as Json,
+          completed_at: new Date().toISOString(),
+        })
+        .eq("id", agendaId);
+      await audit(context.supabase, {
+        tenant_id: data.tenantId,
+        actor_id: context.userId,
+        action: "onbio.agenda_generated",
+        entity: "meeting_agendas",
+        entity_id: agendaId,
+      });
       return { id: agendaId, output: parsed };
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
-      await context.supabase.from("meeting_agendas").update({ status: "ERRO", error: message.slice(0, 1000), completed_at: new Date().toISOString() }).eq("id", agendaId);
+      await context.supabase
+        .from("meeting_agendas")
+        .update({
+          status: "ERRO",
+          error: message.slice(0, 1000),
+          completed_at: new Date().toISOString(),
+        })
+        .eq("id", agendaId);
       throw new Error(message);
     }
   });
@@ -282,27 +357,60 @@ export const getOnbioDashboard = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => tenantInput.parse(input))
   .handler(async ({ data, context }) => {
     await requireOnbio(context.supabase, data.tenantId);
-    const [{ data: affiliates, error: affiliateError }, { data: results, error: resultError }, { data: tasks, error: taskError }] = await Promise.all([
-      context.supabase.from("influencers").select("id, full_name").eq("tenant_id", data.tenantId).is("archived_at", null),
-      context.supabase.from("commercial_results").select("influencer_id, revenue_cents, orders, commission_cents, period_end").eq("tenant_id", data.tenantId).order("period_end", { ascending: false }),
-      context.supabase.from("tasks").select("id, status, due_date").eq("tenant_id", data.tenantId).neq("status", "CANCELADA"),
+    const [
+      { data: affiliates, error: affiliateError },
+      { data: results, error: resultError },
+      { data: tasks, error: taskError },
+    ] = await Promise.all([
+      context.supabase
+        .from("influencers")
+        .select("id, full_name")
+        .eq("tenant_id", data.tenantId)
+        .is("archived_at", null),
+      context.supabase
+        .from("commercial_results")
+        .select("influencer_id, revenue_cents, orders, commission_cents, period_end")
+        .eq("tenant_id", data.tenantId)
+        .order("period_end", { ascending: false }),
+      context.supabase
+        .from("tasks")
+        .select("id, status, due_date")
+        .eq("tenant_id", data.tenantId)
+        .neq("status", "CANCELADA"),
     ]);
-    if (affiliateError || resultError || taskError) throw new Error(affiliateError?.message ?? resultError?.message ?? taskError?.message ?? "Não foi possível carregar os indicadores.");
+    if (affiliateError || resultError || taskError)
+      throw new Error(
+        affiliateError?.message ??
+          resultError?.message ??
+          taskError?.message ??
+          "Não foi possível carregar os indicadores.",
+      );
     const names = new Map((affiliates ?? []).map((row) => [row.id, row.full_name]));
     const revenue = (results ?? []).reduce((sum, row) => sum + row.revenue_cents, 0);
     const orders = (results ?? []).reduce((sum, row) => sum + row.orders, 0);
     const commission = (results ?? []).reduce((sum, row) => sum + row.commission_cents, 0);
     const today = new Date().toISOString().slice(0, 10);
-    const lateTasks = (tasks ?? []).filter((task) => task.status !== "CONCLUIDA" && task.due_date && task.due_date < today).length;
-    const latest = (results ?? []).slice(0, 8).map((row) => ({ ...row, name: names.get(row.influencer_id) ?? "Afiliada" }));
+    const lateTasks = (tasks ?? []).filter(
+      (task) => task.status !== "CONCLUIDA" && task.due_date && task.due_date < today,
+    ).length;
+    const latest = (results ?? [])
+      .slice(0, 8)
+      .map((row) => ({ ...row, name: names.get(row.influencer_id) ?? "Afiliada" }));
     return { affiliates: affiliates?.length ?? 0, revenue, orders, commission, lateTasks, latest };
   });
 
 export const listMeetingAgendas = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => tenantInput.extend({ influencerId: z.string().uuid() }).parse(input))
+  .inputValidator((input: unknown) =>
+    tenantInput.extend({ influencerId: z.string().uuid() }).parse(input),
+  )
   .handler(async ({ data, context }) => {
-    const { data: rows, error } = await context.supabase.from("meeting_agendas").select("*").eq("tenant_id", data.tenantId).eq("influencer_id", data.influencerId).order("created_at", { ascending: false });
+    const { data: rows, error } = await context.supabase
+      .from("meeting_agendas")
+      .select("*")
+      .eq("tenant_id", data.tenantId)
+      .eq("influencer_id", data.influencerId)
+      .order("created_at", { ascending: false });
     if (error) throw new Error(error.message);
     return rows ?? [];
   });
