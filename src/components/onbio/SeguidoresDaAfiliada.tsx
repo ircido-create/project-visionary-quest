@@ -8,8 +8,10 @@ import { Crescimento, SeloSituacao } from "@/components/onbio/AcompanhamentoSegu
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ROTULO_FONTE } from "@/lib/onbio/seguidores";
+import { INTERVALOS_HORAS, ROTULO_FONTE } from "@/lib/onbio/seguidores";
 import {
+  atualizarSeguidoresAgora,
+  desconectarInstagramPelaGestora,
   getHistoricoSeguidores,
   registrarSeguidoresManual,
 } from "@/lib/onbio/seguidores.functions";
@@ -32,7 +34,9 @@ export function SeguidoresDaAfiliada({
 }) {
   const queryClient = useQueryClient();
   const buscar = useServerFn(getHistoricoSeguidores);
+  const atualizar = useServerFn(atualizarSeguidoresAgora);
   const informar = useServerFn(registrarSeguidoresManual);
+  const desconectar = useServerFn(desconectarInstagramPelaGestora);
   const [manual, setManual] = useState({ seguidores: "", posts: "" });
 
   const consulta = useQuery({
@@ -46,6 +50,18 @@ export function SeguidoresDaAfiliada({
     queryClient.invalidateQueries({ queryKey: ["mcb", "influencer", tenantId, influencerId] });
     queryClient.invalidateQueries({ queryKey: ["mcb", "influencers", tenantId] });
   };
+
+  const atualizacao = useMutation({
+    mutationFn: () => atualizar({ data: { tenantId, influencerId } }),
+    onSuccess: (r) => {
+      toast.success(`Seguidores atualizados: ${numero(r.seguidores)}.`);
+      invalidar();
+    },
+    onError: (erro: Error) => {
+      toast.error(erro.message);
+      invalidar();
+    },
+  });
 
   const registro = useMutation({
     mutationFn: () =>
@@ -65,8 +81,20 @@ export function SeguidoresDaAfiliada({
     onError: (erro: Error) => toast.error(erro.message),
   });
 
+  const remocao = useMutation({
+    mutationFn: () => desconectar({ data: { tenantId, influencerId } }),
+    onSuccess: () => {
+      toast.success("Instagram desconectado. O token foi apagado.");
+      invalidar();
+    },
+    onError: (erro: Error) => toast.error(erro.message),
+  });
+
   const dados = consulta.data;
   const atual = dados?.historico[0] ?? null;
+  const intervalo = INTERVALOS_HORAS.find(
+    (i) => i.horas === dados?.intervaloHoras,
+  )?.rotulo.toLowerCase();
 
   return (
     <section className="glass rounded-xl border border-border/60 p-6 lg:col-span-2">
@@ -108,7 +136,9 @@ export function SeguidoresDaAfiliada({
             <div>
               <p className="text-xs text-muted-foreground">Última atualização</p>
               <p className="mt-2 text-sm">{dataHora(atual?.data)}</p>
-              {dados.conexao ? <p className="text-xs text-muted-foreground">Atualizado pela afiliada</p> : null}
+              {dados.conexao ? (
+                <p className="text-xs text-muted-foreground">Consulta automática {intervalo}</p>
+              ) : null}
             </div>
           </div>
 
@@ -120,12 +150,38 @@ export function SeguidoresDaAfiliada({
           ) : null}
 
           <div className="mt-4 flex flex-wrap gap-2">
-            {!dados.conexao ? (
+            {dados.conexao ? (
+              <>
+                <Button
+                  size="sm"
+                  onClick={() => atualizacao.mutate()}
+                  disabled={readOnly || atualizacao.isPending}
+                >
+                  {atualizacao.isPending ? "Atualizando…" : "Atualizar seguidores"}
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  disabled={readOnly || remocao.isPending}
+                  onClick={() => {
+                    if (
+                      window.confirm(
+                        "Desconectar o Instagram desta afiliada? A consulta automática para e o token é apagado.",
+                      )
+                    ) {
+                      remocao.mutate();
+                    }
+                  }}
+                >
+                  Desconectar Instagram
+                </Button>
+              </>
+            ) : (
               <p className="text-sm text-muted-foreground">
-                Para a consulta oficial, a afiliada autoriza a própria conta profissional em “Seu
+                Para a consulta automática, a afiliada autoriza a própria conta profissional em “Seu
                 acompanhamento”. Use “Copiar acesso da afiliada” para enviar o link.
               </p>
-            ) : <p className="text-sm text-muted-foreground">A afiliada atualiza ou desconecta o Instagram pelo próprio acompanhamento.</p>}
+            )}
           </div>
 
           <form
@@ -185,7 +241,7 @@ export function SeguidoresDaAfiliada({
               <table className="mt-2 w-full min-w-[640px] text-sm">
                 <thead className="text-left text-xs text-muted-foreground">
                   <tr>
-                    <th className="py-2 pr-3">Data da atualização</th>
+                    <th className="py-2 pr-3">Data da consulta</th>
                     <th className="py-2 pr-3 text-right">Anterior</th>
                     <th className="py-2 pr-3 text-right">Atual</th>
                     <th className="py-2 pr-3">Variação</th>

@@ -1,17 +1,21 @@
 import { Link } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useMemo, useState } from "react";
+import { toast } from "sonner";
 
 import { StatCard } from "@/components/mcb/AppShell";
 import { BotaoExportar } from "@/components/mcb/BotaoExportar";
 import { Input } from "@/components/ui/input";
 import {
+  INTERVALOS_HORAS,
   ROTULO_FONTE,
   ROTULO_SITUACAO,
   type SituacaoIntegracao,
 } from "@/lib/onbio/seguidores";
 import {
+  atualizarSeguidoresAgora,
+  definirIntervaloInstagram,
   exportarRelatorioSeguidores,
   getPainelSeguidores,
 } from "@/lib/onbio/seguidores.functions";
@@ -91,14 +95,18 @@ export function Crescimento({
  */
 export function AcompanhamentoSeguidores({
   tenantId,
+  readOnly,
   modo,
 }: {
   tenantId: string;
   readOnly: boolean;
   modo: "painel" | "lista";
 }) {
+  const queryClient = useQueryClient();
   const buscar = useServerFn(getPainelSeguidores);
   const exportar = useServerFn(exportarRelatorioSeguidores);
+  const atualizar = useServerFn(atualizarSeguidoresAgora);
+  const salvarIntervalo = useServerFn(definirIntervaloInstagram);
 
   const [periodoEscolhido, setPeriodoEscolhido] =
     useState<(typeof PERIODOS)[number]["valor"]>("30");
@@ -131,6 +139,33 @@ export function AcompanhamentoSeguidores({
     );
   }, [consulta.data, busca, situacao]);
 
+  const invalidar = () => {
+    queryClient.invalidateQueries({ queryKey: ["onbio", "seguidores", tenantId] });
+    queryClient.invalidateQueries({ queryKey: ["onbio", "historico"] });
+    queryClient.invalidateQueries({ queryKey: ["mcb", "influencers", tenantId] });
+  };
+
+  const atualizacao = useMutation({
+    mutationFn: (influencerId: string) => atualizar({ data: { tenantId, influencerId } }),
+    onSuccess: (r) => {
+      toast.success(`Seguidores atualizados: ${numero(r.seguidores)}.`);
+      invalidar();
+    },
+    onError: (erro: Error) => {
+      toast.error(erro.message);
+      invalidar();
+    },
+  });
+
+  const intervalo = useMutation({
+    mutationFn: (horas: 6 | 12 | 24 | 48 | 168) => salvarIntervalo({ data: { tenantId, horas } }),
+    onSuccess: () => {
+      toast.success("Intervalo de atualização salvo.");
+      invalidar();
+    },
+    onError: (erro: Error) => toast.error(erro.message),
+  });
+
   const dados = consulta.data;
   const resumo = dados?.resumo;
 
@@ -145,7 +180,21 @@ export function AcompanhamentoSeguidores({
                 Última atualização: {dataHora(resumo.ultimaAtualizacao)}
               </p>
             </div>
-            <p className="max-w-sm text-xs text-muted-foreground">Os dados oficiais são atualizados quando a afiliada autoriza a conta ou toca em “Atualizar agora” no próprio acompanhamento.</p>
+            <label className="grid gap-1 text-xs text-muted-foreground">
+              Consulta automática
+              <select
+                className="h-9 rounded-md border border-input bg-background px-2 text-sm text-foreground"
+                value={dados.intervaloHoras}
+                disabled={readOnly || intervalo.isPending}
+                onChange={(e) => intervalo.mutate(Number(e.target.value) as 6 | 12 | 24 | 48 | 168)}
+              >
+                {INTERVALOS_HORAS.map((i) => (
+                  <option key={i.horas} value={i.horas}>
+                    {i.rotulo}
+                  </option>
+                ))}
+              </select>
+            </label>
           </div>
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
             <StatCard label="Afiliadas cadastradas" value={resumo.total} />
@@ -278,7 +327,7 @@ export function AcompanhamentoSeguidores({
                   <th className="py-2 pr-4">Crescimento</th>
                   <th className="py-2 pr-4">Atualização</th>
                   <th className="py-2 pr-4">Integração</th>
-                  <th className="py-2 text-right">Ação</th>
+                  <th className="py-2 text-right">Ações</th>
                 </tr>
               </thead>
               <tbody>
@@ -338,7 +387,18 @@ export function AcompanhamentoSeguidores({
                         >
                           Histórico
                         </Link>
-                        {a.situacao === "PENDENTE" ? (
+                        {a.situacao !== "PENDENTE" ? (
+                          <button
+                            type="button"
+                            className="underline underline-offset-4 disabled:opacity-50"
+                            disabled={readOnly || atualizacao.isPending}
+                            onClick={() => atualizacao.mutate(a.id)}
+                          >
+                            {atualizacao.isPending && atualizacao.variables === a.id
+                              ? "Atualizando…"
+                              : "Atualizar seguidores"}
+                          </button>
+                        ) : (
                           <Link
                             to="/candidatas/$id"
                             params={{ id: a.id }}
@@ -346,7 +406,7 @@ export function AcompanhamentoSeguidores({
                           >
                             Conectar ou informar
                           </Link>
-                        ) : null}
+                        )}
                       </div>
                     </td>
                   </tr>

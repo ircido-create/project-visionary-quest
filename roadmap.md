@@ -524,15 +524,17 @@ Montada em 2026-09-14, com medição antes de mexer.
 
 ### ONBIO — seguidores autorizados (2026-09-17)
 - [x] Situação da integração por afiliada: Conectado, Pendente ou Erro (sem expor token).
-- [x] Sem rotina diária: a importação acontece na autorização e a atualização é solicitada
-      somente pela própria afiliada em “Seu acompanhamento”. O token é renovado perto do vencimento.
-- [x] Gestora visualiza situação, data e histórico, mas não usa o token nem sincroniza pela afiliada.
+- [x] Rotina automática (restaurada em 2026-09-17 a pedido): `pg_cron` chama
+      `/api/rotinas/instagram` de hora em hora com o segredo `MCB_ROTINA_INSTAGRAM` do Vault;
+      cada conta autorizada é consultada no intervalo do ambiente (6 h a 7 dias, padrão 24 h).
+      O token é renovado perto do vencimento e nunca chega ao navegador.
+- [x] Botão "Atualizar seguidores" na gestão (uma consulta a cada 5 min por conta) e no portal.
 - [x] Histórico com anterior, atual, variação absoluta e percentual (sem percentual sobre zero).
 - [x] Painel: afiliadas, conectadas, pendentes, soma só das contas lidas na Meta, crescimento
       no período, última atualização; filtros por nome, @, período e integração.
 - [x] Relatório por período exportado em CSV (abre no Excel).
 - [x] Número manual marcado como "informado manualmente", fora da soma da Meta.
-- [x] A própria afiliada pode desconectar a conta (token apagado do Vault); o histórico permanece.
+- [x] A afiliada (portal) ou a dona/administradora (gestão) desconecta a conta; o token sai do Vault e o histórico permanece.
 - [x] Exclusão definitiva pela dona ou administradora, com confirmação pelo e-mail: apaga
       os dados e arquivos da afiliada na ONBIO, mas preserva a conta de acesso e vínculos
       de identidade com outros ambientes.
