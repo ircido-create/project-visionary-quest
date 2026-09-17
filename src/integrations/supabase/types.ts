@@ -1374,6 +1374,7 @@ export type Database = {
           created_at: string
           created_by: string | null
           id: string
+          instagram_intervalo_horas: number
           is_demo: boolean
           is_listed_on_home: boolean
           is_public_page_enabled: boolean
@@ -1392,6 +1393,7 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           id?: string
+          instagram_intervalo_horas?: number
           is_demo?: boolean
           is_listed_on_home?: boolean
           is_public_page_enabled?: boolean
@@ -1410,6 +1412,7 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           id?: string
+          instagram_intervalo_horas?: number
           is_demo?: boolean
           is_listed_on_home?: boolean
           is_public_page_enabled?: boolean
@@ -1509,6 +1512,17 @@ export type Database = {
         }
         Returns: boolean
       }
+      instagram_conexoes_do_ambiente: {
+        Args: { p_tenant: string }
+        Returns: {
+          conectado_em: string
+          expira_em: string
+          influencer_id: string
+          ultimo_erro: string
+          ultimo_sync: string
+          usuario: string
+        }[]
+      }
       instagram_connect: {
         Args: {
           p_expires_at: string
@@ -1520,8 +1534,38 @@ export type Database = {
         }
         Returns: undefined
       }
+      instagram_definir_intervalo: {
+        Args: { p_horas: number; p_tenant: string }
+        Returns: undefined
+      }
+      instagram_desconectar_pela_gestora: {
+        Args: { p_influencer_id: string }
+        Returns: undefined
+      }
       instagram_disconnect: {
         Args: { p_influencer_id: string }
+        Returns: undefined
+      }
+      instagram_erro_servico: {
+        Args: { p_erro: string; p_influencer_id: string }
+        Returns: undefined
+      }
+      instagram_fila_de_atualizacao: {
+        Args: { p_limite?: number }
+        Returns: {
+          expira_em: string
+          influencer_id: string
+          tenant_id: string
+          usuario: string
+        }[]
+      }
+      instagram_gravar_servico: {
+        Args: {
+          p_ator: string
+          p_followers: number
+          p_influencer_id: string
+          p_posts: number
+        }
         Returns: undefined
       }
       instagram_qualification_input: {
@@ -1547,8 +1591,17 @@ export type Database = {
         }
         Returns: undefined
       }
+      instagram_renovar_token_servico: {
+        Args: { p_expira_em: string; p_influencer_id: string; p_token: string }
+        Returns: undefined
+      }
+      instagram_segredo_da_rotina: { Args: never; Returns: string }
       instagram_status: { Args: { p_influencer_id: string }; Returns: Json }
       instagram_token: { Args: { p_influencer_id: string }; Returns: string }
+      instagram_token_servico: {
+        Args: { p_influencer_id: string }
+        Returns: string
+      }
       is_influencer_owner: {
         Args: { p_influencer_id: string }
         Returns: boolean
