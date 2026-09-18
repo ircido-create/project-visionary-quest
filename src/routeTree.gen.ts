@@ -25,6 +25,7 @@ import { Route as AuthenticatedCandidatasIndexRouteImport } from './routes/_auth
 import { Route as AuthenticatedCandidatasIdRouteImport } from './routes/_authenticated/candidatas.$id'
 import { Route as AuthenticatedInstagramRetornoRouteImport } from './routes/_authenticated/instagram.retorno'
 import { Route as AuthenticatedRelatorioIdRouteImport } from './routes/_authenticated/relatorio.$id'
+import { Route as ApiPagamentosAsaasRouteImport } from './routes/api/pagamentos/asaas'
 import { Route as ApiRotinasInstagramRouteImport } from './routes/api/rotinas/instagram'
 import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
 import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
@@ -113,6 +114,11 @@ const AuthenticatedRelatorioIdRoute =
     path: '/relatorio/$id',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const ApiPagamentosAsaasRoute = ApiPagamentosAsaasRouteImport.update({
+  id: '/api/pagamentos/asaas',
+  path: '/api/pagamentos/asaas',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiRotinasInstagramRoute = ApiRotinasInstagramRouteImport.update({
   id: '/api/rotinas/instagram',
   path: '/api/rotinas/instagram',
@@ -144,6 +150,7 @@ export interface FileRoutesByFullPath {
   '/candidatas/$id': typeof AuthenticatedCandidatasIdRoute
   '/instagram/retorno': typeof AuthenticatedInstagramRetornoRoute
   '/relatorio/$id': typeof AuthenticatedRelatorioIdRoute
+  '/api/pagamentos/asaas': typeof ApiPagamentosAsaasRoute
   '/api/rotinas/instagram': typeof ApiRotinasInstagramRoute
   '/candidatas/': typeof AuthenticatedCandidatasIndexRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
@@ -164,6 +171,7 @@ export interface FileRoutesByTo {
   '/candidatas/$id': typeof AuthenticatedCandidatasIdRoute
   '/instagram/retorno': typeof AuthenticatedInstagramRetornoRoute
   '/relatorio/$id': typeof AuthenticatedRelatorioIdRoute
+  '/api/pagamentos/asaas': typeof ApiPagamentosAsaasRoute
   '/api/rotinas/instagram': typeof ApiRotinasInstagramRoute
   '/candidatas': typeof AuthenticatedCandidatasIndexRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
@@ -186,6 +194,7 @@ export interface FileRoutesById {
   '/_authenticated/candidatas/$id': typeof AuthenticatedCandidatasIdRoute
   '/_authenticated/instagram/retorno': typeof AuthenticatedInstagramRetornoRoute
   '/_authenticated/relatorio/$id': typeof AuthenticatedRelatorioIdRoute
+  '/api/pagamentos/asaas': typeof ApiPagamentosAsaasRoute
   '/api/rotinas/instagram': typeof ApiRotinasInstagramRoute
   '/_authenticated/candidatas/': typeof AuthenticatedCandidatasIndexRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
@@ -208,6 +217,7 @@ export interface FileRouteTypes {
     | '/candidatas/$id'
     | '/instagram/retorno'
     | '/relatorio/$id'
+    | '/api/pagamentos/asaas'
     | '/api/rotinas/instagram'
     | '/candidatas/'
     | '/lovable/email/auth/preview'
@@ -228,6 +238,7 @@ export interface FileRouteTypes {
     | '/candidatas/$id'
     | '/instagram/retorno'
     | '/relatorio/$id'
+    | '/api/pagamentos/asaas'
     | '/api/rotinas/instagram'
     | '/candidatas'
     | '/lovable/email/auth/preview'
@@ -249,6 +260,7 @@ export interface FileRouteTypes {
     | '/_authenticated/candidatas/$id'
     | '/_authenticated/instagram/retorno'
     | '/_authenticated/relatorio/$id'
+    | '/api/pagamentos/asaas'
     | '/api/rotinas/instagram'
     | '/_authenticated/candidatas/'
     | '/lovable/email/auth/preview'
@@ -263,6 +275,7 @@ export interface RootRouteChildren {
   ResetPasswordRoute: typeof ResetPasswordRoute
   TermosRoute: typeof TermosRoute
   GSlugRoute: typeof GSlugRoute
+  ApiPagamentosAsaasRoute: typeof ApiPagamentosAsaasRoute
   ApiRotinasInstagramRoute: typeof ApiRotinasInstagramRoute
   LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
   LovableEmailAuthWebhookRoute: typeof LovableEmailAuthWebhookRoute
@@ -382,6 +395,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRelatorioIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/api/pagamentos/asaas': {
+      id: '/api/pagamentos/asaas'
+      path: '/api/pagamentos/asaas'
+      fullPath: '/api/pagamentos/asaas'
+      preLoaderRoute: typeof ApiPagamentosAsaasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/rotinas/instagram': {
       id: '/api/rotinas/instagram'
       path: '/api/rotinas/instagram'
@@ -441,6 +461,7 @@ const rootRouteChildren: RootRouteChildren = {
   ResetPasswordRoute: ResetPasswordRoute,
   TermosRoute: TermosRoute,
   GSlugRoute: GSlugRoute,
+  ApiPagamentosAsaasRoute: ApiPagamentosAsaasRoute,
   ApiRotinasInstagramRoute: ApiRotinasInstagramRoute,
   LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,
   LovableEmailAuthWebhookRoute: LovableEmailAuthWebhookRoute,

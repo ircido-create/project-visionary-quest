@@ -8,6 +8,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
+import { AssinarComAsaas } from "@/components/mcb/AssinarComAsaas";
 import {
   DIAS_DE_ARREPENDIMENTO,
   estadoDaAssinatura,
@@ -87,6 +88,8 @@ export function AssinaturaSection({ tenantId }: { tenantId: string }) {
           </ul>
         </div>
       ) : null}
+
+      {resumo.souDona ? <AssinarComAsaas tenantId={tenantId} /> : null}
 
       {podeCancelar ? (
         <div className="mt-5">
