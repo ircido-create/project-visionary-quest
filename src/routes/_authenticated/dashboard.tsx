@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 
 import { AppShell, StatCard } from "@/components/mcb/AppShell";
+import { PautaSection } from "@/components/mcb/PautaSection";
 import { AvisoAssinaturaCard } from "@/components/mcb/AvisoAssinaturaCard";
 import { AvisoInatividadeCard } from "@/components/mcb/AvisoInatividadeCard";
 import { PrimeirosPassosCard } from "@/components/mcb/PrimeirosPassosCard";
@@ -93,6 +94,8 @@ function DashboardPage() {
               hint="seguidores desde a entrada"
             />
           </div>
+
+          {tenantId ? <PautaSection tenantId={tenantId} readOnly={readOnly} /> : null}
 
           <section className="glass rounded-xl border border-border/60 p-6">
             <h2 className="font-serif text-xl">Funil da jornada</h2>

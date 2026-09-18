@@ -70,23 +70,23 @@ export const getPortal = createServerFn({ method: "POST" })
 
     const brutas = (data ?? []) as Array<Omit<PortalApplication, "requisitos">>;
     return {
-      applications: brutas.map((inscrição): PortalApplication => ({
-        ...candidatura,
+      applications: brutas.map((inscricao): PortalApplication => ({
+        ...inscricao,
         requisitos:
-          candidatura.modulo === "ONBIO"
+          inscricao.modulo === "ONBIO"
             ? []
             : requisitosParaCandidata(
                 evaluateQualification({
-                  followers: candidatura.metricas.seguidores,
-                  postsCount: candidatura.metricas.publicacoes,
-                  recentPosts6m: candidatura.metricas.recentes_6m ?? null,
-                  profileType: candidatura.metricas.tipo_perfil ?? null,
+                  followers: inscricao.metricas.seguidores,
+                  postsCount: inscricao.metricas.publicacoes,
+                  recentPosts6m: inscricao.metricas.recentes_6m ?? null,
+                  profileType: inscricao.metricas.tipo_perfil ?? null,
                   femaleAudiencePct:
-                    candidatura.metricas.publico_feminino_pct === null
+                    inscricao.metricas.publico_feminino_pct === null
                       ? null
-                      : Number(candidatura.metricas.publico_feminino_pct),
-                  source: candidatura.metricas.fonte ?? "MANUAL",
-                  capturedAt: candidatura.metricas.atualizado_em ?? null,
+                      : Number(inscricao.metricas.publico_feminino_pct),
+                  source: inscricao.metricas.fonte ?? "MANUAL",
+                  capturedAt: inscricao.metricas.atualizado_em ?? null,
                 }).requirements,
               ),
       })),

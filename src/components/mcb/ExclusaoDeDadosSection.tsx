@@ -57,9 +57,9 @@ export function ExclusaoDeDadosSection() {
     mutationFn: (afiliada: CandidataParaExclusao) =>
       excluir({
         data: {
-          influencerId: candidata.id,
+          influencerId: afiliada.id,
           confirmacao,
-          excluirConta: excluirConta && candidata.motivoParaManterConta === null,
+          excluirConta: excluirConta && afiliada.motivoParaManterConta === null,
         },
       }),
     onSuccess: (r, afiliada) => {
@@ -71,7 +71,7 @@ export function ExclusaoDeDadosSection() {
         `Dados excluídos: ${resumoExclusao(r.contagem)}${arquivos}. Conta de acesso: ${DESTINO_DA_CONTA[r.conta]}.`,
       );
       if (r.aviso) toast.warning(r.aviso);
-      setResultados((atual) => atual?.filter((c) => c.id !== candidata.id) ?? null);
+      setResultados((atual) => atual?.filter((c) => c.id !== afiliada.id) ?? null);
       escolher(null);
       queryClient.invalidateQueries({ queryKey: ["mcb", "admin", "overview"] });
     },

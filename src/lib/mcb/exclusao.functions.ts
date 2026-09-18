@@ -166,20 +166,20 @@ export const excluirCandidata = createServerFn({ method: "POST" })
       .maybeSingle();
     if (error) throw new Error(error.message);
     if (!afiliada) throw new Error("Afiliada não encontrada — talvez já tenha sido excluída.");
-    if (!confirmacaoConfere(data.confirmacao, candidata.email)) {
+    if (!confirmacaoConfere(data.confirmacao, afiliada.email)) {
       throw new Error("A confirmação não confere com o e-mail da afiliada. Nada foi apagado.");
     }
 
     // A conta é avaliada antes: depois da exclusão, esta inscrição some da contagem.
-    const contaId = candidata.user_id;
-    const situacao = await situacaoDaConta(supabaseAdmin, contaId, candidata.id);
+    const contaId = afiliada.user_id;
+    const situacao = await situacaoDaConta(supabaseAdmin, contaId, afiliada.id);
 
     // 1. Arquivos: o que está na pasta e o que está registrado, para não sobrar nada.
     const [listagem, registros] = await Promise.all([
       supabaseAdmin.storage
         .from(EVIDENCE_BUCKET)
-        .list(`${candidata.tenant_id}/${candidata.id}`, { limit: 1000 }),
-      supabaseAdmin.from("files").select("storage_path").eq("influencer_id", candidata.id),
+        .list(`${afiliada.tenant_id}/${afiliada.id}`, { limit: 1000 }),
+      supabaseAdmin.from("files").select("storage_path").eq("influencer_id", afiliada.id),
     ]);
     if (listagem.error) {
       throw new Error(
@@ -190,8 +190,8 @@ export const excluirCandidata = createServerFn({ method: "POST" })
     const caminhos = [
       ...new Set([
         ...caminhosDeEvidencia(
-          candidata.tenant_id,
-          candidata.id,
+          afiliada.tenant_id,
+          afiliada.id,
           (listagem.data ?? []).map((o) => o.name),
         ),
         ...(registros.data ?? []).map((r) => r.storage_path),
@@ -210,7 +210,7 @@ export const excluirCandidata = createServerFn({ method: "POST" })
 
     // 2. Banco: token do Vault, afiliada com a cascata e o registro no log.
     const { data: contagem, error: erroBanco } = await supabaseAdmin.rpc("excluir_candidata", {
-      p_influencer_id: candidata.id,
+      p_influencer_id: afiliada.id,
       p_actor: userId,
     });
     if (erroBanco) {
@@ -239,11 +239,11 @@ export const excluirCandidata = createServerFn({ method: "POST" })
             .eq("id", contaId);
           if (erroPerfil) aviso = `A conta foi apagada, mas o perfil não (${erroPerfil.message}).`;
           await audit(supabaseAdmin, {
-            tenant_id: candidata.tenant_id,
+            tenant_id: afiliada.tenant_id,
             actor_id: userId,
             action: "candidata.conta_excluida",
             entity: "influencers",
-            entity_id: candidata.id,
+            entity_id: afiliada.id,
           });
         }
       }

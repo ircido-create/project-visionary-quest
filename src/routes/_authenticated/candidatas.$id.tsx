@@ -42,6 +42,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { CommercialResultsSection } from "@/components/onbio/CommercialResultsSection";
 import { SeguidoresDaAfiliada } from "@/components/onbio/SeguidoresDaAfiliada";
+import { PautaSection } from "@/components/mcb/PautaSection";
 import { deleteOnbioAffiliate } from "@/lib/onbio/onbio.functions";
 
 export const Route = createFileRoute("/_authenticated/candidatas/$id")({
@@ -533,6 +534,12 @@ function CandidateDetail() {
               ))}
             </ul>
           </section>
+          <PautaSection
+            tenantId={tenantId!}
+            influencerId={id}
+            readOnly={readOnly}
+            className="lg:col-span-3"
+          />
           <CommercialResultsSection tenantId={tenantId!} influencerId={id} readOnly={readOnly} />
           <EvidenceSection tenantId={tenantId!} influencerId={id} readOnly={readOnly} />
         </div>
@@ -1077,6 +1084,13 @@ function CandidateDetail() {
 
         {/* Só leitura: quem conecta e desconecta é a afiliada, no portal dela. */}
         <InstagramSection influencerId={id} podeGerenciar={false} />
+
+        <PautaSection
+          tenantId={tenantId!}
+          influencerId={id}
+          readOnly={readOnly}
+          className="lg:col-span-3"
+        />
 
         <section className="glass rounded-xl border border-border/60 p-6 lg:col-span-3">
           <h2 className="font-serif text-xl">Histórico de status</h2>

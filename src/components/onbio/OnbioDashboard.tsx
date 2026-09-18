@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 
 import { AppShell, StatCard } from "@/components/mcb/AppShell";
+import { PautaSection } from "@/components/mcb/PautaSection";
 import { AcompanhamentoSeguidores } from "@/components/onbio/AcompanhamentoSeguidores";
 import { Button } from "@/components/ui/button";
 import { useWorkspace } from "@/lib/mcb/useWorkspace";
@@ -44,6 +45,7 @@ export function OnbioDashboard({ tenantId }: { tenantId: string }) {
             />
           </div>
           <AcompanhamentoSeguidores tenantId={tenantId} readOnly={readOnly} modo="painel" />
+          <PautaSection tenantId={tenantId} readOnly={readOnly} />
           <section className="glass rounded-xl border border-border/60 p-6">
             <h2 className="text-xl font-semibold">Resultados recentes</h2>
             {query.data.latest.length ? (

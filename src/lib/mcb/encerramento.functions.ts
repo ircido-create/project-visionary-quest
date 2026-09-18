@@ -107,7 +107,7 @@ export const exportarTudo = createServerFn({ method: "POST" })
     if (!ambiente.data) throw new Error("Ambiente não encontrado.");
 
     const dados = {
-      afiliadas: candidatas.data ?? [],
+      afiliadas: afiliadas.data ?? [],
       inscricoes: inscricoes.data ?? [],
       tarefas: tarefas.data ?? [],
       notas: notas.data ?? [],

@@ -255,7 +255,7 @@ export const criarTarefasDeModelos = createServerFn({ method: "POST" })
         .eq("influencer_id", data.influencerId),
     ]);
     for (const r of [afiliada, modelos, tarefas]) if (r.error) throw new Error(r.error.message);
-    if (!candidata.data) throw new Error("Afiliada não encontrada neste ambiente.");
+    if (!afiliada.data) throw new Error("Afiliada não encontrada neste ambiente.");
 
     // Dois cliques, ou duas abas abertas, não duplicam a tarefa.
     const faltam = modelosQueFaltam((modelos.data ?? []) as ModeloTarefa[], tarefas.data ?? []);

@@ -75,7 +75,7 @@ export const obterPrimeirosPassos = createServerFn({ method: "POST" })
       listadaNoMcb: ambiente.data.is_listed_on_home,
       paginaAjustada: paginaFoiAjustada(ambiente.data.created_at, marca.data?.updated_at ?? null),
       modelosCarregados: (modelos.count ?? 0) > 0,
-      primeiraCandidata: (candidatas.count ?? 0) > 0,
+      primeiraCandidata: (afiliadas.count ?? 0) > 0,
       // Quem criou o ambiente já é membro: equipe convidada é convite enviado ou mais alguém.
       equipeConvidada: (convites.count ?? 0) > 0 || (membros.count ?? 0) > 1,
     };

@@ -87,7 +87,7 @@ function Ambiente({
         <div>
           <dt className="text-xs uppercase tracking-wide text-muted-foreground">Afiliadas</dt>
           <dd className="mt-1">
-            <Uso atual={ambiente.uso.candidatas} limite={ambiente.limites?.candidatas ?? null} />
+            <Uso atual={ambiente.uso.afiliadas} limite={ambiente.limites?.afiliadas ?? null} />
           </dd>
         </div>
         <div>
