@@ -8,7 +8,7 @@
  * ORDEM, e o que acontece se algo falhar no meio:
  *
  * 1. Arquivos no Storage. Se falhar, nada foi apagado.
- * 2. Banco, pela função `excluir_candidata`: token do Vault, candidata com a cascata e o
+ * 2. Banco, pela função `excluir_candidata`: token do Vault, afiliada com a cascata e o
  *    registro no log, numa transação. Se falhar, os arquivos já foram — repetir a
  *    exclusão retoma daqui, porque a pasta estará vazia.
  * 3. Conta de acesso, só se pedida e se ela não serve a mais nada. Se falhar, os dados já
@@ -83,7 +83,7 @@ export type CandidataParaExclusao = {
   arquivos: number;
 };
 
-/** Acha as candidaturas com aquele e-mail, em todos os ambientes. */
+/** Acha as inscrições com aquele e-mail, em todos os ambientes. */
 export const buscarParaExclusao = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: { email: string }) =>
@@ -159,18 +159,18 @@ export const excluirCandidata = createServerFn({ method: "POST" })
     await exigirSuperadmin(context.supabase, userId);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
-    const { data: candidata, error } = await supabaseAdmin
+    const { data: afiliada, error } = await supabaseAdmin
       .from("influencers")
       .select("id, tenant_id, email, user_id")
       .eq("id", data.influencerId)
       .maybeSingle();
     if (error) throw new Error(error.message);
-    if (!candidata) throw new Error("Candidata não encontrada — talvez já tenha sido excluída.");
+    if (!afiliada) throw new Error("Afiliada não encontrada — talvez já tenha sido excluída.");
     if (!confirmacaoConfere(data.confirmacao, candidata.email)) {
-      throw new Error("A confirmação não confere com o e-mail da candidata. Nada foi apagado.");
+      throw new Error("A confirmação não confere com o e-mail da afiliada. Nada foi apagado.");
     }
 
-    // A conta é avaliada antes: depois da exclusão, esta candidatura some da contagem.
+    // A conta é avaliada antes: depois da exclusão, esta inscrição some da contagem.
     const contaId = candidata.user_id;
     const situacao = await situacaoDaConta(supabaseAdmin, contaId, candidata.id);
 
@@ -208,7 +208,7 @@ export const excluirCandidata = createServerFn({ method: "POST" })
       }
     }
 
-    // 2. Banco: token do Vault, candidata com a cascata e o registro no log.
+    // 2. Banco: token do Vault, afiliada com a cascata e o registro no log.
     const { data: contagem, error: erroBanco } = await supabaseAdmin.rpc("excluir_candidata", {
       p_influencer_id: candidata.id,
       p_actor: userId,

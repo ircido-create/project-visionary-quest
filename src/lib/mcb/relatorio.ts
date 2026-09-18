@@ -2,7 +2,7 @@
  * Fase 5 — Relatório de evolução: o que entra no documento, sem rede nem tela.
  *
  * O relatório existe para sair da plataforma: a gestora salva em PDF pelo navegador e
- * manda à candidata ou a quem avalia (decisão de 2026-09-12 — sem link público). Por
+ * manda à afiliada ou a quem avalia (decisão de 2026-09-12 — sem link público). Por
  * isso a página mostra uma lista fechada: identificação pública (nome, @, cidade),
  * números, requisitos e tarefas. Contato (e-mail, telefone), notas internas, leitura da
  * IA e prints de evidência não entram, mesmo estando nos dados que a página recebe.

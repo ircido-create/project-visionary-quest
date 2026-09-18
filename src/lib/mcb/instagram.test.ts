@@ -22,7 +22,7 @@ describe("url de autorização", () => {
     );
 
   it("aponta para o domínio do Instagram, não o do Facebook", () => {
-    // O caminho pelo Facebook exigiria Página vinculada, que as candidatas não têm.
+    // O caminho pelo Facebook exigiria Página vinculada, que as afiliadas não têm.
     expect(url().host).toBe("www.instagram.com");
   });
 

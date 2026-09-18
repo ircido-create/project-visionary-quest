@@ -38,8 +38,8 @@ export function ExclusaoDeDadosSection() {
   const [confirmacao, setConfirmacao] = useState("");
   const [excluirConta, setExcluirConta] = useState(true);
 
-  const escolher = (candidata: CandidataParaExclusao | null) => {
-    setAlvo(candidata);
+  const escolher = (afiliada: CandidataParaExclusao | null) => {
+    setAlvo(afiliada);
     setConfirmacao("");
     setExcluirConta(true);
   };
@@ -54,7 +54,7 @@ export function ExclusaoDeDadosSection() {
   });
 
   const exclusao = useMutation({
-    mutationFn: (candidata: CandidataParaExclusao) =>
+    mutationFn: (afiliada: CandidataParaExclusao) =>
       excluir({
         data: {
           influencerId: candidata.id,
@@ -62,7 +62,7 @@ export function ExclusaoDeDadosSection() {
           excluirConta: excluirConta && candidata.motivoParaManterConta === null,
         },
       }),
-    onSuccess: (r, candidata) => {
+    onSuccess: (r, afiliada) => {
       const arquivos =
         r.arquivosNoArmazenamento > 0
           ? `; ${r.arquivosNoArmazenamento} arquivo(s) no armazenamento`
@@ -84,7 +84,7 @@ export function ExclusaoDeDadosSection() {
     <section className="glass rounded-xl border border-border/60 p-6">
       <h2 className="font-serif text-xl">Exclusão de dados a pedido</h2>
       <p className="mt-1 text-sm text-muted-foreground">
-        Quando uma candidata pedir a exclusão dos dados, busque pelo e-mail dela. A exclusão é
+        Quando uma afiliada pedir a exclusão dos dados, busque pelo e-mail dela. A exclusão é
         definitiva: apaga cadastro, inscrição, consentimentos, tarefas, notas, números, avaliações,
         análises e arquivos. No log fica só o registro de que houve a exclusão, sem nome nem e-mail.
       </p>
@@ -97,7 +97,7 @@ export function ExclusaoDeDadosSection() {
         }}
       >
         <div className="grid gap-1.5">
-          <Label htmlFor="exclusao-email">E-mail da candidata</Label>
+          <Label htmlFor="exclusao-email">E-mail da afiliada</Label>
           <Input
             id="exclusao-email"
             type="email"
@@ -114,7 +114,7 @@ export function ExclusaoDeDadosSection() {
 
       {resultados !== null && resultados.length === 0 ? (
         <p className="mt-4 text-sm text-muted-foreground">
-          Nenhuma candidatura com esse e-mail, em nenhum ambiente.
+          Nenhuma inscrição com esse e-mail, em nenhum ambiente.
         </p>
       ) : null}
 
@@ -126,7 +126,7 @@ export function ExclusaoDeDadosSection() {
                 <div>
                   <p className="font-medium">{c.nome}</p>
                   <p className="text-xs text-muted-foreground">
-                    {c.email} · {c.ambiente} · candidatura em{" "}
+                    {c.email} · {c.ambiente} · inscrição em{" "}
                     {new Date(c.criadaEm).toLocaleDateString("pt-BR")}
                   </p>
                   <p className="text-xs text-muted-foreground">
@@ -136,7 +136,7 @@ export function ExclusaoDeDadosSection() {
                 </div>
                 {alvo?.id === c.id ? null : (
                   <Button type="button" size="sm" variant="outline" onClick={() => escolher(c)}>
-                    Excluir esta candidatura
+                    Excluir esta inscrição
                   </Button>
                 )}
               </div>
@@ -171,7 +171,7 @@ export function ExclusaoDeDadosSection() {
 
                   <div className="grid gap-1.5">
                     <Label htmlFor={`exclusao-confirmacao-${c.id}`}>
-                      Para confirmar, digite o e-mail da candidata
+                      Para confirmar, digite o e-mail da afiliada
                     </Label>
                     <Input
                       id={`exclusao-confirmacao-${c.id}`}

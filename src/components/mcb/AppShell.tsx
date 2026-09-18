@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils";
 
 const MCB_NAV = [
   { to: "/dashboard", label: "Visão geral" },
-  { to: "/candidatas", label: "Candidatas" },
+  { to: "/candidatas", label: "Afiliadas" },
   { to: "/tarefas", label: "Tarefas" },
   { to: "/configuracoes", label: "Configurações" },
 ] as const;
@@ -146,8 +146,8 @@ export function AppShell({
           {suspenso ? (
             <p className="mt-6 rounded-lg border border-destructive/60 bg-destructive/10 px-4 py-3 text-sm">
               {suspensoPorVencimento
-                ? "A assinatura deste ambiente venceu. Você continua vendo todos os dados, mas não é possível alterá-los nem receber novas candidaturas até o pagamento. Fale com a MCB em contato@mcblessing.com.br para reativar."
-                : "Este ambiente está suspenso pela administração. Você continua vendo todos os dados, mas não é possível alterá-los nem receber novas candidaturas. Fale com a administração da plataforma para reativar."}
+                ? "A assinatura deste ambiente venceu. Você continua vendo todos os dados, mas não é possível alterá-los nem receber novas inscrições até o pagamento. Fale com a MCB em contato@mcblessing.com.br para reativar."
+                : "Este ambiente está suspenso pela administração. Você continua vendo todos os dados, mas não é possível alterá-los nem receber novas inscrições. Fale com a administração da plataforma para reativar."}
             </p>
           ) : null}
 

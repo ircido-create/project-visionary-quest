@@ -10,7 +10,7 @@ import { dataBR } from "./relatorio";
 export type TipoDeAviso =
   "nova_candidatura" | "tarefa_concluida" | "pronta_auditoria" | "tarefa_nova" | "feedback_novo";
 
-/** Os avisos da candidata levam ao portal; os da gestora, à página da candidata. */
+/** Os avisos da afiliada levam ao portal; os da gestora, à página da afiliada. */
 export function avisoDaCandidata(tipo: string): boolean {
   return tipo === "tarefa_nova" || tipo === "feedback_novo";
 }

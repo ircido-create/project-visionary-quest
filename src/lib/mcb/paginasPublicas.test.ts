@@ -4,7 +4,7 @@ import { ordenarPaginas, paginaPrincipal } from "./paginasPublicas";
 
 const pagina = (slug: string, is_demo: boolean) => ({ name: slug, slug, is_demo });
 
-describe("páginas públicas de candidatura", () => {
+describe("páginas públicas de inscrição", () => {
   it("põe as reais antes das demonstrações, mantendo a ordem de cada grupo", () => {
     const r = ordenarPaginas([
       pagina("demo-a", true),

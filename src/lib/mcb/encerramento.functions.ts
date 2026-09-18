@@ -5,7 +5,7 @@
  * regras de sempre — só sai o que ela já enxerga. Fica registrado no log.
  *
  * EXCLUIR: só a dona, com o nome do ambiente digitado de novo. Ordem, e o que acontece se
- * algo falhar no meio (a mesma da exclusão de candidata, Fase 6):
+ * algo falhar no meio (a mesma da exclusão de afiliada, Fase 6):
  * 1. arquivos no Storage — se falhar, nada foi apagado;
  * 2. banco, pela função `excluir_ambiente` (só a chave de serviço executa): confere de
  *    novo o papel, apaga os tokens do Vault e o ambiente em cascata, e registra no log da
@@ -51,7 +51,7 @@ export const exportarTudo = createServerFn({ method: "POST" })
     const [
       ambiente,
       pagina,
-      candidatas,
+      afiliadas,
       inscricoes,
       tarefas,
       notas,
@@ -89,7 +89,7 @@ export const exportarTudo = createServerFn({ method: "POST" })
     for (const r of [
       ambiente,
       pagina,
-      candidatas,
+      afiliadas,
       inscricoes,
       tarefas,
       notas,
@@ -107,7 +107,7 @@ export const exportarTudo = createServerFn({ method: "POST" })
     if (!ambiente.data) throw new Error("Ambiente não encontrado.");
 
     const dados = {
-      candidatas: candidatas.data ?? [],
+      afiliadas: candidatas.data ?? [],
       inscricoes: inscricoes.data ?? [],
       tarefas: tarefas.data ?? [],
       notas: notas.data ?? [],
@@ -138,7 +138,7 @@ export const exportarTudo = createServerFn({ method: "POST" })
         {
           geradoEm: new Date().toISOString(),
           aviso:
-            "Dados pessoais de candidatas. Guarde com cuidado e apague quando não precisar mais (LGPD). Os prints ficam na página de cada candidata; aqui vai só a lista deles.",
+            "Dados pessoais de afiliadas. Guarde com cuidado e apague quando não precisar mais (LGPD). Os prints ficam na página de cada afiliada; aqui vai só a lista deles.",
           ambiente: ambiente.data,
           pagina: pagina.data,
           ...dados,
@@ -172,7 +172,7 @@ export const excluirAmbiente = createServerFn({ method: "POST" })
       throw new Error("O nome digitado não confere com o do ambiente. Nada foi apagado.");
     }
 
-    // 1. Arquivos: o que está registrado e o que está em cada pasta de candidata.
+    // 1. Arquivos: o que está registrado e o que está em cada pasta de afiliada.
     const [pastas, registros] = await Promise.all([
       supabaseAdmin.storage.from(EVIDENCE_BUCKET).list(ambiente.id, { limit: 1000 }),
       supabaseAdmin.from("files").select("storage_path").eq("tenant_id", ambiente.id),

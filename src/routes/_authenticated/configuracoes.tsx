@@ -237,13 +237,17 @@ function SettingsPage() {
     manager_owner: "Dona do ambiente",
     manager_admin: "Administradora",
     manager_member: "Equipe",
-    influencer: "Candidata",
+    influencer: "Afiliada",
   };
 
   return (
     <AppShell
       title="Configurações"
-      description={isOnbio ? "Seu perfil e o ambiente exclusivo ONBIO." : "Seu ambiente, sua página de candidatura, sua equipe e seu plano."}
+      description={
+        isOnbio
+          ? "Seu perfil e o ambiente exclusivo ONBIO."
+          : "Seu ambiente, sua página de inscrição, sua equipe e seu plano."
+      }
     >
       <div className="grid gap-6 lg:grid-cols-2">
         <section className="glass rounded-xl border border-border/60 p-6 lg:col-span-2">
@@ -324,7 +328,7 @@ function SettingsPage() {
             <h2 className="font-serif text-xl">Criar meu ambiente</h2>
             <p className="mt-1 text-sm text-muted-foreground">
               Você está apenas visitando a demonstração. Crie seu próprio ambiente para receber
-              candidaturas reais.
+              inscrições reais.
             </p>
             <form
               className="mt-4 grid gap-3 sm:grid-cols-2"
@@ -362,108 +366,114 @@ function SettingsPage() {
           </section>
         ) : null}
 
-        {!isOnbio ? <section className="glass rounded-xl border border-border/60 p-6">
-          <h2 className="font-serif text-xl">Página de candidatura</h2>
-          {publicUrl ? (
-            <div className="mt-1 grid gap-2 text-sm text-muted-foreground">
-              <p className="flex flex-wrap items-center gap-2">
-                Link público: <span className="font-medium">{publicUrl}</span>
-                <Button
-                  type="button"
-                  size="sm"
-                  variant="outline"
-                  onClick={() =>
-                    navigator.clipboard.writeText(`${window.location.origin}${publicUrl}`).then(
-                      () => toast.success("Link copiado."),
-                      () => toast.error("Não foi possível copiar. Selecione o link e copie."),
-                    )
-                  }
-                >
-                  Copiar link
-                </Button>
-              </p>
-              <label className="flex items-start gap-2">
-                <input
-                  type="checkbox"
-                  className="mt-1"
-                  checked={Boolean(settings?.tenant?.is_listed_on_home)}
-                  disabled={readOnly || !canSeeTeamAdmin || listingMutation.isPending}
-                  onChange={(event) => {
-                    if (!guard()) return;
-                    listingMutation.mutate(event.target.checked);
-                  }}
-                  aria-labelledby="lista-do-mcb"
-                />
-                <span id="lista-do-mcb">
-                  Mostrar minha página na lista de páginas de candidatura do MCB. Desmarcada, ela
-                  continua no ar para quem tem o link.
-                </span>
-              </label>
-            </div>
-          ) : null}
-          <form
-            className="mt-4 grid gap-3"
-            onSubmit={(event) => {
-              event.preventDefault();
-              if (!guard()) return;
-              brandingMutation.mutate();
-            }}
-          >
-            <Field label="Seu nome">
-              <Input
-                value={branding.managerName}
-                onChange={(e) => setBranding((prev) => ({ ...prev, managerName: e.target.value }))}
-              />
-            </Field>
-            <Field label="Título principal">
-              <Input
-                value={branding.headline}
-                onChange={(e) => setBranding((prev) => ({ ...prev, headline: e.target.value }))}
-              />
-            </Field>
-            <Field label="Subtítulo">
-              <Textarea
-                rows={3}
-                value={branding.subheadline}
-                onChange={(e) => setBranding((prev) => ({ ...prev, subheadline: e.target.value }))}
-              />
-            </Field>
-            <Field label="Frase de autoridade">
-              <Input
-                value={branding.authorityQuote}
-                onChange={(e) =>
-                  setBranding((prev) => ({ ...prev, authorityQuote: e.target.value }))
-                }
-              />
-            </Field>
-            <Field label="Sua bio">
-              <Textarea
-                rows={3}
-                value={branding.bio}
-                onChange={(e) => setBranding((prev) => ({ ...prev, bio: e.target.value }))}
-              />
-            </Field>
-            <div className="grid gap-3 sm:grid-cols-2">
-              <Field label="@ do Instagram">
+        {!isOnbio ? (
+          <section className="glass rounded-xl border border-border/60 p-6">
+            <h2 className="font-serif text-xl">Página de inscrição</h2>
+            {publicUrl ? (
+              <div className="mt-1 grid gap-2 text-sm text-muted-foreground">
+                <p className="flex flex-wrap items-center gap-2">
+                  Link público: <span className="font-medium">{publicUrl}</span>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    onClick={() =>
+                      navigator.clipboard.writeText(`${window.location.origin}${publicUrl}`).then(
+                        () => toast.success("Link copiado."),
+                        () => toast.error("Não foi possível copiar. Selecione o link e copie."),
+                      )
+                    }
+                  >
+                    Copiar link
+                  </Button>
+                </p>
+                <label className="flex items-start gap-2">
+                  <input
+                    type="checkbox"
+                    className="mt-1"
+                    checked={Boolean(settings?.tenant?.is_listed_on_home)}
+                    disabled={readOnly || !canSeeTeamAdmin || listingMutation.isPending}
+                    onChange={(event) => {
+                      if (!guard()) return;
+                      listingMutation.mutate(event.target.checked);
+                    }}
+                    aria-labelledby="lista-do-mcb"
+                  />
+                  <span id="lista-do-mcb">
+                    Mostrar minha página na lista de páginas de inscrição do MCB. Desmarcada, ela
+                    continua no ar para quem tem o link.
+                  </span>
+                </label>
+              </div>
+            ) : null}
+            <form
+              className="mt-4 grid gap-3"
+              onSubmit={(event) => {
+                event.preventDefault();
+                if (!guard()) return;
+                brandingMutation.mutate();
+              }}
+            >
+              <Field label="Seu nome">
                 <Input
-                  value={branding.instagramHandle}
+                  value={branding.managerName}
                   onChange={(e) =>
-                    setBranding((prev) => ({ ...prev, instagramHandle: e.target.value }))
+                    setBranding((prev) => ({ ...prev, managerName: e.target.value }))
                   }
                 />
               </Field>
-              <Field label="WhatsApp">
+              <Field label="Título principal">
                 <Input
-                  value={branding.whatsapp}
-                  onChange={(e) => setBranding((prev) => ({ ...prev, whatsapp: e.target.value }))}
+                  value={branding.headline}
+                  onChange={(e) => setBranding((prev) => ({ ...prev, headline: e.target.value }))}
                 />
               </Field>
-            </div>
-            <Button type="submit" disabled={brandingMutation.isPending}>
-              Salvar página
-            </Button>
-          </form>
-        </section> : null}
+              <Field label="Subtítulo">
+                <Textarea
+                  rows={3}
+                  value={branding.subheadline}
+                  onChange={(e) =>
+                    setBranding((prev) => ({ ...prev, subheadline: e.target.value }))
+                  }
+                />
+              </Field>
+              <Field label="Frase de autoridade">
+                <Input
+                  value={branding.authorityQuote}
+                  onChange={(e) =>
+                    setBranding((prev) => ({ ...prev, authorityQuote: e.target.value }))
+                  }
+                />
+              </Field>
+              <Field label="Sua bio">
+                <Textarea
+                  rows={3}
+                  value={branding.bio}
+                  onChange={(e) => setBranding((prev) => ({ ...prev, bio: e.target.value }))}
+                />
+              </Field>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <Field label="@ do Instagram">
+                  <Input
+                    value={branding.instagramHandle}
+                    onChange={(e) =>
+                      setBranding((prev) => ({ ...prev, instagramHandle: e.target.value }))
+                    }
+                  />
+                </Field>
+                <Field label="WhatsApp">
+                  <Input
+                    value={branding.whatsapp}
+                    onChange={(e) => setBranding((prev) => ({ ...prev, whatsapp: e.target.value }))}
+                  />
+                </Field>
+              </div>
+              <Button type="submit" disabled={brandingMutation.isPending}>
+                Salvar página
+              </Button>
+            </form>
+          </section>
+        ) : null}
 
         <div className="grid gap-6">
           <section className="glass rounded-xl border border-border/60 p-6">
@@ -472,8 +482,9 @@ function SettingsPage() {
               <div className="mt-3 text-sm">
                 <p className="font-medium">{settings.plan.name}</p>
                 <p className="text-muted-foreground">
-                  {settings.usage.candidates} de {settings.plan.max_candidates} {isOnbio ? "afiliadas" : "candidatas"} ·{" "}
-                  {settings.usage.members} de {settings.plan.max_members} pessoas na equipe
+                  {settings.usage.candidates} de {settings.plan.max_candidates}{" "}
+                  {isOnbio ? "afiliadas" : "afiliadas"} · {settings.usage.members} de{" "}
+                  {settings.plan.max_members} pessoas na equipe
                 </p>
                 <p className="mt-2 text-xs text-muted-foreground">
                   Os limites do plano são acompanhados aqui; a assinatura está logo abaixo.
@@ -488,125 +499,131 @@ function SettingsPage() {
 
           {tenantId && !readOnly && !isOnbio ? <AssinaturaSection tenantId={tenantId} /> : null}
 
-          {!isOnbio ? <section className="glass rounded-xl border border-border/60 p-6">
-            <h2 className="font-serif text-xl">Equipe</h2>
-            <p className="mt-1 text-sm text-muted-foreground">
-              {settings?.members.length ?? 0} pessoa(s) com acesso.
-            </p>
+          {!isOnbio ? (
+            <section className="glass rounded-xl border border-border/60 p-6">
+              <h2 className="font-serif text-xl">Equipe</h2>
+              <p className="mt-1 text-sm text-muted-foreground">
+                {settings?.members.length ?? 0} pessoa(s) com acesso.
+              </p>
 
-            {canSeeTeamAdmin && settings?.members.length ? (
-              <ul className="mt-4 grid gap-3 text-sm">
-                {settings.members.map((member) => {
-                  const isMe = member.user_id === settings.currentUserId;
-                  return (
-                    <li
-                      key={member.user_id}
-                      className="flex flex-wrap items-center justify-between gap-2 border-b border-border/50 pb-2 last:border-b-0"
-                    >
-                      <div className="min-w-0">
-                        <p className="truncate font-medium">
-                          {member.fullName ?? member.email ?? "Pessoa da equipe"}
-                          {isMe ? " (você)" : ""}
-                        </p>
-                        {member.email ? (
-                          <p className="truncate text-xs text-muted-foreground">{member.email}</p>
-                        ) : null}
-                      </div>
-                      {isOwner && !isMe ? (
-                        <div className="flex items-center gap-2">
-                          <select
-                            aria-label={`Papel de ${member.fullName ?? member.email ?? "pessoa da equipe"}`}
-                            className="h-9 rounded-md border border-input bg-background px-2 text-sm"
-                            value={member.role}
-                            disabled={readOnly || roleMutation.isPending}
-                            onChange={(event) => {
-                              if (!guard()) return;
-                              roleMutation.mutate({
-                                memberId: member.user_id,
-                                role: event.target.value as
-                                  "manager_owner" | "manager_admin" | "manager_member",
-                              });
-                            }}
-                          >
-                            <option value="manager_owner">Dona do ambiente</option>
-                            <option value="manager_admin">Administradora</option>
-                            <option value="manager_member">Equipe</option>
-                          </select>
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            disabled={readOnly || removeMutation.isPending}
-                            onClick={() => {
-                              if (!guard()) return;
-                              if (!window.confirm("Remover o acesso desta pessoa?")) return;
-                              removeMutation.mutate(member.user_id);
-                            }}
-                          >
-                            Remover
-                          </Button>
+              {canSeeTeamAdmin && settings?.members.length ? (
+                <ul className="mt-4 grid gap-3 text-sm">
+                  {settings.members.map((member) => {
+                    const isMe = member.user_id === settings.currentUserId;
+                    return (
+                      <li
+                        key={member.user_id}
+                        className="flex flex-wrap items-center justify-between gap-2 border-b border-border/50 pb-2 last:border-b-0"
+                      >
+                        <div className="min-w-0">
+                          <p className="truncate font-medium">
+                            {member.fullName ?? member.email ?? "Pessoa da equipe"}
+                            {isMe ? " (você)" : ""}
+                          </p>
+                          {member.email ? (
+                            <p className="truncate text-xs text-muted-foreground">{member.email}</p>
+                          ) : null}
                         </div>
-                      ) : (
-                        <span className="text-xs text-muted-foreground">
-                          {ROLE_LABELS[member.role] ?? member.role}
-                        </span>
-                      )}
-                    </li>
-                  );
-                })}
-              </ul>
-            ) : null}
+                        {isOwner && !isMe ? (
+                          <div className="flex items-center gap-2">
+                            <select
+                              aria-label={`Papel de ${member.fullName ?? member.email ?? "pessoa da equipe"}`}
+                              className="h-9 rounded-md border border-input bg-background px-2 text-sm"
+                              value={member.role}
+                              disabled={readOnly || roleMutation.isPending}
+                              onChange={(event) => {
+                                if (!guard()) return;
+                                roleMutation.mutate({
+                                  memberId: member.user_id,
+                                  role: event.target.value as
+                                    "manager_owner" | "manager_admin" | "manager_member",
+                                });
+                              }}
+                            >
+                              <option value="manager_owner">Dona do ambiente</option>
+                              <option value="manager_admin">Administradora</option>
+                              <option value="manager_member">Equipe</option>
+                            </select>
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              disabled={readOnly || removeMutation.isPending}
+                              onClick={() => {
+                                if (!guard()) return;
+                                if (!window.confirm("Remover o acesso desta pessoa?")) return;
+                                removeMutation.mutate(member.user_id);
+                              }}
+                            >
+                              Remover
+                            </Button>
+                          </div>
+                        ) : (
+                          <span className="text-xs text-muted-foreground">
+                            {ROLE_LABELS[member.role] ?? member.role}
+                          </span>
+                        )}
+                      </li>
+                    );
+                  })}
+                </ul>
+              ) : null}
 
-            <form
-              className="mt-4 flex flex-wrap gap-2"
-              onSubmit={(event) => {
-                event.preventDefault();
-                if (!guard()) return;
-                inviteMutation.mutate();
-              }}
-            >
-              <Input
-                aria-label="E-mail de quem você quer convidar"
-                type="email"
-                className="max-w-xs"
-                placeholder="email@exemplo.com"
-                value={inviteEmail}
-                onChange={(event) => setInviteEmail(event.target.value)}
-                required
-              />
-              <Button type="submit" variant="outline" disabled={inviteMutation.isPending}>
-                Convidar
-              </Button>
-            </form>
-            <p className="mt-2 text-xs text-muted-foreground">
-              O MCB não envia e-mail de convite. Mande para a pessoa o link
-              mcblessing.com.br/auth?modo=cadastro e peça que ela crie a conta com o e-mail
-              convidado: ao entrar, ela passa a fazer parte da equipe. O convite vale 14 dias.
-            </p>
-            {settings?.invitations.length ? (
-              <ul className="mt-4 grid gap-2 text-sm">
-                {settings.invitations.map((invitation) => (
-                  <li key={invitation.id} className="flex justify-between gap-2">
-                    <span>{invitation.email}</span>
-                    <span className="text-xs text-muted-foreground">
-                      {invitation.accepted_at ? "aceito" : "pendente"}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            ) : null}
-          </section> : null}
+              <form
+                className="mt-4 flex flex-wrap gap-2"
+                onSubmit={(event) => {
+                  event.preventDefault();
+                  if (!guard()) return;
+                  inviteMutation.mutate();
+                }}
+              >
+                <Input
+                  aria-label="E-mail de quem você quer convidar"
+                  type="email"
+                  className="max-w-xs"
+                  placeholder="email@exemplo.com"
+                  value={inviteEmail}
+                  onChange={(event) => setInviteEmail(event.target.value)}
+                  required
+                />
+                <Button type="submit" variant="outline" disabled={inviteMutation.isPending}>
+                  Convidar
+                </Button>
+              </form>
+              <p className="mt-2 text-xs text-muted-foreground">
+                O MCB não envia e-mail de convite. Mande para a pessoa o link
+                mcblessing.com.br/auth?modo=cadastro e peça que ela crie a conta com o e-mail
+                convidado: ao entrar, ela passa a fazer parte da equipe. O convite vale 14 dias.
+              </p>
+              {settings?.invitations.length ? (
+                <ul className="mt-4 grid gap-2 text-sm">
+                  {settings.invitations.map((invitation) => (
+                    <li key={invitation.id} className="flex justify-between gap-2">
+                      <span>{invitation.email}</span>
+                      <span className="text-xs text-muted-foreground">
+                        {invitation.accepted_at ? "aceito" : "pendente"}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
+            </section>
+          ) : null}
 
           <section className="glass rounded-xl border border-border/60 p-6">
             <h2 className="font-serif text-xl">Privacidade</h2>
             <p className="mt-2 text-sm text-muted-foreground">
-              Cada candidatura registra o consentimento com data, finalidade e origem. Para excluir
-              os dados de uma candidata, escreva para contato@mcblessing.com.br: a MCB exclui a
-              candidatura, os prints e, se pedido, a conta de acesso.
+              Cada inscrição registra o consentimento com data, finalidade e origem. Para excluir os
+              dados de uma afiliada, escreva para contato@mcblessing.com.br: a MCB exclui a
+              inscrição, os prints e, se pedido, a conta de acesso.
             </p>
           </section>
 
-          {tenantId && !readOnly && !isOnbio && settings?.currentRole === "manager_owner" && settings.tenant ? (
+          {tenantId &&
+          !readOnly &&
+          !isOnbio &&
+          settings?.currentRole === "manager_owner" &&
+          settings.tenant ? (
             <EncerrarAmbienteSection
               tenantId={tenantId}
               nome={settings.tenant.name}
@@ -618,7 +635,9 @@ function SettingsPage() {
           ) : null}
         </div>
 
-        {tenantId && !isOnbio ? <ModelosTarefaSection tenantId={tenantId} readOnly={readOnly} /> : null}
+        {tenantId && !isOnbio ? (
+          <ModelosTarefaSection tenantId={tenantId} readOnly={readOnly} />
+        ) : null}
       </div>
     </AppShell>
   );

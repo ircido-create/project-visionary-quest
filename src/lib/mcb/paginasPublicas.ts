@@ -1,5 +1,5 @@
 /**
- * Páginas públicas de candidatura: qual delas o botão da página inicial abre e o que uma
+ * Páginas públicas de inscrição: qual delas o botão da página inicial abre e o que uma
  * página de demonstração pode receber.
  *
  * Ambiente de demonstração é legível por qualquer conta logada (`can_read_tenant`), de
@@ -26,8 +26,8 @@ export function paginaPrincipal<T extends PaginaPublica>(paginas: T[]): T | null
 
 /** Resposta do servidor a um envio numa página de demonstração. */
 export const MENSAGEM_DEMONSTRACAO =
-  "Esta é uma página de demonstração e não recebe candidaturas. Use o link enviado pela sua gestora.";
+  "Esta é uma página de demonstração e não recebe inscrições. Use o link enviado pela sua gestora.";
 
 /** Aviso fixo na própria página de demonstração, antes do formulário. */
 export const AVISO_PAGINA_DEMONSTRACAO =
-  "Página de demonstração: ela mostra como a candidatura funciona, mas não recebe inscrições. Para se candidatar, use o link enviado pela sua gestora.";
+  "Página de demonstração: ela mostra como a inscrição funciona, mas não recebe inscrições. Para se candidatar, use o link enviado pela sua gestora.";

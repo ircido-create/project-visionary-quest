@@ -27,10 +27,10 @@ export const Route = createFileRoute("/g/$slug")({
         meta: [{ title: "Página indisponível — MCB" }, { name: "robots", content: "noindex" }],
       };
     }
-    const title = `Candidatura — ${loaderData.branding?.managerName ?? loaderData.tenant.name} | MCB`;
+    const title = `Inscrição — ${loaderData.branding?.managerName ?? loaderData.tenant.name} | MCB`;
     const description =
       loaderData.branding?.subheadline ??
-      "Preencha a candidatura e receba um diagnóstico do seu perfil com base em critérios claros.";
+      "Preencha a inscrição e receba um diagnóstico do seu perfil com base em critérios claros.";
     return {
       meta: [
         { title },
@@ -114,7 +114,7 @@ function ManagerLanding() {
     },
     onError: () =>
       setError(
-        "Não foi possível enviar sua candidatura. Revise os campos obrigatórios e tente novamente.",
+        "Não foi possível enviar sua inscrição. Revise os campos obrigatórios e tente novamente.",
       ),
   });
 
@@ -131,15 +131,15 @@ function ManagerLanding() {
     return (
       <main className="grain-overlay flex min-h-screen items-center justify-center bg-background px-6 py-16">
         <div className="glass max-w-xl rounded-2xl border border-border/60 p-8 text-center">
-          <h1 className="font-serif text-3xl">Candidatura recebida</h1>
+          <h1 className="font-serif text-3xl">Inscrição recebida</h1>
           <p className="mt-3 text-sm text-muted-foreground">
             {mutation.data.duplicated
-              ? "Já tínhamos uma candidatura com este e-mail. A gestora vai retomar o seu acompanhamento."
+              ? "Já tínhamos uma inscrição com este e-mail. A gestora vai retomar o seu acompanhamento."
               : `${page.branding?.managerName ?? page.tenant.name} vai analisar o seu perfil e retornar com o próximo passo da jornada.`}
           </p>
           <p className="mt-4 text-xs text-muted-foreground">
-            Esta candidatura não garante aprovação em nenhum programa. O foco é preparar o seu
-            perfil com critérios claros.
+            Esta inscrição não garante aprovação em nenhum programa. O foco é preparar o seu perfil
+            com critérios claros.
           </p>
           <Link to="/" className="mt-6 inline-block text-sm underline underline-offset-4">
             Voltar ao início
@@ -435,7 +435,7 @@ function ManagerLanding() {
                 ? "Envio desativado na demonstração"
                 : mutation.isPending
                   ? "Enviando..."
-                  : "Enviar candidatura"}
+                  : "Enviar inscrição"}
             </Button>
             <p className="text-xs text-muted-foreground">
               O envio não garante aprovação em nenhum programa de terceiros.

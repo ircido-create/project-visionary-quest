@@ -5,7 +5,7 @@ import type { Database, Json } from "@/integrations/supabase/types";
 export type AuditEntry = {
   tenant_id: string;
   /**
-   * Ausente na Porta de Entrada: a candidata se inscreve sem estar autenticada, e
+   * Ausente na Porta de Entrada: a afiliada se inscreve sem estar autenticada, e
    * aquele fluxo grava pelo cliente de serviço, que não passa por RLS.
    */
   actor_id?: string | null;

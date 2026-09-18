@@ -25,8 +25,8 @@ export type Passo = {
 const PASSOS: Array<Omit<Passo, "feito">> = [
   {
     chave: "paginaAjustada",
-    titulo: "Ajustar sua página de candidatura",
-    descricao: "Seu nome, sua bio e o texto que a candidata lê antes de se inscrever.",
+    titulo: "Ajustar sua página de inscrição",
+    descricao: "Seu nome, sua bio e o texto que a afiliada lê antes de se inscrever.",
     opcional: false,
   },
   {
@@ -37,14 +37,14 @@ const PASSOS: Array<Omit<Passo, "feito">> = [
   },
   {
     chave: "primeiraCandidata",
-    titulo: "Receber a primeira candidatura",
+    titulo: "Receber a primeira inscrição",
     descricao: "Compartilhe o link da sua página com quem você acompanha.",
     opcional: false,
   },
   {
     chave: "equipeConvidada",
     titulo: "Convidar alguém da equipe",
-    descricao: "Se mais alguém acompanha as candidatas com você.",
+    descricao: "Se mais alguém acompanha as afiliadas com você.",
     opcional: true,
   },
 ];

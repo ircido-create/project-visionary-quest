@@ -1,7 +1,7 @@
 /**
  * Fase 6 — Exclusão por inatividade: os números da regra, sem rede nem banco.
  *
- * Decisão de 2026-09-13 (Política de Privacidade, P5): candidatura sem nenhuma atividade
+ * Decisão de 2026-09-13 (Política de Privacidade, P5): inscrição sem nenhuma atividade
  * por 90 dias tem os dados excluídos pela limpeza diária do banco
  * (`limpar_candidatas_inativas`, migração `20260913140000_fase6_inatividade_90_dias`). A
  * gestora vê o aviso no painel nos 15 dias anteriores. O que conta como atividade está na

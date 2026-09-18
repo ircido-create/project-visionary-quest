@@ -8,7 +8,7 @@
  *
  * "Instagram API with Instagram Login" (host `graph.instagram.com`), não a que passa
  * pelo Facebook. A diferença que decide: o caminho pelo Facebook exige que a conta do
- * Instagram esteja vinculada a uma Página do Facebook, e as candidatas do MCB
+ * Instagram esteja vinculada a uma Página do Facebook, e as afiliadas do MCB
  * tipicamente não têm Página. Pelo Instagram Login, ela entra com a conta dela e
  * pronto.
  *

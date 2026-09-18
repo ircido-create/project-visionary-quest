@@ -20,7 +20,7 @@ describe("avisos", () => {
     expect(contagemNoSino(12)).toBe("9+");
   });
 
-  it("tarefa e feedback novos são da candidata; o resto é da gestora", () => {
+  it("tarefa e feedback novos são da afiliada; o resto é da gestora", () => {
     expect(avisoDaCandidata("tarefa_nova")).toBe(true);
     expect(avisoDaCandidata("feedback_novo")).toBe(true);
     expect(avisoDaCandidata("nova_candidatura")).toBe(false);

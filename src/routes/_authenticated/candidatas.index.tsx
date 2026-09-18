@@ -20,8 +20,8 @@ import { AcompanhamentoSeguidores } from "@/components/onbio/AcompanhamentoSegui
 export const Route = createFileRoute("/_authenticated/candidatas/")({
   head: () => ({
     meta: [
-      { title: "Candidatas — MCB" },
-      { name: "description", content: "Lista de candidatas com status, nível e progresso." },
+      { title: "Afiliadas — MCB" },
+      { name: "description", content: "Lista de afiliadas com status, nível e progresso." },
       { name: "robots", content: "noindex" },
     ],
   }),
@@ -70,11 +70,11 @@ function CandidatesPage() {
 
   return (
     <AppShell
-      title={isOnbio ? "Afiliadas" : "Candidatas"}
+      title={isOnbio ? "Afiliadas" : "Afiliadas"}
       description={
         isOnbio
           ? "Cadastre e acompanhe cada afiliada da ONBIO."
-          : "Filtre, acompanhe e abra o perfil detalhado de cada candidata."
+          : "Filtre, acompanhe e abra o perfil detalhado de cada afiliada."
       }
       actions={
         isOnbio ? (
@@ -227,7 +227,7 @@ function CandidatesPage() {
         <>
           <div className="flex flex-wrap items-center gap-3">
             <Input
-              aria-label={isOnbio ? "Buscar afiliada" : "Buscar candidata"}
+              aria-label={isOnbio ? "Buscar afiliada" : "Buscar afiliada"}
               className="max-w-xs"
               placeholder={
                 isOnbio ? "Buscar afiliada por nome, @ ou e-mail" : "Buscar por nome, @ ou e-mail"
@@ -268,20 +268,20 @@ function CandidatesPage() {
 
           {query.isLoading ? (
             <p className="mt-8 text-sm text-muted-foreground">
-              Carregando {isOnbio ? "afiliadas" : "candidatas"}...
+              Carregando {isOnbio ? "afiliadas" : "afiliadas"}...
             </p>
           ) : rows.length === 0 ? (
             <p className="mt-8 text-sm text-muted-foreground">
               {isOnbio
                 ? "Nenhuma afiliada encontrada. Use “Nova afiliada” para fazer o primeiro cadastro."
-                : "Nenhuma candidata encontrada com esses filtros. Compartilhe sua página de candidatura para receber novas inscrições."}
+                : "Nenhuma afiliada encontrada com esses filtros. Compartilhe sua página de inscrição para receber novas inscrições."}
             </p>
           ) : view === "lista" ? (
             <div className="mt-6 overflow-x-auto rounded-xl border border-border/60">
               <table className="w-full min-w-[820px] text-sm">
                 <thead className="bg-muted/60 text-left text-xs uppercase tracking-wide text-muted-foreground">
                   <tr>
-                    <th className="px-4 py-3">{isOnbio ? "Afiliada" : "Candidata"}</th>
+                    <th className="px-4 py-3">{isOnbio ? "Afiliada" : "Afiliada"}</th>
                     {!isOnbio ? <th className="px-4 py-3">Status</th> : null}
                     {!isOnbio ? <th className="px-4 py-3">Qualificação</th> : null}
                     <th className="px-4 py-3">Seguidores</th>

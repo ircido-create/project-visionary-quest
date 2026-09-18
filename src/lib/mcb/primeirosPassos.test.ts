@@ -56,7 +56,7 @@ describe("página ajustada", () => {
   });
 });
 
-describe("link de candidatura", () => {
+describe("link de inscrição", () => {
   it("monta o endereço completo, com ou sem barra no fim da origem", () => {
     expect(linkDeCandidatura("https://mcblessing.com.br", "blessing")).toBe(
       "https://mcblessing.com.br/g/blessing",

@@ -16,7 +16,7 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
     meta: [
       { title: "Visão geral — MCB" },
-      { name: "description", content: "Painel da gestora com candidatas, evolução e pendências." },
+      { name: "description", content: "Painel da gestora com afiliadas, evolução e pendências." },
       { name: "robots", content: "noindex" },
     ],
   }),
@@ -36,7 +36,7 @@ function DashboardPage() {
     return (
       <AppShell
         title="Bem-vinda ao MCB"
-        description="Crie seu ambiente para começar a receber candidaturas."
+        description="Crie seu ambiente para começar a receber inscrições."
       >
         <Button asChild>
           <Link to="/configuracoes">Criar meu ambiente</Link>
@@ -52,7 +52,7 @@ function DashboardPage() {
   return (
     <AppShell
       title="Visão geral"
-      description="Onde cada candidata está e o que precisa de atenção hoje."
+      description="Onde cada afiliada está e o que precisa de atenção hoje."
       actions={
         <Button asChild variant="outline">
           <Link to="/candidatas">Ver candidatas</Link>
@@ -67,7 +67,7 @@ function DashboardPage() {
           {tenantId && !readOnly ? <PrimeirosPassosCard tenantId={tenantId} /> : null}
           {tenantId && !readOnly ? <AvisoInatividadeCard tenantId={tenantId} /> : null}
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <StatCard label="Candidatas" value={data.totals.candidates} hint="total no ambiente" />
+            <StatCard label="Afiliadas" value={data.totals.candidates} hint="total no ambiente" />
             <StatCard label="Novas (14 dias)" value={data.totals.newApplications} />
             <StatCard
               label="Qualificadas"
@@ -122,7 +122,7 @@ function DashboardPage() {
               <h2 className="font-serif text-xl">Perto da meta</h2>
               {data.nearGoal.length === 0 ? (
                 <p className="mt-3 text-sm text-muted-foreground">
-                  Nenhuma candidata em desenvolvimento agora.
+                  Nenhuma afiliada em desenvolvimento agora.
                 </p>
               ) : (
                 <ul className="mt-4 grid gap-3">
@@ -148,7 +148,7 @@ function DashboardPage() {
               <h2 className="font-serif text-xl">Aguardando auditoria</h2>
               {data.awaitingAudit.length === 0 ? (
                 <p className="mt-3 text-sm text-muted-foreground">
-                  Nenhuma candidata esperando auditoria.
+                  Nenhuma afiliada esperando auditoria.
                 </p>
               ) : (
                 <ul className="mt-4 grid gap-3 text-sm">

@@ -6,7 +6,7 @@ import { evaluateQualification } from "./qualification";
 const avaliar = (entrada: Parameters<typeof evaluateQualification>[0]) =>
   requisitosParaCandidata(evaluateQualification(entrada).requirements);
 
-describe("requisitos no portal da candidata", () => {
+describe("requisitos no portal da afiliada", () => {
   it("quem cumpre tudo vê os 5 cumpridos e nenhum próximo passo", () => {
     const itens = avaliar({
       followers: 4272,

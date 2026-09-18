@@ -114,7 +114,7 @@ export function AnalysisSection({ tenantId, influencerId, readOnly }: Props) {
         </Button>
       </div>
       <p className="mt-1 text-sm text-muted-foreground">
-        A IA lê apenas os dados da candidata e as evidências que uma pessoa já confirmou. A leitura
+        A IA lê apenas os dados da afiliada e as evidências que uma pessoa já confirmou. A leitura
         não decide qualificação e não vale enquanto alguém não aceitar.
       </p>
       {runMutation.isPending ? (

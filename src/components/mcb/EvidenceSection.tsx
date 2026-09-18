@@ -172,7 +172,7 @@ export function EvidenceSection({ tenantId, influencerId, readOnly }: Props) {
                 <a href={file.url} target="_blank" rel="noreferrer">
                   <img
                     src={file.url}
-                    alt="Print de insights da candidata"
+                    alt="Print de insights da afiliada"
                     loading="lazy"
                     className="h-40 w-full rounded-md border border-border/40 object-cover"
                   />

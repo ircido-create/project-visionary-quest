@@ -3,7 +3,7 @@
  *
  * QUEM CHAMA O QUÊ
  *
- * `conectar`, `sincronizar` e `desconectar` só funcionam para a **própria candidata**.
+ * `conectar`, `sincronizar` e `desconectar` só funcionam para a **própria afiliada**.
  * Isso não é decidido aqui: as funções `security definer` da migração
  * 20260910150000 recusam qualquer outro chamador. Esta camada é conveniência e
  * tradução; a autoridade está no banco.
@@ -19,7 +19,7 @@
  *
  * Um sync noturno precisaria rodar sem ninguém logado, e a única credencial capaz
  * disso é a service role key — que este projeto deliberadamente não usa. Então o
- * sync acontece quando a candidata abre o portal e pede. O custo é honesto: o dado
+ * sync acontece quando a afiliada abre o portal e pede. O custo é honesto: o dado
  * tem a idade da última visita dela, e a tela mostra essa data.
  */
 
@@ -153,9 +153,9 @@ async function pedirJson(url: string, init?: RequestInit): Promise<unknown> {
 // ---------------------------------------------------------------------------
 
 /**
- * Devolve a URL para onde mandar a candidata. O `state` carrega o id da candidatura;
+ * Devolve a URL para onde mandar a afiliada. O `state` carrega o id da inscrição;
  * ele não é a defesa — quem valida o dono é o banco, no retorno. Serve para o callback
- * saber de qual candidatura se trata sem confiar em nada guardado no navegador.
+ * saber de qual inscrição se trata sem confiar em nada guardado no navegador.
  */
 export const iniciarConexaoInstagram = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
@@ -170,7 +170,7 @@ export const iniciarConexaoInstagram = createServerFn({ method: "POST" })
       p_influencer_id: data.influencerId,
     });
     if (error) throw new Error(error.message);
-    if (!dono) throw new Error("Só a própria candidata pode conectar o Instagram dela.");
+    if (!dono) throw new Error("Só a própria afiliada pode conectar o Instagram dela.");
 
     return {
       url: montarUrlDeAutorizacao({ appId, redirectUri, state: data.influencerId }),
@@ -283,7 +283,7 @@ export const getInstagramStatus = createServerFn({ method: "POST" })
 // ---------------------------------------------------------------------------
 
 /**
- * Busca os números na Meta e grava. O que a candidata vê depois é o mesmo que a
+ * Busca os números na Meta e grava. O que a afiliada vê depois é o mesmo que a
  * gestora veria se tivesse digitado à mão — a diferença fica registrada em
  * `data_source = 'META_API'` e no snapshot, que é o que torna a origem auditável.
  */
@@ -336,7 +336,7 @@ export const sincronizarInstagram = createServerFn({ method: "POST" })
       }
 
       // 2. Renova quando estiver perto de vencer. Um token que expira no meio do uso
-      //    faria a candidata reconectar sem entender por quê.
+      //    faria a afiliada reconectar sem entender por quê.
       const { data: statusAtual } = await rpc(supabase, "instagram_status", {
         p_influencer_id: data.influencerId,
       });
@@ -385,7 +385,7 @@ export const sincronizarInstagram = createServerFn({ method: "POST" })
       }
 
       // 4. A Meta não fornece `recent_posts_6m` nem `profile_type`. Recalcular a
-      //    pontuação sem eles rebaixaria a candidata a cada sync, então os valores
+      //    pontuação sem eles rebaixaria a afiliada a cada sync, então os valores
       //    atuais entram no cálculo junto com os números novos.
       const { data: atuais, error: erroAtuais } = await rpc(
         supabase,
@@ -431,7 +431,7 @@ export const sincronizarInstagram = createServerFn({ method: "POST" })
       };
     } catch (erro) {
       const mensagem = erro instanceof Error ? erro.message : "Falha desconhecida no sync.";
-      // Registra a falha para a candidata ver que precisa reconectar, e repassa.
+      // Registra a falha para a afiliada ver que precisa reconectar, e repassa.
       await rpc(supabase, "instagram_record_error", {
         p_influencer_id: data.influencerId,
         p_error: mensagem,
@@ -444,7 +444,7 @@ export const sincronizarInstagram = createServerFn({ method: "POST" })
 // Desconectar
 // ---------------------------------------------------------------------------
 
-/** LGPD: a candidata retira o acesso quando quiser, e o token sai do Vault junto. */
+/** LGPD: a afiliada retira o acesso quando quiser, e o token sai do Vault junto. */
 export const desconectarInstagram = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: { influencerId: string }) =>

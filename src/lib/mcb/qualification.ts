@@ -111,8 +111,8 @@ export type RespostasDaInscricao = {
 
 /**
  * Os sinais de preparação que saem das respostas da inscrição. A mesma regra vale no
- * envio da candidatura e no recálculo feito pela gestora — antes, o envio avaliava sem
- * sinais e toda candidata começava com no máximo 45%.
+ * envio da inscrição e no recálculo feito pela gestora — antes, o envio avaliava sem
+ * sinais e toda afiliada começava com no máximo 45%.
  */
 export function sinaisDasRespostas(respostas: RespostasDaInscricao): ProgressSignals {
   const preenchido = (valor: string | null) => Boolean(valor && valor.trim().length > 8);

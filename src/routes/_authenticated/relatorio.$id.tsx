@@ -1,7 +1,7 @@
 /**
- * Fase 5 — Relatório de evolução da candidata, para salvar em PDF pelo navegador.
+ * Fase 5 — Relatório de evolução da afiliada, para salvar em PDF pelo navegador.
  *
- * Fica fora da página da candidata (`/relatorio/$id`, não `/candidatas/$id/relatorio`)
+ * Fica fora da página da afiliada (`/relatorio/$id`, não `/candidatas/$id/relatorio`)
  * para não transformar aquela página em layout. Não usa o AppShell: é um documento, e o
  * que não deve ir para o papel leva `print:hidden`. O que entra e o que fica de fora
  * está em `relatorio.ts`.
@@ -31,7 +31,7 @@ export const Route = createFileRoute("/_authenticated/relatorio/$id")({
   head: () => ({
     meta: [
       { title: "Relatório de evolução — MCB" },
-      { name: "description", content: "Evolução, requisitos e tarefas da candidata." },
+      { name: "description", content: "Evolução, requisitos e tarefas da afiliada." },
       { name: "robots", content: "noindex" },
     ],
   }),
@@ -50,7 +50,7 @@ function RelatorioPage() {
   const { tenantId, active, profile } = useWorkspace();
   const buscar = useServerFn(getInfluencer);
 
-  // A mesma chave da página da candidata: vindo de lá, o relatório abre sem nova consulta.
+  // A mesma chave da página da afiliada: vindo de lá, o relatório abre sem nova consulta.
   const consulta = useQuery({
     queryKey: ["mcb", "influencer", tenantId, id],
     queryFn: () => buscar({ data: { tenantId: tenantId!, influencerId: id } }),
@@ -65,7 +65,7 @@ function RelatorioPage() {
   if (!dados) {
     return (
       <p className="p-8 text-sm">
-        Esta candidata não existe neste ambiente.{" "}
+        Esta afiliada não existe neste ambiente.{" "}
         <Link to="/candidatas" className="underline underline-offset-4">
           Voltar para a lista
         </Link>
@@ -99,7 +99,7 @@ function RelatorioPage() {
       <div className="mb-6 flex flex-wrap items-center justify-between gap-3 print:hidden">
         <Button asChild variant="outline" size="sm">
           <Link to="/candidatas/$id" params={{ id }}>
-            Voltar à candidata
+            Voltar à afiliada
           </Link>
         </Button>
         <div className="flex flex-wrap items-center gap-3">

@@ -62,9 +62,9 @@ export function EncerrarAmbienteSection({
 
       <div className="mt-3">
         <p className="text-sm text-muted-foreground">
-          Baixe um arquivo com todos os dados do ambiente: candidatas, inscrições, tarefas, notas,
+          Baixe um arquivo com todos os dados do ambiente: afiliadas, inscrições, tarefas, notas,
           feedbacks, números, avaliações, histórico, consentimentos e pagamentos. Os prints
-          continuam na página de cada candidata.
+          continuam na página de cada afiliada.
         </p>
         <Button
           type="button"
@@ -88,7 +88,7 @@ export function EncerrarAmbienteSection({
         }}
       >
         <p className="text-sm text-muted-foreground">
-          Excluir apaga de vez as candidatas, os prints, a página de candidatura, a equipe e o
+          Excluir apaga de vez as afiliadas, os prints, a página de inscrição, a equipe e o
           histórico deste ambiente. As contas de acesso das pessoas continuam existindo, e a
           exclusão não desfaz cobranças já pagas. Baixe os dados antes.
         </p>

@@ -1,7 +1,7 @@
 /**
  * Fase 5 — Biblioteca de modelos de tarefa, em Configurações.
  *
- * Uma lista por nível da jornada. Na página da candidata, os modelos do nível em que ela
+ * Uma lista por nível da jornada. Na página da afiliada, os modelos do nível em que ela
  * está aparecem como sugestão (`SugestoesTarefa.tsx`). As regras estão em
  * `modelosTarefa.ts`; quem pode editar é conferido no servidor.
  */
@@ -128,7 +128,7 @@ export function ModelosTarefaSection({
     <section className="glass rounded-xl border border-border/60 p-6 lg:col-span-2">
       <h2 className="font-serif text-xl">Modelos de tarefa</h2>
       <p className="mt-1 text-sm text-muted-foreground">
-        As tarefas de cada nível da jornada. Na página da candidata, as do nível em que ela está
+        As tarefas de cada nível da jornada. Na página da afiliada, as do nível em que ela está
         aparecem como sugestão, e você escolhe quais criar.
       </p>
 
@@ -170,7 +170,7 @@ export function ModelosTarefaSection({
             />
           </div>
           <div className="grid gap-1.5 sm:col-span-2">
-            <Label htmlFor="modelo-descricao">Orientação para a candidata (opcional)</Label>
+            <Label htmlFor="modelo-descricao">Orientação para a afiliada (opcional)</Label>
             <Textarea
               id="modelo-descricao"
               rows={2}

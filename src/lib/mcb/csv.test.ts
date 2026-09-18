@@ -68,7 +68,7 @@ describe("números no formato brasileiro", () => {
   });
 
   it("devolve vazio para ausência de dado, e não zero", () => {
-    // Zero e "não informado" são coisas diferentes: uma candidata com 0 seguidores não
+    // Zero e "não informado" são coisas diferentes: uma afiliada com 0 seguidores não
     // é o mesmo que uma cujo dado ainda não foi levantado.
     expect(numeroBr(null)).toBe("");
     expect(numeroBr(undefined)).toBe("");

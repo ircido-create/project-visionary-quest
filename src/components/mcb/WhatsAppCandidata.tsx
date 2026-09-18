@@ -1,5 +1,5 @@
 /**
- * Fase 5 — Botões de WhatsApp no topo da página da candidata.
+ * Fase 5 — Botões de WhatsApp no topo da página da afiliada.
  *
  * - "Convidar para o portal": só para quem ainda não tem acesso.
  * - "Lembrar tarefas atrasadas": só quando há tarefa pendente com prazo vencido.

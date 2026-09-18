@@ -16,7 +16,7 @@ export const Route = createFileRoute("/_authenticated/tarefas")({
   head: () => ({
     meta: [
       { title: "Tarefas — MCB" },
-      { name: "description", content: "Tarefas do acompanhamento por candidata e por etapa." },
+      { name: "description", content: "Tarefas do acompanhamento por afiliada e por etapa." },
       { name: "robots", content: "noindex" },
     ],
   }),
@@ -45,7 +45,7 @@ function TasksPage() {
     queryClient.invalidateQueries({ queryKey: ["mcb", "tasks", tenantId] });
     queryClient.invalidateQueries({ queryKey: ["mcb", "dashboard", tenantId] });
     // O outro lado do mesmo problema: a tarefa concluída aqui aparece no detalhe da
-    // candidata. A chave é um prefixo, então alcança o detalhe de qualquer candidata.
+    // afiliada. A chave é um prefixo, então alcança o detalhe de qualquer afiliada.
     queryClient.invalidateQueries({ queryKey: ["mcb", "influencer", tenantId] });
   };
 
@@ -85,12 +85,18 @@ function TasksPage() {
   });
 
   const today = new Date().toISOString().slice(0, 10);
-  const tasks = (query.data ?? []).filter((task) => filter === "todas" || task.status !== "CONCLUIDA");
+  const tasks = (query.data ?? []).filter(
+    (task) => filter === "todas" || task.status !== "CONCLUIDA",
+  );
 
   return (
     <AppShell
       title="Tarefas"
-      description={isOnbio ? "Próximas ações da operação e do relacionamento com cada afiliada." : "O que precisa acontecer para cada candidata avançar de etapa."}
+      description={
+        isOnbio
+          ? "Próximas ações da operação e do relacionamento com cada afiliada."
+          : "O que precisa acontecer para cada afiliada avançar de etapa."
+      }
       actions={
         <BotaoExportar
           rotulo="Exportar (CSV)"
@@ -162,7 +168,9 @@ function TasksPage() {
                   });
                 }}
               />
-              <span className={task.status === "CONCLUIDA" ? "text-muted-foreground line-through" : ""}>
+              <span
+                className={task.status === "CONCLUIDA" ? "text-muted-foreground line-through" : ""}
+              >
                 {task.title}
               </span>
               {task.influencer_id && task.influencerName ? (

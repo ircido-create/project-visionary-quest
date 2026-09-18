@@ -148,7 +148,7 @@ export function emailDeVencimento(p: {
   const plano = p.plano
     ? `o plano ${p.plano}${p.precoCentavos ? ` (${precoBR(p.precoCentavos)} por mês)` : ""}`
     : "o seu plano";
-  const regra = `Se o pagamento não for feito até o vencimento, o ambiente segue funcionando por mais ${plural(DIAS_DE_TOLERANCIA, "dia", "dias")}; depois fica disponível só para leitura, e a página deixa de receber candidaturas até o pagamento.`;
+  const regra = `Se o pagamento não for feito até o vencimento, o ambiente segue funcionando por mais ${plural(DIAS_DE_TOLERANCIA, "dia", "dias")}; depois fica disponível só para leitura, e a página deixa de receber inscrições até o pagamento.`;
   const fecho = `Equipe MCB\n${CONTROLADOR.email}`;
 
   let assunto: string;
@@ -171,7 +171,7 @@ export function emailDeVencimento(p: {
     case "tolerancia":
       assunto = "Sua assinatura do MCB venceu";
       paragrafos = [
-        `A assinatura do ambiente ${p.ambiente} no MCB venceu em ${dataBR(p.estado.venceEm)}. Ele continua funcionando até ${dataBR(p.estado.suspendeEm)}; depois fica disponível só para leitura, e a página deixa de receber candidaturas, até o pagamento.`,
+        `A assinatura do ambiente ${p.ambiente} no MCB venceu em ${dataBR(p.estado.venceEm)}. Ele continua funcionando até ${dataBR(p.estado.suspendeEm)}; depois fica disponível só para leitura, e a página deixa de receber inscrições, até o pagamento.`,
         `Para continuar com ${plano}, responda este e-mail e combinamos o pagamento.`,
       ];
       break;

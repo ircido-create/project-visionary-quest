@@ -21,13 +21,13 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Plataforma que organiza candidaturas, acompanha a evolução de cada criadora e audita os requisitos de qualificação com critérios claros e auditáveis.",
+          "Plataforma que organiza inscrições, acompanha a evolução de cada criadora e audita os requisitos de qualificação com critérios claros e auditáveis.",
       },
       { property: "og:title", content: "MCB — Método Criadora Blessing" },
       {
         property: "og:description",
         content:
-          "Do perfil pessoal à criadora pronta para análise: candidaturas, jornada guiada e qualificação determinística em um só lugar.",
+          "Do perfil pessoal à criadora pronta para análise: inscrições, jornada guiada e qualificação determinística em um só lugar.",
       },
     ],
   }),
@@ -73,9 +73,9 @@ function Landing() {
             Do perfil pessoal à criadora de conteúdo pronta para análise.
           </h1>
           <p className="mt-5 max-w-2xl text-base opacity-90">
-            Uma plataforma para gestoras acompanharem candidatas com clareza: candidatura
-            estruturada, jornada guiada em cinco etapas e auditoria dos requisitos com critérios
-            explícitos — sem promessas de aprovação.
+            Uma plataforma para gestoras acompanharem afiliadas com clareza: inscrição estruturada,
+            jornada guiada em cinco etapas e auditoria dos requisitos com critérios explícitos — sem
+            promessas de aprovação.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Button asChild size="lg" variant="secondary">
@@ -89,7 +89,7 @@ function Landing() {
                 className="border-primary-foreground/40 bg-transparent text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground"
               >
                 <Link to="/g/$slug" params={{ slug: principal.slug }}>
-                  Ver página de candidatura
+                  Ver página de inscrição
                 </Link>
               </Button>
             ) : null}
@@ -103,7 +103,7 @@ function Landing() {
       <section id="metodo" className="mx-auto max-w-6xl px-6 py-20">
         <h2 className="font-serif text-3xl">As cinco etapas da jornada</h2>
         <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
-          Cada candidata avança por etapas com tarefas concretas. Os pilares {PILLARS.join(", ")}{" "}
+          Cada afiliada avança por etapas com tarefas concretas. Os pilares {PILLARS.join(", ")}{" "}
           orientam a produção de conteúdo em todas elas.
         </p>
         <div className="mt-10 grid gap-4 md:grid-cols-3 lg:grid-cols-5">
@@ -136,7 +136,7 @@ function Landing() {
           <div>
             <h3 className="font-serif text-2xl">Cada gestora no seu espaço</h3>
             <p className="mt-2 text-sm text-muted-foreground">
-              Dados isolados por ambiente, página de candidatura própria e equipe com papéis
+              Dados isolados por ambiente, página de inscrição própria e equipe com papéis
               definidos.
             </p>
           </div>
@@ -146,7 +146,7 @@ function Landing() {
       <section id="planos" className="mx-auto max-w-6xl px-6 py-20">
         <h2 className="font-serif text-3xl">Planos</h2>
         <p className="mt-2 text-sm text-muted-foreground">
-          Escolha o limite de candidatas e de pessoas na equipe. Todo ambiente começa com 14 dias de
+          Escolha o limite de afiliadas e de pessoas na equipe. Todo ambiente começa com 14 dias de
           avaliação grátis; depois, a cobrança é mensal e combinada com a MCB.
         </p>
         <div className="mt-10 grid gap-4 md:grid-cols-3">
@@ -166,7 +166,7 @@ function Landing() {
                 ) : null}
               </p>
               <ul className="mt-4 space-y-1 text-sm text-muted-foreground">
-                <li>Até {plan.max_candidates} candidatas</li>
+                <li>Até {plan.max_candidates} afiliadas</li>
                 <li>Até {plan.max_members} pessoas na equipe</li>
                 <li>{plan.max_ai_analyses} análises assistidas por mês</li>
                 <li>{plan.custom_branding ? "Página personalizada" : "Página padrão"}</li>
@@ -181,7 +181,7 @@ function Landing() {
 
       {paginas.length > 0 ? (
         <section className="mx-auto max-w-6xl px-6 pb-20">
-          <h2 className="font-serif text-2xl">Páginas de candidatura</h2>
+          <h2 className="font-serif text-2xl">Páginas de inscrição</h2>
           <ul className="mt-4 flex flex-wrap gap-3 text-sm">
             {paginas.map((manager) => (
               <li key={manager.slug}>
@@ -202,7 +202,7 @@ function Landing() {
       <footer className="border-t border-border/60 px-6 py-10 text-center text-xs text-muted-foreground">
         <p>
           MCB — Método Criadora Blessing. Plataforma independente de formação e organização de
-          candidaturas. Não garantimos aprovação em nenhum programa de terceiros.
+          inscrições. Não garantimos aprovação em nenhum programa de terceiros.
         </p>
         <p className="mt-2">
           <Link to="/privacidade" className="underline underline-offset-4">

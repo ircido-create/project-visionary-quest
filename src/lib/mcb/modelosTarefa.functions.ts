@@ -221,7 +221,7 @@ export const carregarConjuntoInicial = createServerFn({ method: "POST" })
     return { criados: novos.length };
   });
 
-/** Cria, para a candidata, as tarefas dos modelos que a gestora marcou. */
+/** Cria, para a afiliada, as tarefas dos modelos que a gestora marcou. */
 export const criarTarefasDeModelos = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: { tenantId: string; influencerId: string; modeloIds: string[] }) =>
@@ -236,7 +236,7 @@ export const criarTarefasDeModelos = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
 
-    const [candidata, modelos, tarefas] = await Promise.all([
+    const [afiliada, modelos, tarefas] = await Promise.all([
       supabase
         .from("influencers")
         .select("id")
@@ -254,8 +254,8 @@ export const criarTarefasDeModelos = createServerFn({ method: "POST" })
         .eq("tenant_id", data.tenantId)
         .eq("influencer_id", data.influencerId),
     ]);
-    for (const r of [candidata, modelos, tarefas]) if (r.error) throw new Error(r.error.message);
-    if (!candidata.data) throw new Error("Candidata não encontrada neste ambiente.");
+    for (const r of [afiliada, modelos, tarefas]) if (r.error) throw new Error(r.error.message);
+    if (!candidata.data) throw new Error("Afiliada não encontrada neste ambiente.");
 
     // Dois cliques, ou duas abas abertas, não duplicam a tarefa.
     const faltam = modelosQueFaltam((modelos.data ?? []) as ModeloTarefa[], tarefas.data ?? []);

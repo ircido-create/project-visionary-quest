@@ -24,10 +24,10 @@ const requisito = (status: RequirementResult["status"], key = "followers"): Requ
 
 const todosCumpridos = [requisito("PASS", "a"), requisito("PASS", "b")];
 const umPendente = [requisito("PASS", "a"), requisito("FAIL", "b")];
-const justificativa = "Conferido pessoalmente com a candidata.";
+const justificativa = "Conferido pessoalmente com a afiliada.";
 
 describe("decisão de auditoria", () => {
-  it("só vale para candidata em Pronta para auditoria", () => {
+  it("só vale para afiliada em Pronta para auditoria", () => {
     const r = validarDecisao({
       etapaAtual: "EM_CRESCIMENTO",
       decisao: "APROVAR",

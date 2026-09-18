@@ -82,7 +82,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         name: "description",
         content:
-          "Plataforma do Método Criadora Blessing: candidaturas, jornada guiada e qualificação com critérios claros.",
+          "Plataforma do Método Criadora Blessing: inscrições, jornada guiada e qualificação com critérios claros.",
       },
       { property: "og:title", content: "MCB — Método Criadora Blessing" },
       {

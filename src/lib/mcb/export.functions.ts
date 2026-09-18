@@ -5,7 +5,7 @@
  * em CSV e baixa. Assim a definição das colunas mora num lugar só, e mudar uma coluna
  * não exige mexer em dois arquivos.
  *
- * Toda exportação é registrada em `audit_logs`. O CSV de candidatas leva nome, e-mail e
+ * Toda exportação é registrada em `audit_logs`. O CSV de afiliadas leva nome, e-mail e
  * WhatsApp para fora do sistema — dado pessoal de terceiro. Saber quem levou, quando e
  * quantos registros é parte da postura de LGPD que o projeto assume desde a fase 1.
  */
@@ -82,7 +82,7 @@ export const exportarCandidatas = createServerFn({ method: "POST" })
       "Requisitos pendentes",
       "Origem",
       "Consentimento em",
-      "Candidatura em",
+      "Inscrição em",
     ];
 
     const registros = (linhas ?? []).map((i) => {
@@ -119,7 +119,7 @@ export const exportarCandidatas = createServerFn({ method: "POST" })
     });
 
     return {
-      nomeDoArquivo: nomeDoArquivo("candidatas", tenant?.slug ?? "ambiente"),
+      nomeDoArquivo: nomeDoArquivo("afiliadas", tenant?.slug ?? "ambiente"),
       cabecalho,
       linhas: registros,
     };
@@ -131,7 +131,7 @@ export const exportarTarefas = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
 
-    const [{ data: tenant }, { data: tarefas, error }, { data: candidatas }] = await Promise.all([
+    const [{ data: tenant }, { data: tarefas, error }, { data: afiliadas }] = await Promise.all([
       supabase.from("tenants").select("slug").eq("id", data.tenantId).maybeSingle(),
       supabase
         .from("tasks")
@@ -142,7 +142,7 @@ export const exportarTarefas = createServerFn({ method: "POST" })
     ]);
     if (error) throw new Error(error.message);
 
-    const nomePorId = new Map((candidatas ?? []).map((c) => [c.id, c.full_name]));
+    const nomePorId = new Map((afiliadas ?? []).map((c) => [c.id, c.full_name]));
 
     const registros = (tarefas ?? []).map((t) => [
       t.influencer_id ? (nomePorId.get(t.influencer_id) ?? "") : "",
@@ -163,7 +163,7 @@ export const exportarTarefas = createServerFn({ method: "POST" })
 
     return {
       nomeDoArquivo: nomeDoArquivo("tarefas", tenant?.slug ?? "ambiente"),
-      cabecalho: ["Candidata", "Tarefa", "Status", "Prioridade", "Prazo", "Criada em"],
+      cabecalho: ["Afiliada", "Tarefa", "Status", "Prioridade", "Prazo", "Criada em"],
       linhas: registros,
     };
   });

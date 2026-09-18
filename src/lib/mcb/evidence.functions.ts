@@ -46,7 +46,7 @@ export const createEvidenceUpload = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const { supabase } = context;
 
-    // A candidata precisa existir neste ambiente: sem esta conferência daria para
+    // A afiliada precisa existir neste ambiente: sem esta conferência daria para
     // montar um caminho apontando para o tenant de outra gestora.
     const { data: influencer, error: lookupError } = await supabase
       .from("influencers")
@@ -55,7 +55,7 @@ export const createEvidenceUpload = createServerFn({ method: "POST" })
       .eq("id", data.influencerId)
       .maybeSingle();
     if (lookupError) throw new Error(lookupError.message);
-    if (!influencer) throw new Error("Candidata não encontrada neste ambiente.");
+    if (!influencer) throw new Error("Afiliada não encontrada neste ambiente.");
 
     await garantirEspacoParaArquivo(supabase, data.tenantId, data.sizeBytes);
 
@@ -95,9 +95,9 @@ export const registerEvidence = createServerFn({ method: "POST" })
     const { supabase, userId } = context;
 
     // O caminho volta do navegador, então é reconferido aqui: caso contrário daria
-    // para registrar um objeto de outro ambiente como evidência desta candidata.
+    // para registrar um objeto de outro ambiente como evidência desta afiliada.
     if (!data.storagePath.startsWith(`${data.tenantId}/${data.influencerId}/`)) {
-      throw new Error("Caminho de arquivo inválido para esta candidata.");
+      throw new Error("Caminho de arquivo inválido para esta afiliada.");
     }
 
     const { data: file, error } = await supabase
@@ -129,7 +129,7 @@ export const registerEvidence = createServerFn({ method: "POST" })
     return { id: file.id };
   });
 
-/** Prints da candidata com URL assinada de vida curta e quem já confirmou cada um. */
+/** Prints da afiliada com URL assinada de vida curta e quem já confirmou cada um. */
 export const listEvidence = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: { tenantId: string; influencerId: string }) =>

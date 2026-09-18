@@ -1,8 +1,8 @@
 /**
- * Fase 6 — Aviso no painel: candidatas que serão excluídas por inatividade.
+ * Fase 6 — Aviso no painel: afiliadas que serão excluídas por inatividade.
  *
  * Aparece só quando alguma entrou na janela de aviso (os 15 dias antes dos 90). Qualquer
- * ação na página da candidata conta como atividade e adia a exclusão.
+ * ação na página da afiliada conta como atividade e adia a exclusão.
  */
 
 import { Link } from "@tanstack/react-router";
@@ -28,7 +28,7 @@ export function AvisoInatividadeCard({ tenantId }: { tenantId: string }) {
     <section className="glass rounded-xl border border-destructive/40 p-6">
       <h2 className="font-serif text-xl">Perto da exclusão por inatividade</h2>
       <p className="mt-1 text-sm text-muted-foreground">
-        Candidatas sem nenhuma atividade por {DIAS_PARA_EXCLUSAO} dias têm os dados excluídos, como
+        Afiliadas sem nenhuma atividade por {DIAS_PARA_EXCLUSAO} dias têm os dados excluídos, como
         diz a Política de Privacidade. Qualquer ação na página delas — uma nota, uma tarefa, números
         atualizados — conta como atividade e adia a exclusão.
       </p>

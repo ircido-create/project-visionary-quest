@@ -62,7 +62,7 @@ export const createProfileAnalysis = createServerFn({ method: "POST" })
       .eq("id", data.influencerId)
       .maybeSingle();
     if (lookupError) throw new Error(lookupError.message);
-    if (!influencer) throw new Error("Candidata não encontrada neste ambiente.");
+    if (!influencer) throw new Error("Afiliada não encontrada neste ambiente.");
 
     // Só entra o que uma pessoa confirmou. Print não conferido não alimenta a IA —
     // é a mesma regra que vale para a qualificação.
@@ -190,7 +190,7 @@ export const createProfileAnalysis = createServerFn({ method: "POST" })
     }
   });
 
-/** Histórico de análises da candidata, da mais recente para a mais antiga. */
+/** Histórico de análises da afiliada, da mais recente para a mais antiga. */
 export const listAnalyses = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: { tenantId: string; influencerId: string }) =>

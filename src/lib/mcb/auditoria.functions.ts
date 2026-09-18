@@ -13,7 +13,7 @@
  * - `qualification_results`: a avaliação daquele momento (requisitos e progresso), mais
  *   `manual_decision`, `manual_decision_by` e `manual_decision_note`. É o registro que
  *   responde "quem aprovou, com base em quê" depois que os números mudarem.
- * - `influencers.status`: a próxima etapa. A atualização só acontece se a candidata
+ * - `influencers.status`: a próxima etapa. A atualização só acontece se a afiliada
  *   ainda estiver em "Pronta para auditoria" — se duas pessoas decidirem ao mesmo tempo,
  *   só a primeira vale.
  * - `status_history`, com a decisão e a nota.
@@ -95,7 +95,7 @@ export const decidirAuditoria = createServerFn({ method: "POST" })
       .eq("id", data.influencerId)
       .maybeSingle();
     if (erroLeitura) throw new Error(erroLeitura.message);
-    if (!influencer) throw new Error("Candidata não encontrada neste ambiente.");
+    if (!influencer) throw new Error("Afiliada não encontrada neste ambiente.");
 
     const avaliacao = evaluateInfluencer(influencer);
     const resultado = validarDecisao({
@@ -117,7 +117,7 @@ export const decidirAuditoria = createServerFn({ method: "POST" })
       .select("id");
     if (erroEtapa) throw new Error(erroEtapa.message);
     if (!atualizadas || atualizadas.length === 0) {
-      throw new Error("A etapa da candidata mudou enquanto você auditava. Recarregue a página.");
+      throw new Error("A etapa da afiliada mudou enquanto você auditava. Recarregue a página.");
     }
 
     const nota = data.nota.trim();
@@ -145,7 +145,7 @@ export const decidirAuditoria = createServerFn({ method: "POST" })
         .eq("id", data.influencerId)
         .eq("status", resultado.proximaEtapa);
       throw new Error(
-        `A decisão não foi registrada (${erroDecisao.message}). A candidata continua em auditoria.`,
+        `A decisão não foi registrada (${erroDecisao.message}). A afiliada continua em auditoria.`,
       );
     }
 

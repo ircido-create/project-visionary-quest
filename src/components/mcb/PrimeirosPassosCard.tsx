@@ -139,7 +139,7 @@ export function PrimeirosPassosCard({ tenantId }: { tenantId: string }) {
 
       <p className="mt-4 text-xs text-muted-foreground">
         {dados.listadaNoMcb
-          ? "Sua página aparece na lista de páginas de candidatura do MCB."
+          ? "Sua página aparece na lista de páginas de inscrição do MCB."
           : "Sua página está no ar para quem tem o link, mas não aparece na lista do MCB. Isso se muda em Configurações."}
       </p>
     </section>

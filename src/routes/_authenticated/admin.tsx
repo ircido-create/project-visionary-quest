@@ -85,7 +85,7 @@ function Ambiente({
 
       <dl className="mt-4 grid grid-cols-2 gap-3 text-sm md:grid-cols-4">
         <div>
-          <dt className="text-xs uppercase tracking-wide text-muted-foreground">Candidatas</dt>
+          <dt className="text-xs uppercase tracking-wide text-muted-foreground">Afiliadas</dt>
           <dd className="mt-1">
             <Uso atual={ambiente.uso.candidatas} limite={ambiente.limites?.candidatas ?? null} />
           </dd>

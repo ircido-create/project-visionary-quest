@@ -1,5 +1,5 @@
 /**
- * Fase 8 — No portal da candidata: cada requisito do programa, quanto falta e o que ela
+ * Fase 8 — No portal da afiliada: cada requisito do programa, quanto falta e o que ela
  * pode fazer. O cálculo vem do servidor, com o mesmo motor da página da gestora.
  */
 

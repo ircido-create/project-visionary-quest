@@ -1,5 +1,5 @@
 /**
- * Fase 5 — Tarefas sugeridas para o nível da candidata, dentro da seção "Tarefas".
+ * Fase 5 — Tarefas sugeridas para o nível da afiliada, dentro da seção "Tarefas".
  *
  * Mostra os modelos do nível em que ela está e que ela ainda não tem. Vêm todos marcados;
  * a gestora desmarca o que não servir e confirma. Nada é criado sem esse clique.

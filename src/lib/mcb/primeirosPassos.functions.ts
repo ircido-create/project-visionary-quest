@@ -36,7 +36,7 @@ export const obterPrimeirosPassos = createServerFn({ method: "POST" })
     const { supabase } = context;
     if (!(await ehDonaOuAdministradora(supabase, data.tenantId))) return { podeVer: false };
 
-    const [ambiente, marca, modelos, candidatas, convites, membros] = await Promise.all([
+    const [ambiente, marca, modelos, afiliadas, convites, membros] = await Promise.all([
       supabase
         .from("tenants")
         .select("slug, is_demo, created_at, is_listed_on_home")
@@ -64,7 +64,7 @@ export const obterPrimeirosPassos = createServerFn({ method: "POST" })
         .select("user_id", { count: "exact", head: true })
         .eq("tenant_id", data.tenantId),
     ]);
-    for (const r of [ambiente, marca, modelos, candidatas, convites, membros]) {
+    for (const r of [ambiente, marca, modelos, afiliadas, convites, membros]) {
       if (r.error) throw new Error(r.error.message);
     }
     if (!ambiente.data || ambiente.data.is_demo) return { podeVer: false };

@@ -67,7 +67,7 @@ describe("limites por plano", () => {
     });
   });
 
-  describe("candidatas", () => {
+  describe("afiliadas", () => {
     it("permite abaixo do limite", async () => {
       const db = comPlano({ influencers: { count: 24 } });
       await expect(garantirEspacoParaCandidata(db, AMBIENTE)).resolves.toBeUndefined();
@@ -75,7 +75,7 @@ describe("limites por plano", () => {
 
     it("recusa ao atingir o limite, e não só ao passar dele", async () => {
       const db = comPlano({ influencers: { count: 25 } });
-      await expect(garantirEspacoParaCandidata(db, AMBIENTE)).rejects.toThrow(/25 candidatas/);
+      await expect(garantirEspacoParaCandidata(db, AMBIENTE)).rejects.toThrow(/25 afiliadas/);
     });
 
     it("diz o plano, o limite e quanto já existe", async () => {

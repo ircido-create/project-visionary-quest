@@ -1,5 +1,5 @@
 /**
- * Fase 6 — Na administração: candidatas que passaram dos 90 dias sem atividade mas que a
+ * Fase 6 — Na administração: afiliadas que passaram dos 90 dias sem atividade mas que a
  * limpeza diária não exclui, porque têm arquivos de evidência. Os arquivos só saem pela
  * "Exclusão de dados a pedido", que também apaga o Storage.
  */
@@ -24,7 +24,7 @@ export function InativasComArquivosSection() {
         Sem atividade há mais de {DIAS_PARA_EXCLUSAO} dias, com arquivos
       </h2>
       <p className="mt-1 text-sm text-muted-foreground">
-        A limpeza diária exclui sozinha as candidatas sem atividade há {DIAS_PARA_EXCLUSAO} dias. As
+        A limpeza diária exclui sozinha as afiliadas sem atividade há {DIAS_PARA_EXCLUSAO} dias. As
         que têm arquivos de evidência ficam aqui, porque os arquivos só saem pela exclusão da
         administração: busque o e-mail em “Exclusão de dados a pedido”.
       </p>

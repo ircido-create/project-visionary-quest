@@ -19,7 +19,7 @@ export function nomeDoArquivoDeExportacao(slug: string, agora: Date = new Date()
 }
 
 const ROTULOS: Array<[string, string, string]> = [
-  ["candidatas", "candidata", "candidatas"],
+  ["afiliadas", "afiliada", "afiliadas"],
   ["tarefas", "tarefa", "tarefas"],
   ["feedbacks", "feedback", "feedbacks"],
   ["arquivos", "arquivo", "arquivos"],
@@ -27,7 +27,7 @@ const ROTULOS: Array<[string, string, string]> = [
   ["pagamentos", "pagamento", "pagamentos"],
 ];
 
-/** "2 candidatas, 5 tarefas, 1 pessoa da equipe" — só o que havia. */
+/** "2 afiliadas, 5 tarefas, 1 pessoa da equipe" — só o que havia. */
 export function resumoDaExclusaoDoAmbiente(contagem: Record<string, number>): string {
   const partes = ROTULOS.flatMap(([chave, um, varios]) => {
     const n = contagem[chave] ?? 0;

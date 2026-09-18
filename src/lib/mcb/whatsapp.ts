@@ -60,7 +60,7 @@ export function mensagemConvite(entrada: {
 }): string {
   return [
     `Oi, ${primeiroNome(entrada.nome)}! ${apresentacao(entrada.gestora)}Seu acompanhamento no Método Criadora Blessing agora tem um portal: lá você vê suas tarefas, seus números e o que falta para a análise.`,
-    // O vínculo com a candidatura é pelo e-mail: com outro e-mail ela entra num portal vazio.
+    // O vínculo com a inscrição é pelo e-mail: com outro e-mail ela entra num portal vazio.
     `Para entrar, crie sua conta com o mesmo e-mail da sua inscrição (${entrada.email}): ${entrada.linkCadastro}`,
     "Depois é só confirmar o e-mail que chega na sua caixa de entrada.",
   ].join("\n\n");

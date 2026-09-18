@@ -22,7 +22,7 @@ export const Route = createFileRoute("/auth")({
       { title: "Entrar — MCB Método Criadora Blessing" },
       {
         name: "description",
-        content: "Acesse seu ambiente de gestora para acompanhar candidatas e a jornada.",
+        content: "Acesse seu ambiente de gestora para acompanhar afiliadas e a jornada.",
       },
       { property: "og:title", content: "Entrar — MCB" },
       { property: "og:description", content: "Acesse seu ambiente de gestora no MCB." },
@@ -73,8 +73,8 @@ function AuthPage() {
     });
   }, []);
 
-  // Candidata vai para o portal, gestora para o painel. A decisão é do servidor: o
-  // navegador não consegue consultar a candidatura, que fica atrás de RPC.
+  // Afiliada vai para o portal, gestora para o painel. A decisão é do servidor: o
+  // navegador não consegue consultar a inscrição, que fica atrás de RPC.
   const goToLanding = useCallback(async () => {
     await syncLovableProfile();
     const { to } = await resolveDestination();
@@ -148,9 +148,9 @@ function AuthPage() {
           email,
           password,
           options: {
-            // Volta para esta tela, que vincula a candidatura e manda a candidata ao
-            // portal e a gestora ao painel. Em /dashboard a candidata caía na tela de
-            // "crie seu ambiente", sem a candidatura vinculada.
+            // Volta para esta tela, que vincula a inscrição e manda a afiliada ao
+            // portal e a gestora ao painel. Em /dashboard a afiliada caía na tela de
+            // "crie seu ambiente", sem a inscrição vinculada.
             emailRedirectTo: `${window.location.origin}/auth`,
             // O banco grava o aceite na criação da conta (`aceites_de_termos`).
             data: {
@@ -184,7 +184,7 @@ function AuthPage() {
 
     // O endpoint de OAuth (/~oauth/initiate) é servido pela infraestrutura do
     // Lovable, não pelo app. Rodando localmente ele não existe, e o redirecionamento
-    // levava a candidata a uma tela 404 sem explicação nenhuma. A checagem abaixo
+    // levava a afiliada a uma tela 404 sem explicação nenhuma. A checagem abaixo
     // troca o beco sem saída por uma instrução. Se ela falhar por qualquer motivo,
     // o fluxo segue normal em vez de bloquear quem conseguiria entrar.
     try {
@@ -226,7 +226,7 @@ function AuthPage() {
         <p className="mt-2 text-sm text-muted-foreground">
           {mode === "forgot"
             ? "Informe seu e-mail e enviamos um link para você criar uma nova senha."
-            : "Acompanhe candidaturas, evolução e qualificação em um só lugar."}
+            : "Acompanhe inscrições, evolução e qualificação em um só lugar."}
         </p>
 
         <div className="mt-6 grid gap-3">

@@ -36,7 +36,7 @@ describe("conta de acesso ao portal", () => {
     papelNaPlataforma: false,
   };
 
-  it("pode ser apagada quando só serve a esta candidatura", () => {
+  it("pode ser apagada quando só serve a esta inscrição", () => {
     expect(motivoParaManterConta(base)).toBeNull();
   });
 
@@ -49,8 +49,8 @@ describe("conta de acesso ao portal", () => {
     expect(motivoParaManterConta({ ...base, papelNaPlataforma: true })).toMatch(/administração/);
   });
 
-  it("fica quando há candidatura em outro ambiente", () => {
-    expect(motivoParaManterConta({ ...base, outrasCandidaturas: 1 })).toMatch(/outra candidatura/);
+  it("fica quando há inscrição em outro ambiente", () => {
+    expect(motivoParaManterConta({ ...base, outrasCandidaturas: 1 })).toMatch(/outra inscrição/);
     expect(motivoParaManterConta({ ...base, outrasCandidaturas: 2 })).toMatch(/outras 2/);
   });
 });

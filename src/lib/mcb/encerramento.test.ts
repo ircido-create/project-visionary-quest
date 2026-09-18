@@ -21,9 +21,9 @@ describe("encerrar o ambiente", () => {
   });
 
   it("o resumo diz só o que havia, no singular e no plural", () => {
-    expect(resumoDaExclusaoDoAmbiente({ candidatas: 2, tarefas: 1, arquivos: 0, membros: 1 })).toBe(
-      "2 candidatas, 1 tarefa, 1 pessoa da equipe",
+    expect(resumoDaExclusaoDoAmbiente({ afiliadas: 2, tarefas: 1, arquivos: 0, membros: 1 })).toBe(
+      "2 afiliadas, 1 tarefa, 1 pessoa da equipe",
     );
-    expect(resumoDaExclusaoDoAmbiente({ candidatas: 0 })).toBe("o ambiente estava vazio");
+    expect(resumoDaExclusaoDoAmbiente({ afiliadas: 0 })).toBe("o ambiente estava vazio");
   });
 });

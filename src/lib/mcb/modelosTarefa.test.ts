@@ -32,7 +32,7 @@ const biblioteca = [
 ];
 
 describe("sugestões de tarefa", () => {
-  it("sugere só o nível da candidata, na ordem da biblioteca", () => {
+  it("sugere só o nível da afiliada, na ordem da biblioteca", () => {
     const r = sugestoesParaNivel(LEVELS.ONE, biblioteca, []);
     expect(r.map((m) => m.id)).toEqual(["m2", "m1", "m3"]);
   });

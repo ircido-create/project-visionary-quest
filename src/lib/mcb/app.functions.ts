@@ -287,7 +287,7 @@ export const getDashboard = createServerFn({ method: "POST" })
       },
       funnel,
       nearGoal,
-      // Fila da Fase 5: candidatas esperando a decisão de auditoria.
+      // Fila da Fase 5: afiliadas esperando a decisão de auditoria.
       awaitingAudit: rows
         .filter((r) => r.status === "PRONTA_AUDITORIA")
         .slice(0, 6)
@@ -296,16 +296,16 @@ export const getDashboard = createServerFn({ method: "POST" })
         .filter((t) => t.due_date !== null && t.due_date < today)
         .slice(0, 6)
         .map((t) => {
-          // Nome e WhatsApp da candidata, para o lembrete sair do próprio painel.
-          const candidata = rows.find((r) => r.id === t.influencer_id);
+          // Nome e WhatsApp da afiliada, para o lembrete sair do próprio painel.
+          const afiliada = rows.find((r) => r.id === t.influencer_id);
           return {
             id: t.id,
             title: t.title,
             dueDate: t.due_date,
             influencerId: t.influencer_id,
-            influencerName: candidata?.full_name ?? null,
-            whatsapp: numeroWhatsApp(candidata?.whatsapp),
-            temPortal: Boolean(candidata?.user_id),
+            influencerName: afiliada?.full_name ?? null,
+            whatsapp: numeroWhatsApp(afiliada?.whatsapp),
+            temPortal: Boolean(afiliada?.user_id),
           };
         }),
       evolution: rows
@@ -475,7 +475,7 @@ export const updateInfluencerMetrics = createServerFn({ method: "POST" })
       .select("*")
       .maybeSingle();
     if (error) throw new Error(error.message);
-    if (!updated) throw new Error("Candidata não encontrada neste ambiente.");
+    if (!updated) throw new Error("Afiliada não encontrada neste ambiente.");
 
     const evaluation = evaluateInfluencer(updated);
 
@@ -536,7 +536,7 @@ export const changeInfluencerStatus = createServerFn({ method: "POST" })
       .eq("tenant_id", data.tenantId)
       .eq("id", data.influencerId)
       .maybeSingle();
-    if (!current) throw new Error("Candidata não encontrada neste ambiente.");
+    if (!current) throw new Error("Afiliada não encontrada neste ambiente.");
 
     const nextStatus = data.status as InfluencerStatus;
     // Fase 5: "Qualificada" só pela auditoria, e as etapas seguintes só depois dela.
@@ -992,11 +992,18 @@ export const updateInfluencerProfile = createServerFn({ method: "POST" })
       .select("*")
       .maybeSingle();
     if (error) throw new Error(error.message);
-    if (!updated) throw new Error("Candidata não encontrada neste ambiente.");
+    if (!updated) throw new Error("Afiliada não encontrada neste ambiente.");
 
     if (current?.person_id) {
-      const shared = { full_name: data.fullName, email: data.email.toLowerCase(), whatsapp: clean(data.whatsapp) };
-      const { error: personError } = await supabase.from("people").update(shared).eq("id", current.person_id);
+      const shared = {
+        full_name: data.fullName,
+        email: data.email.toLowerCase(),
+        whatsapp: clean(data.whatsapp),
+      };
+      const { error: personError } = await supabase
+        .from("people")
+        .update(shared)
+        .eq("id", current.person_id);
       if (personError) throw new Error(personError.message);
       const { error: linkedError } = await supabase
         .from("influencers")

@@ -2,9 +2,9 @@
  * Fase 4 — Conexão com o Instagram.
  *
  * O mesmo componente serve as duas telas, porque o que muda entre elas é só quem pode
- * agir: no portal a candidata conecta, sincroniza e desconecta; no detalhe a gestora
+ * agir: no portal a afiliada conecta, sincroniza e desconecta; no detalhe a gestora
  * apenas vê. Duplicar isso em dois componentes faria a informação divergir — a gestora
- * precisa enxergar exatamente o estado que a candidata enxerga, inclusive o erro.
+ * precisa enxergar exatamente o estado que a afiliada enxerga, inclusive o erro.
  *
  * Nenhum caminho aqui recebe token: `getInstagramStatus` devolve só data de conexão,
  * usuário e resultado do último sync.
@@ -30,12 +30,10 @@ const dataHora = (iso: string | null | undefined) =>
 export function InstagramSection({
   influencerId,
   podeGerenciar,
-  pessoa = "candidata",
 }: {
   influencerId: string;
   /** Verdadeiro só para a dona da conta. A recusa real acontece no banco. */
   podeGerenciar: boolean;
-  pessoa?: "candidata" | "afiliada";
 }) {
   const queryClient = useQueryClient();
   const buscarStatus = useServerFn(getInstagramStatus);
@@ -60,7 +58,7 @@ export function InstagramSection({
 
   const invalidar = () => {
     queryClient.invalidateQueries({ queryKey });
-    // Os números mudam: a candidata vê pelo portal, a gestora pelo detalhe.
+    // Os números mudam: a afiliada vê pelo portal, a gestora pelo detalhe.
     queryClient.invalidateQueries({ queryKey: ["mcb", "portal"] });
     queryClient.invalidateQueries({ queryKey: ["mcb", "influencer"] });
     queryClient.invalidateQueries({ queryKey: ["mcb", "influencers"] });
@@ -70,7 +68,7 @@ export function InstagramSection({
     mutationFn: () => iniciar({ data: { influencerId } }),
     onSuccess: ({ url }) => {
       // Sai da aplicação de propósito: a autorização acontece no domínio do Instagram,
-      // e é lá que a candidata confere o que está autorizando.
+      // e é lá que a afiliada confere o que está autorizando.
       window.location.href = url;
     },
     // A mensagem do servidor é a que explica o motivo — engoli-la já custou caro antes.
@@ -132,7 +130,7 @@ export function InstagramSection({
             <p className="mt-1 text-sm text-muted-foreground">
               {podeGerenciar
                 ? "Conectando sua conta profissional, seus números entram sozinhos — sem print."
-                : `A ${pessoa} ainda não conectou a conta.`}
+                : "A afiliada ainda não conectou a conta."}
             </p>
           )}
         </div>

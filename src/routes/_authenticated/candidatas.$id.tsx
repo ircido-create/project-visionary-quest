@@ -47,8 +47,8 @@ import { deleteOnbioAffiliate } from "@/lib/onbio/onbio.functions";
 export const Route = createFileRoute("/_authenticated/candidatas/$id")({
   head: () => ({
     meta: [
-      { title: "Perfil da candidata — MCB" },
-      { name: "description", content: "Requisitos, evolução, tarefas e histórico da candidata." },
+      { title: "Perfil da afiliada — MCB" },
+      { name: "description", content: "Requisitos, evolução, tarefas e histórico da afiliada." },
       { name: "robots", content: "noindex" },
     ],
   }),
@@ -186,7 +186,7 @@ function CandidateDetail() {
     mutationFn: () =>
       saveProfileData({ data: { tenantId: tenantId!, influencerId: id, ...profileForm } }),
     onSuccess: () => {
-      toast.success("Dados da candidata atualizados.");
+      toast.success("Dados da afiliada atualizados.");
       invalidate();
     },
     onError: () => toast.error("Não foi possível salvar os dados."),
@@ -260,13 +260,12 @@ function CandidateDetail() {
       toast.success("Afiliada excluída. A conta de acesso foi preservada.");
       await navigate({ to: "/candidatas" });
     },
-    onError: (error: Error) =>
-      toast.error(error.message || "Não foi possível excluir a afiliada."),
+    onError: (error: Error) => toast.error(error.message || "Não foi possível excluir a afiliada."),
   });
 
   if (query.isLoading) {
     return (
-      <AppShell title="Candidata">
+      <AppShell title="Afiliada">
         <p className="text-sm text-muted-foreground">Carregando perfil...</p>
       </AppShell>
     );
@@ -274,9 +273,9 @@ function CandidateDetail() {
 
   if (!detail) {
     return (
-      <AppShell title="Candidata não encontrada">
+      <AppShell title="Afiliada não encontrada">
         <p className="text-sm text-muted-foreground">
-          Esta candidata não existe neste ambiente.{" "}
+          Esta afiliada não existe neste ambiente.{" "}
           <Link to="/candidatas" className="underline underline-offset-4">
             Voltar para a lista
           </Link>
@@ -424,7 +423,7 @@ function CandidateDetail() {
                 Salvar contato
               </Button>
             </form>
-            <InstagramSection influencerId={id} podeGerenciar={false} pessoa="afiliada" />
+            <InstagramSection influencerId={id} podeGerenciar={false} />
           </section>
           <SeguidoresDaAfiliada
             tenantId={tenantId!}
@@ -561,7 +560,7 @@ function CandidateDetail() {
             gestora={profile?.full_name ?? null}
           />
           <select
-            aria-label="Status da candidata"
+            aria-label="Status da afiliada"
             className="h-10 rounded-md border border-input bg-background px-3 text-sm"
             value={influencer.status}
             onChange={(event) => {
@@ -753,7 +752,7 @@ function CandidateDetail() {
         <section className="glass rounded-xl border border-border/60 p-6">
           <h2 className="font-serif text-xl">Editar dados</h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            Corrija o cadastro da candidata: contato, perfil e objetivos.
+            Corrija o cadastro da afiliada: contato, perfil e objetivos.
           </p>
           <form
             className="mt-4 grid gap-3 sm:grid-cols-2"
@@ -1032,7 +1031,7 @@ function CandidateDetail() {
         </section>
 
         <section className="glass rounded-xl border border-border/60 p-6">
-          <h2 className="font-serif text-xl">Feedback para a candidata</h2>
+          <h2 className="font-serif text-xl">Feedback para a afiliada</h2>
           <form
             className="mt-3 grid gap-2"
             onSubmit={(event) => {
@@ -1076,7 +1075,7 @@ function CandidateDetail() {
 
         <AnalysisSection tenantId={tenantId!} influencerId={id} readOnly={readOnly} />
 
-        {/* Só leitura: quem conecta e desconecta é a candidata, no portal dela. */}
+        {/* Só leitura: quem conecta e desconecta é a afiliada, no portal dela. */}
         <InstagramSection influencerId={id} podeGerenciar={false} />
 
         <section className="glass rounded-xl border border-border/60 p-6 lg:col-span-3">

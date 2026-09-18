@@ -30,7 +30,7 @@ const PRIORITY_LABEL: Record<string, string> = {
 
 /**
  * Shell próprio, não o AppShell da gestora: aquele depende de `useWorkspace`, que
- * assume membresia num ambiente. A candidata não é membro de nenhum — é justamente o
+ * assume membresia num ambiente. A afiliada não é membro de nenhum — é justamente o
  * que impede que ela veja os dados das outras.
  */
 function PortalShell({ children }: { children: React.ReactNode }) {
@@ -84,24 +84,40 @@ function Application({
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <h2 className="font-serif text-2xl">{application.gestora}</h2>
-          <p className="mt-1 text-sm text-muted-foreground">{isOnbio ? "Afiliada ONBIO" : STATUS_LABELS[application.status as InfluencerStatus] ?? application.status}</p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            {isOnbio
+              ? "Afiliada ONBIO"
+              : (STATUS_LABELS[application.status as InfluencerStatus] ?? application.status)}
+          </p>
         </div>
-        {!isOnbio ? <span className="rounded-full border border-border px-3 py-1 text-xs">
-          Preparação do perfil: {Math.round(Number(application.progresso))}%
-        </span> : null}
+        {!isOnbio ? (
+          <span className="rounded-full border border-border px-3 py-1 text-xs">
+            Preparação do perfil: {Math.round(Number(application.progresso))}%
+          </span>
+        ) : null}
       </div>
       {/* A etapa e o índice medem coisas diferentes; lado a lado, sem explicação, uma
-          candidata "Qualificada para análise" com 45% achava que algo estava errado. */}
-      {!isOnbio ? <p className="mt-3 text-xs text-muted-foreground">
-        A etapa mostra em que ponto do acompanhamento você está. A preparação do perfil soma os
-        requisitos do programa e também nicho, bio, organização do perfil, stories e constância:
-        ajuda a acompanhar a sua evolução, mas não decide a qualificação.
-      </p> : <p className="mt-3 text-sm text-muted-foreground">Conecte a conta profissional cadastrada{application.instagram ? ` (@${application.instagram})` : ""} para enviar seguidores e publicações à sua gestora.</p>}
+          afiliada "Qualificada para análise" com 45% achava que algo estava errado. */}
+      {!isOnbio ? (
+        <p className="mt-3 text-xs text-muted-foreground">
+          A etapa mostra em que ponto do acompanhamento você está. A preparação do perfil soma os
+          requisitos do programa e também nicho, bio, organização do perfil, stories e constância:
+          ajuda a acompanhar a sua evolução, mas não decide a qualificação.
+        </p>
+      ) : (
+        <p className="mt-3 text-sm text-muted-foreground">
+          Conecte a conta profissional cadastrada
+          {application.instagram ? ` (@${application.instagram})` : ""} para enviar seguidores e
+          publicações à sua gestora.
+        </p>
+      )}
 
-      {!isOnbio ? <RequisitosDoPortal
-        itens={application.requisitos}
-        atualizadoEm={application.metricas.atualizado_em ?? null}
-      /> : null}
+      {!isOnbio ? (
+        <RequisitosDoPortal
+          itens={application.requisitos}
+          atualizadoEm={application.metricas.atualizado_em ?? null}
+        />
+      ) : null}
 
       <div className="mt-5">
         <h3 className="text-xs uppercase tracking-[0.15em] text-muted-foreground">Suas tarefas</h3>
@@ -188,8 +204,8 @@ function Application({
         </div>
       ) : null}
 
-      {/* A candidata é a dona da conta, então é aqui que ela conecta. */}
-      <InstagramSection influencerId={application.id} podeGerenciar={true} pessoa={isOnbio ? "afiliada" : "candidata"} />
+      {/* A afiliada é a dona da conta, então é aqui que ela conecta. */}
+      <InstagramSection influencerId={application.id} podeGerenciar={true} />
     </section>
   );
 }

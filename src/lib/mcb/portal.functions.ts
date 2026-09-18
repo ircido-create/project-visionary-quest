@@ -1,10 +1,10 @@
 /**
- * Fase 2 (item 3) — Portal da candidata.
+ * Fase 2 (item 3) — Portal da afiliada.
  *
  * Tudo aqui passa pelas funções `security definer` criadas em
- * supabase/migrations/20260909210000_fase2_portal_candidata.sql. A candidata **não é
+ * supabase/migrations/20260909210000_fase2_portal_candidata.sql. A afiliada **não é
  * membro do ambiente** — se fosse, as políticas da fase 1 deixariam ela ler os dados
- * de todas as outras candidatas, inclusive as notas internas da gestora.
+ * de todas as outras afiliadas, inclusive as notas internas da gestora.
  *
  * O que ela pode ver e mudar está definido naquelas funções, não aqui.
  */
@@ -56,12 +56,12 @@ export type PortalApplication = {
   requisitos: RequisitoDoPortal[];
 };
 
-/** Vincula a conta pelo e-mail (idempotente) e devolve as candidaturas dela. */
+/** Vincula a conta pelo e-mail (idempotente) e devolve as inscrições dela. */
 export const getPortal = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    // Roda sempre: é barato, idempotente, e cobre o caso de a candidata se cadastrar
-    // antes de a gestora registrar a candidatura dela.
+    // Roda sempre: é barato, idempotente, e cobre o caso de a afiliada se cadastrar
+    // antes de a gestora registrar a inscrição dela.
     const { error: linkError } = await context.supabase.rpc("link_influencer_account");
     if (linkError) throw new Error(linkError.message);
 
@@ -70,7 +70,7 @@ export const getPortal = createServerFn({ method: "POST" })
 
     const brutas = (data ?? []) as Array<Omit<PortalApplication, "requisitos">>;
     return {
-      applications: brutas.map((candidatura): PortalApplication => ({
+      applications: brutas.map((inscrição): PortalApplication => ({
         ...candidatura,
         requisitos:
           candidatura.modulo === "ONBIO"
@@ -93,7 +93,7 @@ export const getPortal = createServerFn({ method: "POST" })
     };
   });
 
-/** A candidata marca a própria tarefa. A função no banco só deixa mudar o status. */
+/** A afiliada marca a própria tarefa. A função no banco só deixa mudar o status. */
 export const setPortalTaskStatus = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: { taskId: string; status: "PENDENTE" | "CONCLUIDA" }) =>
@@ -118,7 +118,7 @@ export const setPortalTaskStatus = createServerFn({ method: "POST" })
 /**
  * Para onde mandar a pessoa depois do login.
  *
- * Candidata vai para o portal; gestora vai para o painel. Quem é as duas coisas
+ * Afiliada vai para o portal; gestora vai para o painel. Quem é as duas coisas
  * (gestora que também se candidatou) vai para o painel, porque é o ambiente que ela
  * administra. Na dúvida vai para o painel: erro aqui não pode impedir o login.
  */
@@ -132,7 +132,7 @@ export const resolveLanding = createServerFn({ method: "POST" })
       // por isso vai para o painel logo abaixo.
       await context.supabase.rpc("aceitar_convites_pendentes");
 
-      // Vincula antes de decidir: no primeiro login a candidatura ainda não tem dono.
+      // Vincula antes de decidir: no primeiro login a inscrição ainda não tem dono.
       await context.supabase.rpc("link_influencer_account");
 
       const { data: memberships } = await context.supabase

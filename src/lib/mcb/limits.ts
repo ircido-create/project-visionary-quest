@@ -5,14 +5,14 @@
  * `max_ai_analyses`, `storage_mb`) e a tela de Configurações já os exibia — mas nada
  * os aplicava. Este módulo é quem recusa.
  *
- * Estoque x fluxo: candidatas, membros e armazenamento são **acumulados** — contam o
+ * Estoque x fluxo: afiliadas, membros e armazenamento são **acumulados** — contam o
  * total que existe hoje. Análises de IA são **mensais**, reiniciando no primeiro dia de
  * cada mês: numa assinatura mensal, um teto vitalício deixaria o ambiente inutilizável
  * a partir do segundo mês.
  *
  * Ambiente sem plano atribuído não é bloqueado. Isso mantém a Porta de Entrada dos
  * ambientes de demonstração funcionando e evita que um erro de cadastro de plano
- * derrube a inscrição de candidatas reais.
+ * derrube a inscrição de afiliadas reais.
  */
 
 import type { SupabaseClient } from "@supabase/supabase-js";
@@ -56,7 +56,7 @@ export async function garantirEspacoParaCandidata(supabase: Db, tenantId: string
     .eq("tenant_id", tenantId);
 
   const atual = count ?? 0;
-  if (atual >= plano.max_candidates) recusar(plano, "candidatas", atual, plano.max_candidates);
+  if (atual >= plano.max_candidates) recusar(plano, "afiliadas", atual, plano.max_candidates);
 }
 
 /**

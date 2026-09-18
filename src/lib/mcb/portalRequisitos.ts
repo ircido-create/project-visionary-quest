@@ -1,9 +1,9 @@
 /**
- * Fase 8 — Os requisitos do programa como a candidata os vê no portal.
+ * Fase 8 — Os requisitos do programa como a afiliada os vê no portal.
  *
  * O cálculo é o mesmo da página da gestora (`evaluateQualification`); aqui só muda a
  * linguagem. O texto da gestora diz o estado ("aguardando dado", "faltam 88"); o da
- * candidata diz o que ela pode fazer. Não há decisão de auditoria nem nota interna aqui.
+ * afiliada diz o que ela pode fazer. Não há decisão de auditoria nem nota interna aqui.
  */
 
 import { formatarValorAtual, numeroBR, type RequirementResult } from "./qualification";

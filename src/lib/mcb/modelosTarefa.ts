@@ -2,9 +2,9 @@
  * Fase 5 — Modelos de tarefa por nível: as regras, sem rede nem banco.
  *
  * Cada ambiente mantém uma biblioteca de tarefas por nível da jornada. Na página da
- * candidata aparecem, como sugestão, as tarefas do nível em que ela está e que ela ainda
+ * afiliada aparecem, como sugestão, as tarefas do nível em que ela está e que ela ainda
  * não tem — e a gestora escolhe quais criar. Nada é criado sozinho: a gestora conhece a
- * candidata, o modelo não.
+ * afiliada, o modelo não.
  *
  * Os modelos são de cada ambiente (decisão de 2026-09-12). Quem edita a biblioteca é
  * conferido no servidor (`modelosTarefa.functions.ts`).
@@ -33,7 +33,7 @@ export const NIVEL_INICIAL: string = LEVELS.ONE;
 /** O mesmo limite do `check` no banco. */
 export const PRAZO_MAXIMO_DIAS = 90;
 
-/** Chave do cache da biblioteca: Configurações e a página da candidata usam a mesma. */
+/** Chave do cache da biblioteca: Configurações e a página da afiliada usam a mesma. */
 export const chaveModelosTarefa = (tenantId: string) => ["mcb", "modelos-tarefa", tenantId];
 
 export type ModeloTarefa = {
@@ -53,7 +53,7 @@ export function normalizarTitulo(titulo: string): string {
 }
 
 /**
- * Os modelos que a candidata ainda não tem como tarefa.
+ * Os modelos que a afiliada ainda não tem como tarefa.
  *
  * "Já tem" vale para qualquer situação da tarefa, concluída ou cancelada inclusive:
  * sugerir de novo o que a gestora cancelou seria insistir. Tarefas criadas à mão, antes

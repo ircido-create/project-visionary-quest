@@ -1,5 +1,5 @@
 /**
- * Fase 9 — O sininho de avisos, no painel da gestora e no portal da candidata.
+ * Fase 9 — O sininho de avisos, no painel da gestora e no portal da afiliada.
  *
  * Consulta a cada minuto. Se a consulta falhar, o sininho some em vez de mostrar erro:
  * aviso é conveniência, não pode atrapalhar o resto da página.

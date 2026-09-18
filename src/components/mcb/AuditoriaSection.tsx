@@ -1,7 +1,7 @@
 /**
- * Fase 5 — Seção "Auditoria" da página da candidata.
+ * Fase 5 — Seção "Auditoria" da página da afiliada.
  *
- * Aparece quando a candidata está em "Pronta para auditoria", ou quando já houve alguma
+ * Aparece quando a afiliada está em "Pronta para auditoria", ou quando já houve alguma
  * decisão — o histórico continua visível depois que ela avança. As regras da decisão
  * estão em `auditoria.ts`; quem pode decidir é conferido no servidor.
  */
@@ -132,7 +132,7 @@ export function AuditoriaSection({
       {emAuditoria ? (
         <>
           <p className="mt-1 text-sm text-muted-foreground">
-            Confira cada requisito antes de a candidata seguir para a análise oficial. As evidências
+            Confira cada requisito antes de a afiliada seguir para a análise oficial. As evidências
             que embasam os números estão na seção de evidências desta página.
           </p>
 
@@ -230,7 +230,7 @@ export function AuditoriaSection({
               <div className="grid gap-1.5">
                 <Label htmlFor="auditoria-nota">
                   {decisao === "DEVOLVER"
-                    ? "Motivo da devolução (vira a tarefa da candidata)"
+                    ? "Motivo da devolução (vira a tarefa da afiliada)"
                     : pendentes.length > 0
                       ? "Justificativa da exceção"
                       : "Observação (opcional)"}

@@ -23,8 +23,8 @@ export const CONTROLADOR = {
   foro: "Osasco/SP" as string | null,
 };
 
-export const VERSAO_POLITICA = "2026-09-13.6";
-export const VERSAO_TERMOS = "2026-09-13.6";
+export const VERSAO_POLITICA = "2026-09-18.7";
+export const VERSAO_TERMOS = "2026-09-18.7";
 
 /**
  * Aceite mínimo para usar a área logada (T1). Só sobe quando a mudança pede novo aceite de
@@ -114,12 +114,12 @@ export function aceiteEmDia(versoesAceitas: string[], exigida: string): boolean 
   });
 }
 
-/** Aviso do formulário de candidatura sobre as respostas abertas (P8). */
+/** Aviso do formulário de inscrição sobre as respostas abertas (P8). */
 export const AVISO_DADOS_SENSIVEIS =
   "Não inclua nas respostas informações sobre saúde, religião, opinião política, vida sexual, origem racial ou outros dados sensíveis.";
 
 const AVISO_DE_MUDANCAS =
-  "Mudanças relevantes serão avisadas por e-mail com 15 dias de antecedência. Se mudarmos a finalidade do uso dos dados de candidatas, pediremos um novo consentimento.";
+  "Mudanças relevantes serão avisadas por e-mail com 15 dias de antecedência. Se mudarmos a finalidade do uso dos dados de afiliadas, pediremos um novo consentimento.";
 
 export function politicaDePrivacidade(): Secao[] {
   const { cnpj, email } = CONTROLADOR;
@@ -133,7 +133,7 @@ export function politicaDePrivacidade(): Secao[] {
           `${nome}, CNPJ ${cnpj}, é a responsável pela plataforma MCB. Pedidos sobre seus dados — dúvidas, acesso, correção ou exclusão — podem ser feitos à sua gestora ou à MCB, pelo e-mail ${email}; a MCB encaminha e apoia a resposta. Por se enquadrar como agente de tratamento de pequeno porte (Resolução CD/ANPD nº 2/2022), a MCB não indicou encarregado; esse é o canal para assuntos de dados pessoais.`,
         ),
         p(
-          "Cada gestora é a controladora dos dados das candidatas que se inscrevem pela página dela: é ela quem decide como acompanhar cada candidata. A MCB opera a plataforma para as gestoras e trata esses dados em nome delas, conforme as instruções delas e esta política. A MCB é controladora dos dados das contas das gestoras e não usa os dados das candidatas para fins próprios.",
+          "Cada gestora é a controladora dos dados das afiliadas que se inscrevem pela página dela: é ela quem decide como acompanhar cada afiliada. A MCB opera a plataforma para as gestoras e trata esses dados em nome delas, conforme as instruções delas e esta política. A MCB é controladora dos dados das contas das gestoras e não usa os dados das afiliadas para fins próprios.",
         ),
       ],
     },
@@ -142,8 +142,8 @@ export function politicaDePrivacidade(): Secao[] {
       titulo: "A quem esta política se aplica",
       blocos: [
         lista(
-          "Candidatas que se inscrevem pela página de candidatura de uma gestora e, se quiserem, usam o portal da candidata.",
-          "Gestoras e pessoas da equipe delas, que usam a plataforma para acompanhar candidatas.",
+          "Afiliadas que se inscrevem pela página de inscrição de uma gestora e, se quiserem, usam o portal da afiliada.",
+          "Gestoras e pessoas da equipe delas, que usam a plataforma para acompanhar afiliadas.",
           "Quem visita o site.",
         ),
       ],
@@ -152,7 +152,7 @@ export function politicaDePrivacidade(): Secao[] {
       id: "dados",
       titulo: "Dados que tratamos",
       blocos: [
-        p("De candidatas:"),
+        p("De afiliadas:"),
         lista(
           "Identificação e contato: nome, e-mail, WhatsApp, cidade e estado.",
           "Perfil do Instagram: @, link do perfil, número de seguidores e de publicações, se as 12 últimas publicações são dos últimos 6 meses, tipo de conta, percentual de público feminino e frequência de stories e reels.",
@@ -166,7 +166,7 @@ export function politicaDePrivacidade(): Secao[] {
           "Não pedimos dados sensíveis. Se algum chegar pelas respostas abertas, ele é usado só para o acompanhamento e pode ser excluído a pedido.",
         ),
         p(
-          "De gestoras e equipe: nome, e-mail, foto (se informada), dados de acesso, os textos e contatos da página de candidatura, o registro das ações feitas na plataforma, o do aceite dos Termos de Uso e desta política (versão e data) e os pagamentos registrados (valor, data e período).",
+          "De gestoras e equipe: nome, e-mail, foto (se informada), dados de acesso, os textos e contatos da página de inscrição, o registro das ações feitas na plataforma, o do aceite dos Termos de Uso e desta política (versão e data) e os pagamentos registrados (valor, data e período).",
         ),
         p(
           "De quem visita o site: só o necessário para o site funcionar, descrito em “Cookies e armazenamento no navegador”. Não coletamos estatísticas de visita.",
@@ -178,7 +178,7 @@ export function politicaDePrivacidade(): Secao[] {
       titulo: "Para que usamos os dados",
       blocos: [
         lista(
-          "Candidatas: analisar o perfil e acompanhar a jornada no método — organizar tarefas, conferir os requisitos de qualificação e registrar a evolução dos números. A base é o consentimento dado na inscrição (LGPD, art. 7º, I), que você pode revogar a qualquer momento; a revogação encerra o acompanhamento e leva à exclusão dos dados.",
+          "Afiliadas: analisar o perfil e acompanhar a jornada no método — organizar tarefas, conferir os requisitos de qualificação e registrar a evolução dos números. A base é o consentimento dado na inscrição (LGPD, art. 7º, I), que você pode revogar a qualquer momento; a revogação encerra o acompanhamento e leva à exclusão dos dados.",
           "Comunicação: permitir que a gestora fale com você. Mensagens de WhatsApp são enviadas pela própria gestora, do WhatsApp dela; a plataforma só prepara o texto. A base é o mesmo consentimento.",
           "Gestoras e equipe: prestar o serviço contratado — contas, ambientes e limites do plano. A base é a execução do contrato (art. 7º, V).",
           "Segurança e prestação de contas: manter registros das ações feitas na plataforma, prevenir abuso e cumprir obrigações legais. A base é o legítimo interesse em manter a plataforma segura (art. 7º, IX) e, quando houver, o cumprimento de obrigação legal (art. 7º, II).",
@@ -235,7 +235,7 @@ export function politicaDePrivacidade(): Secao[] {
       titulo: "Por quanto tempo guardamos",
       blocos: [
         p(
-          `Guardamos os dados enquanto durar o acompanhamento. Se a candidatura ficar ${DIAS_PARA_EXCLUSAO} dias sem nenhuma atividade — nenhuma ação da gestora ou da candidata na plataforma —, os dados são excluídos automaticamente; antes disso, a gestora é avisada no painel. Você ou a gestora podem pedir a exclusão a qualquer momento.`,
+          `Guardamos os dados enquanto durar o acompanhamento. Se a inscrição ficar ${DIAS_PARA_EXCLUSAO} dias sem nenhuma atividade — nenhuma ação da gestora ou da afiliada na plataforma —, os dados são excluídos automaticamente; antes disso, a gestora é avisada no painel. Você ou a gestora podem pedir a exclusão a qualquer momento.`,
         ),
         p(
           "Depois de uma exclusão, fica só o registro de que o pedido foi atendido, sem nome nem contato, para comprovar o atendimento. Cópias de segurança dos prestadores podem manter dados por um período limitado, até serem substituídas.",
@@ -324,7 +324,7 @@ export function termosDeUso(): Secao[] {
       titulo: "O que é a plataforma",
       blocos: [
         p(
-          "Uma ferramenta para gestoras organizarem candidaturas, acompanharem a jornada de candidatas a criadoras de conteúdo e auditarem os requisitos de qualificação com critérios claros. Inclui a página pública de candidatura de cada gestora e o portal da candidata.",
+          "Uma ferramenta para gestoras organizarem inscrições, acompanharem a jornada de afiliadas a criadoras de conteúdo e auditarem os requisitos de qualificação com critérios claros. Inclui a página pública de inscrição de cada gestora e o portal da afiliada.",
         ),
       ],
     },
@@ -342,7 +342,7 @@ export function termosDeUso(): Secao[] {
       titulo: "Contas",
       blocos: [
         p(
-          "Para usar a área de gestora ou o portal da candidata, é preciso criar uma conta com dados verdadeiros e aceitar estes termos e a Política de Privacidade; a plataforma registra a versão e a data do aceite. A senha é pessoal, e você responde pelo que for feito com a sua conta. A dona do ambiente decide quem entra na equipe e com qual papel.",
+          "Para usar a área de gestora ou o portal da afiliada, é preciso criar uma conta com dados verdadeiros e aceitar estes termos e a Política de Privacidade; a plataforma registra a versão e a data do aceite. A senha é pessoal, e você responde pelo que for feito com a sua conta. A dona do ambiente decide quem entra na equipe e com qual papel.",
         ),
       ],
     },
@@ -351,10 +351,10 @@ export function termosDeUso(): Secao[] {
       titulo: "Responsabilidades da gestora",
       blocos: [
         lista(
-          "Tratar os dados das candidatas só para o acompanhamento no método, conforme a LGPD e a Política de Privacidade.",
-          "Manter os dados corretos e atender, com a MCB, aos pedidos das candidatas sobre os dados delas.",
+          "Tratar os dados das afiliadas só para o acompanhamento no método, conforme a LGPD e a Política de Privacidade.",
+          "Manter os dados corretos e atender, com a MCB, aos pedidos das afiliadas sobre os dados delas.",
           "Cuidar das planilhas que exportar e das mensagens que enviar do próprio WhatsApp.",
-          "Não publicar na página de candidatura conteúdo ilegal, enganoso ou que prometa resultados que a plataforma não garante.",
+          "Não publicar na página de inscrição conteúdo ilegal, enganoso ou que prometa resultados que a plataforma não garante.",
         ),
       ],
     },
@@ -363,16 +363,16 @@ export function termosDeUso(): Secao[] {
       titulo: "Operação de dados",
       blocos: [
         p(
-          "Para os dados das candidatas, a gestora é controladora e a MCB é operadora. A MCB se compromete a: tratar os dados só para prestar o serviço e conforme as instruções da gestora; manter sigilo e medidas de segurança; usar apenas os prestadores listados na Política de Privacidade, com obrigações equivalentes; comunicar à gestora, sem demora, incidentes de segurança que envolvam esses dados; apoiar a gestora no atendimento a pedidos de titulares; e excluir os dados ao fim do uso, salvo guarda exigida por lei.",
+          "Para os dados das afiliadas, a gestora é controladora e a MCB é operadora. A MCB se compromete a: tratar os dados só para prestar o serviço e conforme as instruções da gestora; manter sigilo e medidas de segurança; usar apenas os prestadores listados na Política de Privacidade, com obrigações equivalentes; comunicar à gestora, sem demora, incidentes de segurança que envolvam esses dados; apoiar a gestora no atendimento a pedidos de titulares; e excluir os dados ao fim do uso, salvo guarda exigida por lei.",
         ),
       ],
     },
     {
-      id: "candidata",
-      titulo: "Candidatas",
+      id: "afiliada",
+      titulo: "Afiliadas",
       blocos: [
         p(
-          `A inscrição exige ${IDADE_MINIMA} anos ou mais. A plataforma não cobra nada da candidata; o que for combinado entre ela e a gestora fica entre as duas. A candidata pode acompanhar a própria jornada no portal e pedir a exclusão dos dados a qualquer momento, pelo e-mail ${email}.`,
+          `A inscrição exige ${IDADE_MINIMA} anos ou mais. A plataforma não cobra nada da afiliada; o que for combinado entre ela e a gestora fica entre as duas. A afiliada pode acompanhar a própria jornada no portal e pedir a exclusão dos dados a qualquer momento, pelo e-mail ${email}.`,
         ),
       ],
     },
@@ -381,7 +381,7 @@ export function termosDeUso(): Secao[] {
       titulo: "Planos e limites",
       blocos: [
         p(
-          "Cada ambiente tem um plano, com limites de candidatas, pessoas na equipe, análises assistidas e armazenamento. Os preços estão na página inicial do MCB. Todo ambiente novo começa com 14 dias de avaliação gratuita no plano Essencial. A cobrança é mensal e se renova automaticamente a cada mês. A gestora pode cancelar a qualquer momento, sem multa, em Configurações; o plano vale até o fim do mês já pago. Na primeira contratação, a gestora pode desistir em até 7 dias e recebe de volta o valor pago (Código de Defesa do Consumidor, art. 49). Enquanto a cobrança não é feita pela própria plataforma, ela é combinada diretamente com a MCB, e a troca de plano é feita pela administração. A gestora é avisada no painel 5 dias antes do vencimento. Sem o pagamento, o ambiente segue funcionando por mais 3 dias; depois fica disponível só para leitura, e a página deixa de receber candidaturas, até o pagamento ser registrado.",
+          "Cada ambiente tem um plano, com limites de afiliadas, pessoas na equipe, análises assistidas e armazenamento. Os preços estão na página inicial do MCB. Todo ambiente novo começa com 14 dias de avaliação gratuita no plano Essencial. A cobrança é mensal e se renova automaticamente a cada mês. A gestora pode cancelar a qualquer momento, sem multa, em Configurações; o plano vale até o fim do mês já pago. Na primeira contratação, a gestora pode desistir em até 7 dias e recebe de volta o valor pago (Código de Defesa do Consumidor, art. 49). Enquanto a cobrança não é feita pela própria plataforma, ela é combinada diretamente com a MCB, e a troca de plano é feita pela administração. A gestora é avisada no painel 5 dias antes do vencimento. Sem o pagamento, o ambiente segue funcionando por mais 3 dias; depois fica disponível só para leitura, e a página deixa de receber inscrições, até o pagamento ser registrado.",
         ),
       ],
     },
@@ -390,7 +390,7 @@ export function termosDeUso(): Secao[] {
       titulo: "Suspensão e encerramento",
       blocos: [
         p(
-          "A MCB pode suspender um ambiente por falta de pagamento, uso indevido ou violação destes termos. Antes de suspender, a MCB avisa a gestora por e-mail e dá prazo para regularizar, salvo quando houver risco para candidatas ou uso ilícito. Um ambiente suspenso continua disponível só para leitura. A gestora pode encerrar o uso a qualquer momento. Em Configurações, a dona do ambiente pode baixar todos os dados dele e excluí-lo de vez, com os prints; a exclusão não desfaz cobranças já pagas. Os demais pedidos de exclusão seguem a Política de Privacidade.",
+          "A MCB pode suspender um ambiente por falta de pagamento, uso indevido ou violação destes termos. Antes de suspender, a MCB avisa a gestora por e-mail e dá prazo para regularizar, salvo quando houver risco para afiliadas ou uso ilícito. Um ambiente suspenso continua disponível só para leitura. A gestora pode encerrar o uso a qualquer momento. Em Configurações, a dona do ambiente pode baixar todos os dados dele e excluí-lo de vez, com os prints; a exclusão não desfaz cobranças já pagas. Os demais pedidos de exclusão seguem a Política de Privacidade.",
         ),
       ],
     },

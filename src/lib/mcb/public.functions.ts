@@ -51,7 +51,7 @@ export const getManagerPage = createServerFn({ method: "GET" })
       .eq("slug", data.slug)
       .maybeSingle();
 
-    // Ambiente suspenso some do público: manter a página no ar convidaria candidaturas
+    // Ambiente suspenso some do público: manter a página no ar convidaria inscrições
     // que seriam recusadas no envio.
     if (!tenant || !tenant.is_public_page_enabled || tenant.status !== "ACTIVE") return null;
 
@@ -144,9 +144,9 @@ export const submitApplication = createServerFn({ method: "POST" })
       .eq("slug", data.slug)
       .maybeSingle();
 
-    if (tenantError) throw new Error("Não foi possível registrar sua candidatura agora.");
+    if (tenantError) throw new Error("Não foi possível registrar sua inscrição agora.");
     if (!tenant || !tenant.is_public_page_enabled || tenant.status !== "ACTIVE") {
-      return { ok: false as const, reason: "Página de candidatura indisponível." };
+      return { ok: false as const, reason: "Página de inscrição indisponível." };
     }
 
     // Ambiente de demonstração é legível por qualquer conta logada: inscrição real ali
@@ -155,7 +155,7 @@ export const submitApplication = createServerFn({ method: "POST" })
       return { ok: false as const, reason: MENSAGEM_DEMONSTRACAO };
     }
 
-    // Proteção simples contra envios duplicados da mesma candidata.
+    // Proteção simples contra envios duplicados da mesma afiliada.
     const { data: existing } = await supabaseAdmin
       .from("influencers")
       .select("id")
@@ -167,7 +167,7 @@ export const submitApplication = createServerFn({ method: "POST" })
       return { ok: true as const, duplicated: true as const };
     }
 
-    // O limite é da gestora, não da candidata. Ela não deve ver o nome do plano nem
+    // O limite é da gestora, não da afiliada. Ela não deve ver o nome do plano nem
     // quantas vagas restam — é informação comercial de terceiro, e não a ajuda em nada.
     // Por isso a recusa vira uma mensagem neutra em vez de propagar o erro.
     try {
@@ -176,7 +176,7 @@ export const submitApplication = createServerFn({ method: "POST" })
       return {
         ok: false as const,
         reason:
-          "Esta gestora não está recebendo novas candidaturas no momento. Tente novamente mais tarde ou procure outra gestora.",
+          "Esta gestora não está recebendo novas inscrições no momento. Tente novamente mais tarde ou procure outra gestora.",
       };
     }
 
@@ -242,7 +242,7 @@ export const submitApplication = createServerFn({ method: "POST" })
       .select("id")
       .single();
 
-    if (error || !influencer) throw new Error("Não foi possível registrar sua candidatura agora.");
+    if (error || !influencer) throw new Error("Não foi possível registrar sua inscrição agora.");
 
     await Promise.all([
       supabaseAdmin.from("applications").insert({
@@ -271,7 +271,7 @@ export const submitApplication = createServerFn({ method: "POST" })
         influencer_id: influencer.id,
         purpose:
           "Análise de perfil e acompanhamento no Método Criadora Blessing pela gestora e pela MCB, inclusive com análise assistida por IA",
-        // Prova de qual texto da Política de Privacidade a candidata aceitou.
+        // Prova de qual texto da Política de Privacidade a afiliada aceitou.
         version: VERSAO_POLITICA,
         source: `landing:${data.slug}`,
       }),
@@ -279,7 +279,7 @@ export const submitApplication = createServerFn({ method: "POST" })
         tenant_id: tenant.id,
         influencer_id: influencer.id,
         to_status: initialStatus,
-        note: "Candidatura recebida pela landing page da gestora.",
+        note: "Inscrição recebida pela landing page da gestora.",
       }),
       audit(supabaseAdmin, {
         tenant_id: tenant.id,

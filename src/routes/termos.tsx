@@ -9,7 +9,7 @@ export const Route = createFileRoute("/termos")({
       { title: "Termos de Uso — MCB" },
       {
         name: "description",
-        content: "As regras de uso da plataforma MCB para gestoras, equipes e candidatas.",
+        content: "As regras de uso da plataforma MCB para gestoras, equipes e afiliadas.",
       },
     ],
   }),
@@ -17,7 +17,7 @@ export const Route = createFileRoute("/termos")({
     <DocumentoLegal
       titulo="Termos de Uso"
       versao={VERSAO_TERMOS}
-      introducao="Estes termos regem o uso da plataforma MCB — Método Criadora Blessing. Ao criar uma conta ou se inscrever por uma página de candidatura, você concorda com eles e com a Política de Privacidade."
+      introducao="Estes termos regem o uso da plataforma MCB — Método Criadora Blessing. Ao criar uma conta ou se inscrever por uma página de inscrição, você concorda com eles e com a Política de Privacidade."
       secoes={termosDeUso()}
       outro={{ to: "/privacidade", rotulo: "Política de Privacidade" }}
     />

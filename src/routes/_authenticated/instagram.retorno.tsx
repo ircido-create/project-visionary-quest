@@ -3,10 +3,10 @@
  *
  * Fica sob `_authenticated` de propósito: a troca do código pelo token precisa saber
  * quem está logado, porque é a sessão que prova que quem voltou é a dona da
- * candidatura. Sem isso, um código capturado poderia ser trocado por outra pessoa.
+ * inscrição. Sem isso, um código capturado poderia ser trocado por outra pessoa.
  *
- * O `state` traz o id da candidatura. Ele não é a defesa — quem recusa chamador errado
- * é `instagram_connect` no banco. Serve para saber de qual candidatura se trata.
+ * O `state` traz o id da inscrição. Ele não é a defesa — quem recusa chamador errado
+ * é `instagram_connect` no banco. Serve para saber de qual inscrição se trata.
  */
 
 import { createFileRoute, useNavigate } from "@tanstack/react-router";

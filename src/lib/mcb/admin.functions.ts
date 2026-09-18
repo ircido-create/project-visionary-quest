@@ -44,13 +44,13 @@ export type AmbienteNaVisaoGeral = {
   precoCentavos: number | null;
   dona: { nome: string | null; email: string | null } | null;
   uso: {
-    candidatas: number;
+    afiliadas: number;
     membros: number;
     analisesNoMes: number;
     armazenamentoMb: number;
   };
   limites: {
-    candidatas: number;
+    afiliadas: number;
     membros: number;
     analises: number;
     armazenamentoMb: number;
@@ -130,14 +130,14 @@ export const getPlatformOverview = createServerFn({ method: "GET" })
         precoCentavos: plano ? plano.price_cents : null,
         dona: donaPorAmbiente.get(t.id) ?? null,
         uso: {
-          candidatas: porCandidatas.get(t.id) ?? 0,
+          afiliadas: porCandidatas.get(t.id) ?? 0,
           membros: porMembros.get(t.id) ?? 0,
           analisesNoMes: porAnalises.get(t.id) ?? 0,
           armazenamentoMb: Math.round(((porBytes.get(t.id) ?? 0) / (1024 * 1024)) * 10) / 10,
         },
         limites: plano
           ? {
-              candidatas: plano.max_candidates,
+              afiliadas: plano.max_candidates,
               membros: plano.max_members,
               analises: plano.max_ai_analyses,
               armazenamentoMb: plano.storage_mb,
