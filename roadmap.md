@@ -538,8 +538,7 @@ Montada em 2026-09-14, com medição antes de mexer.
 - [x] Exclusão definitiva pela dona ou administradora, com confirmação pelo e-mail: apaga
       os dados e arquivos da afiliada na ONBIO, mas preserva a conta de acesso e vínculos
       de identidade com outros ambientes.
-- [ ] Validar com uma conta real: depende de `META_APP_ID`/`META_APP_SECRET` no Vault e do
-      app aprovado pela Meta. Sem isso, o portal não mostra "Conectar Instagram".
+- [x] Validado com conta real em 2026-09-17 (ver seção seguinte).
 
 ### Integração do Instagram — situação em 2026-09-18
 - [x] App da Meta **MCB Afiliadas** (ID do app do Instagram 4555006211484716), caso de uso
@@ -557,3 +556,53 @@ Montada em 2026-09-14, com medição antes de mexer.
       atualizar o número na Receita antes.
 - [ ] **Análise do app (App Review)**: só depois da verificação. Exige vídeo do fluxo de
       autorização de uma afiliada. Enquanto não sai, só contas testadoras conectam (até 50).
+- [x] **Convites de testadora enviados** em 2026-09-18 para as sete afiliadas restantes
+      (@ir_cido, @jackelinevicente6, @liviamlmelo, @michelly.luk, @reboucasnataliaa,
+      @queel_correa, @ruiznih1982). Cada uma aceita no Instagram, em Configurações → Apps e
+      sites → Convites do testador, e depois conecta pelo portal. Sem o aceite, a Meta
+      responde "Função de desenvolvedor é insuficiente". Limite de 50 testadoras.
+
+## Alinhamento do módulo ONBIO com as decisões da dona (2026-09-18)
+
+O módulo tinha sido construído pelo agente do Lovable com escolhas próprias. Estas três
+entregas o alinham ao que foi combinado:
+
+- [x] **"Candidata" virou "afiliada" nos dois programas**: 303 trocas em telas, portal,
+      relatório, página pública e documentos legais; "candidatura" virou "inscrição".
+      Política e termos na versão `2026-09-18.7`; `VERSAO_ACEITE_EXIGIDO` continua
+      `2026-09-13.4`, porque mudou o vocabulário e não a regra — não faz sentido pedir novo
+      aceite a quem já aceitou. Rotas (`/candidatas`), funções do banco, ações de auditoria
+      e chaves de dados ficaram como estavam.
+- [x] **Pauta de reunião por IA, individual e de equipe, nos dois programas**
+      (`src/lib/mcb/pautas.ts`, `pautas.functions.ts`, `PautaSection.tsx`). A instrução muda
+      com o programa: Ybera fala de requisitos e evolução; ONBIO, de faturamento e
+      crescimento. Período de 7 a 90 dias, botão de copiar, e entrada, saída, modelo, versão
+      do prompt e autoria gravados em `meeting_agendas` (agora com `escopo` e
+      `influencer_id` opcional).
+- [x] **Vínculo entre ambientes com consentimento**: a gestora pede, a afiliada autoriza ou
+      recusa no portal, e o texto que ela leu fica gravado com a resposta
+      (`vinculos_de_identidade`). Só nome, e-mail e WhatsApp são compartilhados; desfazer
+      remove o compartilhamento e preserva os dois cadastros.
+
+### Correções vindas do primeiro uso real (2026-09-18)
+
+- [x] Primeira chamada real de IA em produção: pauta de equipe da ONBIO gerada pelo gateway
+      do Lovable, com os números conferindo com o banco.
+- [x] `normalizarHandle` extrai o usuário de qualquer coisa colada no campo do @ (link com
+      `www`, barra final, `?stkn=...`, caminho `/reels`); vale no cadastro da ONBIO, na
+      edição de dados e na inscrição pública. Os valores antigos foram corrigidos.
+- [x] Cadastro duplicado por clique repetido: o botão trava durante o envio e o banco recusa
+      o mesmo e-mail duas vezes no mesmo ambiente
+      (`idx_influencers_tenant_email_unico`).
+- [x] Campos enviados à IA renomeados: `sem_leitura_no_periodo` virava "leitura de conteúdo"
+      no texto da pauta.
+- [x] Ambiente ONBIO passou a **isento** (estava em avaliação, venceria em 30/09, e a rotina
+      diária o suspenderia com as afiliadas dentro) e deixou de ficar preso a um único uuid:
+      a trava aceita a gestora e quem tem papel de plataforma.
+
+### Armadilha conhecida do projeto
+
+`npx tsc --noEmit -p .` **não checa nada** neste repositório: imprime "This is not the tsc
+command you are looking for" e sai com sucesso. O `vite build` também não valida tipos.
+Use `node node_modules/typescript/bin/tsc --noEmit -p .` — foi assim que apareceram 29
+identificadores quebrados pela renomeação em massa, já corrigidos.
