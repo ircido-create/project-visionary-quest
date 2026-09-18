@@ -37,6 +37,7 @@ function CandidatesPage() {
   const [status, setStatus] = useState<string>("TODOS");
   const [view, setView] = useState<"lista" | "pipeline">("lista");
   const [showForm, setShowForm] = useState(false);
+  const [cadastrando, setCadastrando] = useState(false);
   const [affiliate, setAffiliate] = useState({
     fullName: "",
     email: "",
@@ -95,6 +96,8 @@ function CandidatesPage() {
           className="mb-6 grid gap-4 rounded-lg border border-border bg-card p-5 md:grid-cols-2"
           onSubmit={async (event) => {
             event.preventDefault();
+            if (cadastrando) return;
+            setCadastrando(true);
             try {
               await createAffiliate({
                 data: {
@@ -122,6 +125,8 @@ function CandidatesPage() {
               toast.success("Afiliada cadastrada.");
             } catch (error) {
               toast.error(error instanceof Error ? error.message : "Não foi possível cadastrar.");
+            } finally {
+              setCadastrando(false);
             }
           }}
         >
@@ -215,8 +220,8 @@ function CandidatesPage() {
               compartilhado até ela autorizar no portal dela.
             </span>
           </label>
-          <Button className="md:w-fit" type="submit">
-            Cadastrar afiliada
+          <Button className="md:w-fit" type="submit" disabled={cadastrando}>
+            {cadastrando ? "Cadastrando…" : "Cadastrar afiliada"}
           </Button>
         </form>
       ) : null}

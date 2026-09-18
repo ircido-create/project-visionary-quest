@@ -4,6 +4,7 @@ import { z } from "zod";
 
 import type { Database, Json } from "@/integrations/supabase/types";
 import { audit } from "@/lib/mcb/audit";
+import { normalizarHandle } from "@/lib/mcb/instagramHandle";
 import { garantirEspacoParaCandidata } from "@/lib/mcb/limits";
 import { VERSAO_POLITICA } from "@/lib/mcb/documentosLegais";
 import { MENSAGEM_DEMONSTRACAO } from "@/lib/mcb/paginasPublicas";
@@ -215,7 +216,7 @@ export const submitApplication = createServerFn({ method: "POST" })
         whatsapp: data.whatsapp,
         city: data.city,
         state: data.state,
-        instagram_handle: data.instagramHandle.replace(/^@/, ""),
+        instagram_handle: normalizarHandle(data.instagramHandle),
         instagram_url: data.instagramUrl,
         followers: data.followers,
         posts_count: data.postsCount,

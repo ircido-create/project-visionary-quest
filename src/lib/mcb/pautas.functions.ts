@@ -107,7 +107,7 @@ async function insumosIndividuais(
       no_inicio_do_periodo: primeiro,
       agora: ultimo,
       variacao: primeiro !== null && ultimo !== null ? ultimo - primeiro : null,
-      leituras_no_periodo: comNumero.length,
+      atualizacoes_de_seguidores_no_periodo: comNumero.length,
     },
     tarefas: (tarefas.data ?? []).map(
       (t: { title: string; status: string; due_date: string | null }) => ({
@@ -221,8 +221,8 @@ async function insumosDaEquipe(
     novas_no_periodo: lista.filter((a) => a.created_at >= desde).length,
     seguidores_somados: lista.reduce((s, a) => s + (a.followers ?? 0), 0),
     sem_numero_de_seguidores: lista.filter((a) => a.followers === null).length,
-    maiores_crescimentos: crescimento.filter((c) => c.variacao !== null).slice(0, 5),
-    sem_leitura_no_periodo: crescimento.filter((c) => c.variacao === null).length,
+    maiores_crescimentos_de_seguidores: crescimento.filter((c) => c.variacao !== null).slice(0, 5),
+    afiliadas_sem_atualizacao_de_seguidores: crescimento.filter((c) => c.variacao === null).length,
     tarefas: {
       abertas: listaTarefas.filter((t) => t.status !== "CONCLUIDA").length,
       atrasadas: listaTarefas.filter(

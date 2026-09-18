@@ -6,6 +6,7 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import type { Database, Json } from "@/integrations/supabase/types";
 import { audit } from "@/lib/mcb/audit";
 import { gerarAnalise } from "@/lib/mcb/ai-gateway";
+import { normalizarHandle, urlDoPerfil } from "@/lib/mcb/instagramHandle";
 import { EVIDENCE_BUCKET } from "@/lib/mcb/evidence";
 import { caminhosDeEvidencia, confirmacaoConfere } from "@/lib/mcb/exclusao";
 
@@ -78,7 +79,7 @@ export const createOnbioAffiliate = createServerFn({ method: "POST" })
       personId = person.id;
     }
 
-    const handle = data.instagramHandle?.replace(/^@/, "") || null;
+    const handle = normalizarHandle(data.instagramHandle);
     const { data: affiliate, error } = await supabase
       .from("influencers")
       .insert({
@@ -88,7 +89,7 @@ export const createOnbioAffiliate = createServerFn({ method: "POST" })
         email,
         whatsapp: data.whatsapp,
         instagram_handle: handle,
-        instagram_url: handle ? `https://instagram.com/${handle}` : null,
+        instagram_url: urlDoPerfil(data.instagramHandle),
         followers: data.followers ?? null,
         posts_count: data.postsCount ?? null,
         data_source: "MANUAL",

@@ -5,6 +5,7 @@ import { z } from "zod";
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { audit } from "@/lib/mcb/audit";
+import { normalizarHandle } from "@/lib/mcb/instagramHandle";
 import { garantirEspacoParaMembro } from "@/lib/mcb/limits";
 import {
   evaluateQualification,
@@ -961,7 +962,7 @@ export const updateInfluencerProfile = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
     const clean = (value?: string) => (value && value.trim().length > 0 ? value.trim() : null);
-    const handle = clean(data.instagramHandle)?.replace(/^@/, "") ?? null;
+    const handle = normalizarHandle(data.instagramHandle);
 
     const { data: current } = await supabase
       .from("influencers")
