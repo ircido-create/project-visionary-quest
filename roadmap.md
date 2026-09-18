@@ -540,3 +540,20 @@ Montada em 2026-09-14, com medição antes de mexer.
       de identidade com outros ambientes.
 - [ ] Validar com uma conta real: depende de `META_APP_ID`/`META_APP_SECRET` no Vault e do
       app aprovado pela Meta. Sem isso, o portal não mostra "Conectar Instagram".
+
+### Integração do Instagram — situação em 2026-09-18
+- [x] App da Meta **MCB Afiliadas** (ID do app do Instagram 4555006211484716), caso de uso
+      "Gerenciar mensagens e conteúdo no Instagram", portfólio MCBlessing.
+      O app antigo (`mcblessing`, portabilidade de dados) não aceita o caso de uso do Instagram.
+- [x] Redirecionamento `https://mcblessing.com.br/instagram/retorno`; permissões
+      `instagram_business_basic` e `instagram_business_manage_insights`.
+- [x] `META_APP_ID`, `META_APP_SECRET` e `META_REDIRECT_URI` no Vault; servidor lê as três.
+- [x] Privacidade, termos, exclusão de dados, domínio e categoria preenchidos no app.
+- [x] **Primeira conexão real**: @igor_nathan_sak (testadora) conectou pelo portal em 2026-09-17,
+      1.002 seguidores e 54 publicações importados da Meta. A rotina agendada consultou e
+      atualizou sozinha em seguida (`{"consultadas":1,"atualizadas":1,"falhas":0}`).
+- [ ] **Verificação da empresa**: enviada em 2026-09-18, "Em análise", ~2 dias úteis.
+      Telefone do cadastro (11) 3687-6240 sem acesso; se a Meta exigir código por telefone,
+      atualizar o número na Receita antes.
+- [ ] **Análise do app (App Review)**: só depois da verificação. Exige vídeo do fluxo de
+      autorização de uma afiliada. Enquanto não sai, só contas testadoras conectam (até 50).
