@@ -606,3 +606,20 @@ entregas o alinham ao que foi combinado:
 command you are looking for" e sai com sucesso. O `vite build` também não valida tipos.
 Use `node node_modules/typescript/bin/tsc --noEmit -p .` — foi assim que apareceram 29
 identificadores quebrados pela renomeação em massa, já corrigidos.
+
+### Teste de RLS executado (2026-09-18)
+
+`supabase/tests/rls.test.sql` rodou inteiro contra produção pela primeira vez: **26 de 26
+verificações passaram**. Termina em `rollback`, então não gravou nada.
+
+Dois ajustes no próprio teste, nenhum problema no sistema:
+
+- Passou a criar as pessoas em `auth.users`. Desde a fase 9, criar uma inscrição dispara o
+  aviso para a equipe, e `avisos.user_id` referencia `auth.users`; com uuids inventados a
+  transação abortava.
+- A verificação "ambiente criado por gestora nasce Essencial" rodava antes de a criadora
+  virar dona. Sem membresia ela não enxerga o próprio ambiente — a RLS funcionando —, então
+  falhava por leitura, não pelo que estava sob teste. Foi movida para depois da membresia.
+
+Continua sendo verificação sob demanda: não roda no `bun run test`.
+
