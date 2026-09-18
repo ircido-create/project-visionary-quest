@@ -8,6 +8,7 @@ import { STATUS_LABELS, type InfluencerStatus } from "@/lib/mcb/labels";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { InstagramSection } from "@/components/mcb/InstagramSection";
+import { VinculoPendenteCard } from "@/components/mcb/VinculoPendenteCard";
 import { RequisitosDoPortal } from "@/components/mcb/RequisitosDoPortal";
 import { SinoDeAvisos } from "@/components/mcb/SinoDeAvisos";
 
@@ -236,6 +237,10 @@ function Portal() {
       <p className="mt-1 text-sm text-muted-foreground">
         Suas tarefas, seus números e a conexão segura com o Instagram.
       </p>
+
+      <div className="mt-6">
+        <VinculoPendenteCard />
+      </div>
 
       {query.isLoading ? (
         <p className="mt-8 text-sm text-muted-foreground">Carregando...</p>

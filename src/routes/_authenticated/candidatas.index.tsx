@@ -211,8 +211,8 @@ function CandidatesPage() {
               onChange={(e) => setAffiliate((p) => ({ ...p, linkExisting: e.target.checked }))}
             />
             <span>
-              Vincular à mesma pessoa de outro ambiente quando o e-mail for igual. Somente
-              identidade e contato serão compartilhados.
+              Pedir vínculo com o cadastro que esta pessoa já tem em outro ambiente. Nada é
+              compartilhado até ela autorizar no portal dela.
             </span>
           </label>
           <Button className="md:w-fit" type="submit">

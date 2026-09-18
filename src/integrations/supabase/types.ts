@@ -1633,6 +1633,22 @@ export type Database = {
         }
         Returns: string
       }
+      pedir_vinculo_de_identidade: {
+        Args: { p_destino_influencer_id: string; p_origem_influencer_id: string }
+        Returns: string
+      }
+      responder_vinculo_de_identidade: {
+        Args: { p_vinculo_id: string; p_aceitar: boolean; p_texto: string }
+        Returns: undefined
+      }
+      desfazer_vinculo_de_identidade: {
+        Args: { p_vinculo_id: string }
+        Returns: undefined
+      }
+      vinculos_pendentes_da_afiliada: {
+        Args: never
+        Returns: { id: string; ambiente: string; gestora: string; solicitado_em: string }[]
+      }
       segredos_da_meta: {
         Args: never
         Returns: {

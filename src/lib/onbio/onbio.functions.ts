@@ -21,10 +21,7 @@ async function requireOnbio(supabase: { from: (table: "tenants") => any }, tenan
   if (!data) throw new Error("Este recurso está disponível somente no ambiente ONBIO.");
 }
 
-async function requireOnbioManager(
-  supabase: SupabaseClient<Database>,
-  tenantId: string,
-) {
+async function requireOnbioManager(supabase: SupabaseClient<Database>, tenantId: string) {
   await requireOnbio(supabase, tenantId);
   const { data: allowed, error } = await supabase.rpc("has_tenant_role", {
     _tenant: tenantId,
@@ -63,38 +60,9 @@ export const createOnbioAffiliate = createServerFn({ method: "POST" })
       .maybeSingle();
     if (duplicate) throw new Error("Esta afiliada já está cadastrada na ONBIO.");
 
+    // O vínculo entre ambientes não acontece aqui: a afiliada precisa autorizar no
+    // portal dela. O cadastro nasce com identidade própria, e o pedido vai depois.
     let personId: string | null = null;
-    if (data.linkExisting) {
-      const { data: existing } = await supabase
-        .from("influencers")
-        .select("id, person_id, full_name, email, whatsapp")
-        .ilike("email", email)
-        .neq("tenant_id", data.tenantId)
-        .limit(1)
-        .maybeSingle();
-      personId = existing?.person_id ?? null;
-      if (existing && !personId) {
-        const { data: person, error: personError } = await supabase
-          .from("people")
-          .insert({
-            full_name: existing.full_name,
-            email: existing.email,
-            whatsapp: existing.whatsapp,
-            created_by: userId,
-          })
-          .select("id")
-          .single();
-        if (personError) throw new Error(personError.message);
-        personId = person.id;
-        const { error: linkError } = await supabase
-          .from("influencers")
-          .update({ person_id: personId })
-          .eq("id", existing.id);
-        if (linkError) throw new Error(linkError.message);
-      }
-      if (!existing)
-        throw new Error("Não encontramos uma pessoa com este e-mail em outro ambiente.");
-    }
     if (!personId) {
       const { data: person, error: personError } = await supabase
         .from("people")
@@ -145,13 +113,36 @@ export const createOnbioAffiliate = createServerFn({ method: "POST" })
       });
     }
 
+    let vinculoPedido = false;
+    if (data.linkExisting) {
+      const { data: origem } = await supabase
+        .from("influencers")
+        .select("id")
+        .ilike("email", email)
+        .neq("tenant_id", data.tenantId)
+        .not("user_id", "is", null)
+        .limit(1)
+        .maybeSingle();
+      if (!origem) {
+        throw new Error(
+          "Afiliada cadastrada, mas o vínculo não foi pedido: não encontramos esta pessoa, com conta de acesso, em outro ambiente.",
+        );
+      }
+      const { error: erroVinculo } = await supabase.rpc("pedir_vinculo_de_identidade", {
+        p_destino_influencer_id: affiliate.id,
+        p_origem_influencer_id: origem.id,
+      });
+      if (erroVinculo) throw new Error(erroVinculo.message);
+      vinculoPedido = true;
+    }
+
     await audit(supabase, {
       tenant_id: data.tenantId,
       actor_id: userId,
       action: "onbio.affiliate_created",
       entity: "influencers",
       entity_id: affiliate.id,
-      meta: { linked: data.linkExisting },
+      meta: { vinculo_pedido: vinculoPedido },
     });
     return affiliate;
   });

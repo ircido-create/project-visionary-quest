@@ -42,6 +42,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { CommercialResultsSection } from "@/components/onbio/CommercialResultsSection";
 import { SeguidoresDaAfiliada } from "@/components/onbio/SeguidoresDaAfiliada";
+import { VinculoDaAfiliada } from "@/components/onbio/VinculoDaAfiliada";
 import { PautaSection } from "@/components/mcb/PautaSection";
 import { deleteOnbioAffiliate } from "@/lib/onbio/onbio.functions";
 
@@ -539,6 +540,12 @@ function CandidateDetail() {
             influencerId={id}
             readOnly={readOnly}
             className="lg:col-span-3"
+          />
+          <VinculoDaAfiliada
+            tenantId={tenantId!}
+            influencerId={id}
+            email={influencer.email}
+            readOnly={readOnly}
           />
           <CommercialResultsSection tenantId={tenantId!} influencerId={id} readOnly={readOnly} />
           <EvidenceSection tenantId={tenantId!} influencerId={id} readOnly={readOnly} />
