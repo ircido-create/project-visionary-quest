@@ -131,27 +131,77 @@
   --ring: oklch(0.727 0.099 83);
 }
 
+/* ONBIO — identidade do site onbio.eco.br, medida no próprio site (2026-09-21):
+   fundo slate-50, títulos azul-marinho, menu índigo, botões e rótulos em roxo,
+   rodapé roxo-escuro, fonte Inter e cantos arredondados. Vale só dentro do ambiente
+   ONBIO; o tema vinho e dourado da Ybera não muda. */
 .onbio-theme {
-  --background: oklch(0.98 0.006 210);
-  --foreground: oklch(0.24 0.065 248);
-  --card: oklch(0.995 0.003 190);
-  --card-foreground: oklch(0.24 0.065 248);
-  --primary: oklch(0.56 0.13 165);
-  --primary-foreground: oklch(0.99 0.002 190);
-  --secondary: oklch(0.91 0.035 170);
-  --secondary-foreground: oklch(0.25 0.07 245);
-  --muted: oklch(0.94 0.014 215);
-  --muted-foreground: oklch(0.48 0.04 235);
-  --accent: oklch(0.88 0.065 165);
-  --accent-foreground: oklch(0.22 0.065 245);
-  --border: oklch(0.87 0.025 210);
-  --input: oklch(0.87 0.025 210);
-  --ring: oklch(0.56 0.13 165);
-  --gold: oklch(0.56 0.13 165);
-  --gold-soft: oklch(0.88 0.065 165);
-  --plum: oklch(0.24 0.065 248);
-  --wine: oklch(0.31 0.09 245);
-  --font-display: "Inter", "Manrope", ui-sans-serif, system-ui, sans-serif;
+  --background: #f8fafc;
+  --foreground: #0f172a;
+  --card: #ffffff;
+  --card-foreground: #0f172a;
+  --popover: #ffffff;
+  --popover-foreground: #0f172a;
+  --primary: #8f47eb;
+  --primary-foreground: #ffffff;
+  --secondary: #f3e8ff;
+  --secondary-foreground: #2b0d65;
+  --muted: #f1f5f9;
+  --muted-foreground: #64748b;
+  --accent: #eef2ff;
+  --accent-foreground: #4f46e5;
+  --destructive: #dc2626;
+  --border: #e5e7eb;
+  --input: #e2e8f0;
+  --ring: #8f47eb;
+  --radius: 0.75rem;
+
+  /* Nomes herdados do tema da Ybera, usados por glass e gradientes. */
+  --gold: #d8b4fe;
+  --gold-soft: #f3e8ff;
+  --plum: #2b0d65;
+  --wine: #4f46e5;
+
+  --onbio-titulo: #002b5c;
+  --onbio-menu: #1e1b4b;
+  --onbio-rotulo: #9d53eb;
+
+  --font-display: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--font-sans);
+}
+
+/* Títulos do site: Inter extrabold, azul-marinho, sem serifa. */
+.onbio-theme :is(h1, h2, h3, .font-display, .font-serif) {
+  font-family: var(--font-display);
+  color: var(--onbio-titulo);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+/* Superfícies: branco limpo com borda fina, como os cartões do site. */
+.onbio-theme .glass {
+  background: color-mix(in oklab, var(--card) 92%, transparent);
+  border-color: var(--border);
+  box-shadow:
+    0 1px 2px 0 rgb(15 23 42 / 0.04),
+    0 12px 32px -20px rgb(43 13 101 / 0.18);
+}
+
+/* Menu lateral no tom do cabeçalho do site: índigo escuro, ativo em índigo vivo. */
+.onbio-theme aside nav a {
+  color: var(--onbio-menu);
+  font-weight: 600;
+}
+.onbio-theme aside nav a:is([data-status="active"], [aria-current="page"]) {
+  background: var(--accent);
+  color: var(--accent-foreground);
+}
+
+/* Rótulos em maiúsculas espaçadas viram o "eyebrow" roxo do site. */
+.onbio-theme :is(p, h3).uppercase[class*="tracking-"] {
+  color: var(--onbio-rotulo);
+  font-weight: 800;
 }
 
 .onbio-theme .grain-overlay {
@@ -222,7 +272,11 @@
       color-mix(in oklab, var(--wine) 92%, transparent) 0%,
       transparent 60%
     ),
-    radial-gradient(90% 80% at 92% 20%, color-mix(in oklab, var(--gold) 34%, transparent) 0%, transparent 55%),
+    radial-gradient(
+      90% 80% at 92% 20%,
+      color-mix(in oklab, var(--gold) 34%, transparent) 0%,
+      transparent 55%
+    ),
     linear-gradient(160deg, var(--plum) 0%, var(--wine) 58%, var(--plum) 100%);
 }
 
