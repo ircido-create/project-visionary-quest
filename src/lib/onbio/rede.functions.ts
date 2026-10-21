@@ -107,7 +107,8 @@ export const definirIndicacaoOnbio = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const { error } = await context.supabase.rpc("onbio_definir_indicacao", {
       p_influencer: data.influencerId,
-      p_indicada_por: data.indicadaPor,
+      // A função aceita null (remove a indicação); o tipo gerado não reflete isso.
+      p_indicada_por: data.indicadaPor as string,
     });
     if (error) throw new Error(error.message);
     return { ok: true };
