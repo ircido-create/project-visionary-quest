@@ -461,6 +461,7 @@ export type Database = {
           followers: number | null
           full_name: string
           id: string
+          indicada_por: string | null
           initial_followers: number | null
           initial_posts_count: number | null
           instagram_goal: string | null
@@ -500,6 +501,7 @@ export type Database = {
           followers?: number | null
           full_name: string
           id?: string
+          indicada_por?: string | null
           initial_followers?: number | null
           initial_posts_count?: number | null
           instagram_goal?: string | null
@@ -539,6 +541,7 @@ export type Database = {
           followers?: number | null
           full_name?: string
           id?: string
+          indicada_por?: string | null
           initial_followers?: number | null
           initial_posts_count?: number | null
           instagram_goal?: string | null
@@ -564,6 +567,13 @@ export type Database = {
           whatsapp?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "influencers_indicada_por_fkey"
+            columns: ["indicada_por"]
+            isOneToOne: false
+            referencedRelation: "influencers"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "influencers_person_id_fkey"
             columns: ["person_id"]
@@ -839,6 +849,57 @@ export type Database = {
           },
           {
             foreignKeyName: "notes_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      onbio_metas_mensais: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: string
+          influencer_id: string
+          mes: string
+          origem: string | null
+          situacao: string
+          tenant_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          influencer_id: string
+          mes: string
+          origem?: string | null
+          situacao: string
+          tenant_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          influencer_id?: string
+          mes?: string
+          origem?: string | null
+          situacao?: string
+          tenant_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "onbio_metas_mensais_influencer_id_fkey"
+            columns: ["influencer_id"]
+            isOneToOne: false
+            referencedRelation: "influencers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "onbio_metas_mensais_tenant_id_fkey"
             columns: ["tenant_id"]
             isOneToOne: false
             referencedRelation: "tenants"
@@ -1692,6 +1753,15 @@ export type Database = {
       is_tenant_member_raw: { Args: { _tenant: string }; Returns: boolean }
       limpar_candidatas_inativas: { Args: never; Returns: number }
       link_influencer_account: { Args: never; Returns: number }
+      onbio_chave_do_nome: { Args: { p_nome: string }; Returns: string }
+      onbio_definir_indicacao: {
+        Args: { p_indicada_por: string; p_influencer: string }
+        Returns: undefined
+      }
+      onbio_importar_rede: {
+        Args: { p_linhas: Json; p_origem?: string; p_tenant: string }
+        Returns: Json
+      }
       pedir_vinculo_de_identidade: {
         Args: {
           p_destino_influencer_id: string
