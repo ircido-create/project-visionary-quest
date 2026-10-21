@@ -43,6 +43,13 @@
       "when": 1792545842166,
       "tag": "0005_onbio_rede_de_indicacoes",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1792579736320,
+      "tag": "0006_consent_logs_read_only_and_explicit_grants",
+      "breakpoints": true
     }
   ]
 }
