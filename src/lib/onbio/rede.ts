@@ -284,7 +284,13 @@ export type PessoaDaRede = {
   indicadaPor: string | null;
 };
 
-export type ResultadoDaRede = { influencerId: string; centavos: number; pedidos: number };
+export type ResultadoDaRede = {
+  influencerId: string;
+  centavos: number;
+  pedidos: number;
+  /** "AAAA-MM" quando o resultado é de um mês só. */
+  mes?: string | null;
+};
 export type MetaDaRede = { influencerId: string; mes: string; situacao: SituacaoMeta };
 
 export type SituacaoDeVendas =
@@ -553,4 +559,39 @@ const CARGO_DO_NIVEL = ["", "gestora", "supervisora", "embaixadora", "diretora e
 export function rotuloDoNivel(nivel: number): string {
   const cargo = CARGO_DO_NIVEL[nivel];
   return cargo ? `${nivel}º nível (${cargo})` : `${nivel}º nível`;
+}
+
+export type ComissaoDoMes = {
+  mes: string;
+  vendasCentavos: number;
+  pedidos: number;
+  comissaoCentavos: number;
+  propriaCentavos: number;
+  redeCentavos: number;
+};
+
+/**
+ * Comissão de cada mês, recalculando a rede só com as vendas daquele mês. Resultados que
+ * cobrem mais de um mês entram em "sem mês" (mes = null) e não são distribuídos.
+ */
+export function comissoesPorMes(
+  pessoas: PessoaDaRede[],
+  resultados: ResultadoDaRede[],
+  percentuais: readonly number[] = COMISSAO_PADRAO,
+): ComissaoDoMes[] {
+  const meses = [...new Set(resultados.map((r) => r.mes).filter((m): m is string => !!m))].sort();
+  return meses.map((mes) => {
+    const doMes = resultados.filter((r) => r.mes === mes);
+    const rede = montarRede(pessoas, doMes, []);
+    const c = calcularComissoes(rede, percentuais);
+    const redeCentavos = [...c.porPessoa.values()].reduce((s, x) => s + x.redeCentavos, 0);
+    return {
+      mes,
+      vendasCentavos: doMes.reduce((s, r) => s + r.centavos, 0),
+      pedidos: doMes.reduce((s, r) => s + r.pedidos, 0),
+      comissaoCentavos: c.totalCentavos,
+      propriaCentavos: c.totalCentavos - redeCentavos,
+      redeCentavos,
+    };
+  });
 }

@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useMemo } from "react";
 
-import { calcularComissoes, COMISSAO_PADRAO, montarRede } from "@/lib/onbio/rede";
+import { calcularComissoes, COMISSAO_PADRAO, comissoesPorMes, montarRede } from "@/lib/onbio/rede";
 import { getRedeOnbio } from "@/lib/onbio/rede.functions";
 
 export const money = (cents: number) =>
@@ -27,5 +27,13 @@ export function useRedeOnbio(tenantId: string) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [rede, percentuais.join(",")],
   );
-  return { consulta, rede, comissoes, percentuais };
+  const porMes = useMemo(
+    () =>
+      consulta.data
+        ? comissoesPorMes(consulta.data.pessoas, consulta.data.resultados, percentuais)
+        : [],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [consulta.data, percentuais.join(",")],
+  );
+  return { consulta, rede, comissoes, percentuais, porMes };
 }

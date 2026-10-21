@@ -681,12 +681,17 @@ Continua sendo verificação sob demanda: não roda no `bun run test`.
       Conferido pessoa a pessoa contra os pedidos da ONBIO.
 - [x] **Importação mês a mês**: a mesma pessoa pode vir em várias linhas, uma por período,
       e reimportar uma carga de mesmo nome substitui a carga inteira.
-- [ ] **Vendas mensais por pessoa.** A tela "Sua Rede" soma a equipe no volume das
-      gestoras, então não dá a venda própria delas por mês. As vendas continuam vindo do
-      Power BI (total do período). Fonte certa para o mês: "Vendas Diretas" de cada pessoa
-      ou uma exportação da ONBIO.
-- [ ] **Metas mínimas da ONBIO para receber** (R$ 50 pessoal, R$ 5.000 de equipe, limiares
-      de desempenho por cargo) ainda não entram no cálculo de comissão.
+- [x] **Vendas mensais por pessoa** (rede da Monique, abril a outubro). Na tela "Sua
+      Rede" o volume da gestora é a venda própria mais todo o volume da equipe abaixo; a
+      venda própria sai descontando a equipe. Conferido: o total de cada pessoa bate com o
+      Power BI e o total de cada mês com a "Meta Equipe" da ONBIO (ago 1.506,39, set
+      2.159,23, out 4.337,13). Fora da rede da Monique (equipes de Daniele, Joyce e Laís,
+      R$ 743,99) segue o total do período. Painel mostra a comissão mês a mês.
+- **Comissão é estimativa.** A ONBIO calcula produto a produto e alguns itens não geram
+      comissão (ex.: pedido de R$ 76,68 gerou R$ 0,42 a 2,5%); a tela avisa.
+- **Metas mínimas da ONBIO** (R$ 50 pessoal, R$ 5.000 de equipe) não entram como condição:
+      a ONBIO gerou comissão em outubro com a meta de equipe em 87%, então elas não
+      bloqueiam a comissão.
 - **Segurança do site da ONBIO (fora deste projeto):** o painel baixa para o navegador de
       qualquer afiliada logada os cadastros de todos os usuários com CPF, senha, endereço e
       conta bancária, além de todos os pedidos e saques. Avisado à dona em 2026-10-21.

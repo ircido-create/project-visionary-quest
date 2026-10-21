@@ -97,7 +97,7 @@ export function ComissoesOnbioSection({
   tenantId: string;
   podeEditar: boolean;
 }) {
-  const { rede, comissoes, percentuais } = useRedeOnbio(tenantId);
+  const { rede, comissoes, percentuais, porMes } = useRedeOnbio(tenantId);
   const [editando, setEditando] = useState(false);
   const [filtro, setFiltro] = useState("");
 
@@ -131,7 +131,9 @@ export function ComissoesOnbioSection({
           <h2 className="text-xl font-semibold">Comissões da rede</h2>
           <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
             Cada venda paga quem vendeu e até {niveisPagos} pessoa{niveisPagos === 1 ? "" : "s"}{" "}
-            acima dela na rede. Calculado sobre as vendas importadas (valor sem frete).
+            acima dela na rede. É uma estimativa sobre as vendas importadas (valor sem frete): a
+            ONBIO calcula produto a produto e alguns itens, como kits, não geram comissão, então o
+            valor pago por ela pode ser menor.
           </p>
         </div>
         {podeEditar && !editando ? (
@@ -180,6 +182,42 @@ export function ComissoesOnbioSection({
           <dd className="mt-1 font-serif text-2xl">{money(daRede)}</dd>
         </div>
       </dl>
+
+      {porMes.length > 0 ? (
+        <div className="mt-5 overflow-x-auto">
+          <h3 className="text-sm font-semibold">Por mês</h3>
+          <table className="mt-2 w-full min-w-[520px] text-sm">
+            <thead className="text-left text-xs uppercase tracking-wide text-muted-foreground">
+              <tr>
+                <th className="py-2 pr-4">Mês</th>
+                <th className="py-2 pr-4 text-right">Vendas</th>
+                <th className="py-2 pr-4 text-right">Própria</th>
+                <th className="py-2 pr-4 text-right">Rede</th>
+                <th className="py-2 text-right">Comissão</th>
+              </tr>
+            </thead>
+            <tbody>
+              {porMes.map((m) => (
+                <tr key={m.mes} className="border-t border-border/60">
+                  <td className="py-2 pr-4 capitalize">
+                    {new Date(`${m.mes}-15T12:00:00Z`).toLocaleDateString("pt-BR", {
+                      month: "long",
+                      year: "numeric",
+                      timeZone: "UTC",
+                    })}
+                  </td>
+                  <td className="py-2 pr-4 text-right tabular-nums">{money(m.vendasCentavos)}</td>
+                  <td className="py-2 pr-4 text-right tabular-nums">{money(m.propriaCentavos)}</td>
+                  <td className="py-2 pr-4 text-right tabular-nums">{money(m.redeCentavos)}</td>
+                  <td className="py-2 text-right font-medium tabular-nums">
+                    {money(m.comissaoCentavos)}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ) : null}
 
       <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
         <p className="text-sm text-muted-foreground">

@@ -65,7 +65,7 @@ export const getRedeOnbio = createServerFn({ method: "POST" })
         .is("archived_at", null),
       supabase
         .from("commercial_results")
-        .select("influencer_id, revenue_cents, orders")
+        .select("influencer_id, revenue_cents, orders, period_start, period_end")
         .eq("tenant_id", data.tenantId),
       supabase
         .from("onbio_metas_mensais")
@@ -89,6 +89,11 @@ export const getRedeOnbio = createServerFn({ method: "POST" })
       resultados: (resultados.data ?? []).map((r) => ({
         influencerId: r.influencer_id,
         centavos: r.revenue_cents,
+        // Mês do resultado quando o período cabe num mês só; senão, null.
+        mes:
+          r.period_start.slice(0, 7) === r.period_end.slice(0, 7)
+            ? r.period_start.slice(0, 7)
+            : null,
         pedidos: r.orders,
       })),
       metas: (metas.data ?? []).map((m) => ({

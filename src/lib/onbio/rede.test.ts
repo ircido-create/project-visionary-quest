@@ -10,6 +10,7 @@ import {
   montarRede,
   calcularComissoes,
   percentuaisValidos,
+  comissoesPorMes,
 } from "./rede";
 
 describe("lerCsv", () => {
@@ -300,5 +301,37 @@ describe("calcularComissoes", () => {
       [],
     );
     expect(calcularComissoes(rede).porPessoa.get("b")!.totalCentavos).toBe(500);
+  });
+});
+
+describe("comissoesPorMes", () => {
+  const pessoas = [
+    { id: "m", nome: "m", indicadaPor: null },
+    { id: "a", nome: "a", indicadaPor: "m" },
+  ];
+  it("separa a comissão por mês e ignora resultado de vários meses", () => {
+    const meses = comissoesPorMes(pessoas, [
+      { influencerId: "a", centavos: 10000, pedidos: 1, mes: "2026-09" },
+      { influencerId: "a", centavos: 20000, pedidos: 2, mes: "2026-10" },
+      { influencerId: "a", centavos: 0, pedidos: 3, mes: null },
+    ]);
+    expect(meses).toEqual([
+      {
+        mes: "2026-09",
+        vendasCentavos: 10000,
+        pedidos: 1,
+        comissaoCentavos: 2000,
+        propriaCentavos: 1500,
+        redeCentavos: 500,
+      },
+      {
+        mes: "2026-10",
+        vendasCentavos: 20000,
+        pedidos: 2,
+        comissaoCentavos: 4000,
+        propriaCentavos: 3000,
+        redeCentavos: 1000,
+      },
+    ]);
   });
 });

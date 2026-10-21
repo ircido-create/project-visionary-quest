@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { lerPlanilhaDeRede, type LeituraDaPlanilha } from "@/lib/onbio/rede";
+import { chaveDoTexto, lerPlanilhaDeRede, type LeituraDaPlanilha } from "@/lib/onbio/rede";
 import { importarRedeOnbio, type ResultadoDaImportacao } from "@/lib/onbio/rede.functions";
 
 const money = (cents: number) =>
@@ -53,7 +53,8 @@ export function ImportarRedeSection({
     const linhas = leitura.linhas;
     const meses = new Set(linhas.flatMap((l) => Object.keys(l.metas)));
     return {
-      pessoas: linhas.length,
+      linhas: linhas.length,
+      pessoas: new Set(linhas.map((l) => chaveDoTexto(l.nome))).size,
       comIndicadora: linhas.filter((l) => l.indicada_por).length,
       comEmail: linhas.filter((l) => l.email).length,
       vendas: linhas.reduce((s, l) => s + (l.vendas_centavos ?? 0), 0),
@@ -145,7 +146,10 @@ export function ImportarRedeSection({
             <div className="grid gap-3 rounded-lg border border-border bg-card p-4 text-sm">
               <p className="font-medium">{arquivo}</p>
               <ul className="grid gap-1 sm:grid-cols-2">
-                <li>{resumo.pessoas} pessoas</li>
+                <li>
+                  {resumo.pessoas} pessoas
+                  {resumo.linhas !== resumo.pessoas ? ` em ${resumo.linhas} linhas` : ""}
+                </li>
                 <li>{resumo.comIndicadora} com indicadora</li>
                 <li>{resumo.comEmail} com e-mail</li>
                 <li>Vendas somadas: {money(resumo.vendas)}</li>
@@ -181,10 +185,12 @@ export function ImportarRedeSection({
                   </div>
                   <Button
                     type="button"
-                    disabled={gravar.isPending || resumo.pessoas === 0}
+                    disabled={gravar.isPending || resumo.linhas === 0}
                     onClick={() => gravar.mutate()}
                   >
-                    {gravar.isPending ? "Importando…" : `Importar ${resumo.pessoas} pessoas`}
+                    {gravar.isPending
+                      ? "Importando…"
+                      : `Importar ${resumo.linhas} linha${resumo.linhas === 1 ? "" : "s"}`}
                   </Button>
                 </div>
               )}
