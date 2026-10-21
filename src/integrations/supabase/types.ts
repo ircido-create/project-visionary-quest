@@ -1,1731 +1,1848 @@
-export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
+export type Json =
+  | string
+  | number
+  | boolean
+  | null
+  | { [key: string]: Json | undefined }
+  | Json[]
 
 export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "14.5";
-  };
+    PostgrestVersion: "14.17"
+  }
   public: {
     Tables: {
       aceites_de_termos: {
         Row: {
-          aceito_em: string;
-          id: string;
-          origem: string;
-          user_id: string;
-          versao_politica: string;
-          versao_termos: string;
-        };
+          aceito_em: string
+          id: string
+          origem: string
+          user_id: string
+          versao_politica: string
+          versao_termos: string
+        }
         Insert: {
-          aceito_em?: string;
-          id?: string;
-          origem: string;
-          user_id: string;
-          versao_politica: string;
-          versao_termos: string;
-        };
+          aceito_em?: string
+          id?: string
+          origem: string
+          user_id: string
+          versao_politica: string
+          versao_termos: string
+        }
         Update: {
-          aceito_em?: string;
-          id?: string;
-          origem?: string;
-          user_id?: string;
-          versao_politica?: string;
-          versao_termos?: string;
-        };
-        Relationships: [];
-      };
+          aceito_em?: string
+          id?: string
+          origem?: string
+          user_id?: string
+          versao_politica?: string
+          versao_termos?: string
+        }
+        Relationships: []
+      }
       ai_analyses: {
         Row: {
-          completed_at: string | null;
-          confirmed: boolean;
-          created_at: string;
-          created_by: string | null;
-          error: string | null;
-          id: string;
-          influencer_id: string;
-          input: Json;
-          model: string;
-          output: Json | null;
-          prompt_version: string;
-          status: Database["public"]["Enums"]["ai_analysis_status"];
-          tenant_id: string;
-        };
+          completed_at: string | null
+          confirmed: boolean
+          created_at: string
+          created_by: string | null
+          error: string | null
+          id: string
+          influencer_id: string
+          input: Json
+          model: string
+          output: Json | null
+          prompt_version: string
+          status: Database["public"]["Enums"]["ai_analysis_status"]
+          tenant_id: string
+        }
         Insert: {
-          completed_at?: string | null;
-          confirmed?: boolean;
-          created_at?: string;
-          created_by?: string | null;
-          error?: string | null;
-          id?: string;
-          influencer_id: string;
-          input?: Json;
-          model: string;
-          output?: Json | null;
-          prompt_version: string;
-          status?: Database["public"]["Enums"]["ai_analysis_status"];
-          tenant_id: string;
-        };
+          completed_at?: string | null
+          confirmed?: boolean
+          created_at?: string
+          created_by?: string | null
+          error?: string | null
+          id?: string
+          influencer_id: string
+          input?: Json
+          model: string
+          output?: Json | null
+          prompt_version: string
+          status?: Database["public"]["Enums"]["ai_analysis_status"]
+          tenant_id: string
+        }
         Update: {
-          completed_at?: string | null;
-          confirmed?: boolean;
-          created_at?: string;
-          created_by?: string | null;
-          error?: string | null;
-          id?: string;
-          influencer_id?: string;
-          input?: Json;
-          model?: string;
-          output?: Json | null;
-          prompt_version?: string;
-          status?: Database["public"]["Enums"]["ai_analysis_status"];
-          tenant_id?: string;
-        };
+          completed_at?: string | null
+          confirmed?: boolean
+          created_at?: string
+          created_by?: string | null
+          error?: string | null
+          id?: string
+          influencer_id?: string
+          input?: Json
+          model?: string
+          output?: Json | null
+          prompt_version?: string
+          status?: Database["public"]["Enums"]["ai_analysis_status"]
+          tenant_id?: string
+        }
         Relationships: [
           {
-            foreignKeyName: "ai_analyses_influencer_id_fkey";
-            columns: ["influencer_id"];
-            isOneToOne: false;
-            referencedRelation: "influencers";
-            referencedColumns: ["id"];
+            foreignKeyName: "ai_analyses_influencer_id_fkey"
+            columns: ["influencer_id"]
+            isOneToOne: false
+            referencedRelation: "influencers"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "ai_analyses_tenant_id_fkey";
-            columns: ["tenant_id"];
-            isOneToOne: false;
-            referencedRelation: "tenants";
-            referencedColumns: ["id"];
+            foreignKeyName: "ai_analyses_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
           },
-        ];
-      };
+        ]
+      }
       applications: {
         Row: {
-          answers: Json;
-          consent_version: string;
-          id: string;
-          influencer_id: string | null;
-          submitted_at: string;
-          tenant_id: string;
-        };
+          answers: Json
+          consent_version: string
+          id: string
+          influencer_id: string | null
+          submitted_at: string
+          tenant_id: string
+        }
         Insert: {
-          answers?: Json;
-          consent_version?: string;
-          id?: string;
-          influencer_id?: string | null;
-          submitted_at?: string;
-          tenant_id: string;
-        };
+          answers?: Json
+          consent_version?: string
+          id?: string
+          influencer_id?: string | null
+          submitted_at?: string
+          tenant_id: string
+        }
         Update: {
-          answers?: Json;
-          consent_version?: string;
-          id?: string;
-          influencer_id?: string | null;
-          submitted_at?: string;
-          tenant_id?: string;
-        };
+          answers?: Json
+          consent_version?: string
+          id?: string
+          influencer_id?: string | null
+          submitted_at?: string
+          tenant_id?: string
+        }
         Relationships: [
           {
-            foreignKeyName: "applications_influencer_id_fkey";
-            columns: ["influencer_id"];
-            isOneToOne: false;
-            referencedRelation: "influencers";
-            referencedColumns: ["id"];
+            foreignKeyName: "applications_influencer_id_fkey"
+            columns: ["influencer_id"]
+            isOneToOne: false
+            referencedRelation: "influencers"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "applications_tenant_id_fkey";
-            columns: ["tenant_id"];
-            isOneToOne: false;
-            referencedRelation: "tenants";
-            referencedColumns: ["id"];
+            foreignKeyName: "applications_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
           },
-        ];
-      };
+        ]
+      }
       audit_logs: {
         Row: {
-          action: string;
-          actor_id: string | null;
-          created_at: string;
-          entity: string | null;
-          entity_id: string | null;
-          id: string;
-          meta: Json;
-          tenant_id: string | null;
-        };
+          action: string
+          actor_id: string | null
+          created_at: string
+          entity: string | null
+          entity_id: string | null
+          id: string
+          meta: Json
+          tenant_id: string | null
+        }
         Insert: {
-          action: string;
-          actor_id?: string | null;
-          created_at?: string;
-          entity?: string | null;
-          entity_id?: string | null;
-          id?: string;
-          meta?: Json;
-          tenant_id?: string | null;
-        };
+          action: string
+          actor_id?: string | null
+          created_at?: string
+          entity?: string | null
+          entity_id?: string | null
+          id?: string
+          meta?: Json
+          tenant_id?: string | null
+        }
         Update: {
-          action?: string;
-          actor_id?: string | null;
-          created_at?: string;
-          entity?: string | null;
-          entity_id?: string | null;
-          id?: string;
-          meta?: Json;
-          tenant_id?: string | null;
-        };
+          action?: string
+          actor_id?: string | null
+          created_at?: string
+          entity?: string | null
+          entity_id?: string | null
+          id?: string
+          meta?: Json
+          tenant_id?: string | null
+        }
         Relationships: [
           {
-            foreignKeyName: "audit_logs_tenant_id_fkey";
-            columns: ["tenant_id"];
-            isOneToOne: false;
-            referencedRelation: "tenants";
-            referencedColumns: ["id"];
+            foreignKeyName: "audit_logs_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
           },
-        ];
-      };
+        ]
+      }
       avisos: {
         Row: {
-          criado_em: string;
-          id: string;
-          influencer_id: string | null;
-          lido_em: string | null;
-          quantidade: number;
-          tenant_id: string | null;
-          tipo: string;
-          titulo: string;
-          user_id: string;
-        };
+          criado_em: string
+          id: string
+          influencer_id: string | null
+          lido_em: string | null
+          quantidade: number
+          tenant_id: string | null
+          tipo: string
+          titulo: string
+          user_id: string
+        }
         Insert: {
-          criado_em?: string;
-          id?: string;
-          influencer_id?: string | null;
-          lido_em?: string | null;
-          quantidade?: number;
-          tenant_id?: string | null;
-          tipo: string;
-          titulo: string;
-          user_id: string;
-        };
+          criado_em?: string
+          id?: string
+          influencer_id?: string | null
+          lido_em?: string | null
+          quantidade?: number
+          tenant_id?: string | null
+          tipo: string
+          titulo: string
+          user_id: string
+        }
         Update: {
-          criado_em?: string;
-          id?: string;
-          influencer_id?: string | null;
-          lido_em?: string | null;
-          quantidade?: number;
-          tenant_id?: string | null;
-          tipo?: string;
-          titulo?: string;
-          user_id?: string;
-        };
+          criado_em?: string
+          id?: string
+          influencer_id?: string | null
+          lido_em?: string | null
+          quantidade?: number
+          tenant_id?: string | null
+          tipo?: string
+          titulo?: string
+          user_id?: string
+        }
         Relationships: [
           {
-            foreignKeyName: "avisos_influencer_id_fkey";
-            columns: ["influencer_id"];
-            isOneToOne: false;
-            referencedRelation: "influencers";
-            referencedColumns: ["id"];
+            foreignKeyName: "avisos_influencer_id_fkey"
+            columns: ["influencer_id"]
+            isOneToOne: false
+            referencedRelation: "influencers"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "avisos_tenant_id_fkey";
-            columns: ["tenant_id"];
-            isOneToOne: false;
-            referencedRelation: "tenants";
-            referencedColumns: ["id"];
+            foreignKeyName: "avisos_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
           },
-        ];
-      };
+        ]
+      }
       commercial_results: {
         Row: {
-          campaign: string | null;
-          commission_cents: number;
-          created_at: string;
-          created_by: string | null;
-          goal_cents: number | null;
-          id: string;
-          influencer_id: string;
-          notes: string | null;
-          orders: number;
-          period_end: string;
-          period_start: string;
-          revenue_cents: number;
-          tenant_id: string;
-          updated_at: string;
-        };
+          campaign: string | null
+          commission_cents: number
+          created_at: string
+          created_by: string | null
+          goal_cents: number | null
+          id: string
+          influencer_id: string
+          notes: string | null
+          orders: number
+          period_end: string
+          period_start: string
+          revenue_cents: number
+          tenant_id: string
+          updated_at: string
+        }
         Insert: {
-          campaign?: string | null;
-          commission_cents?: number;
-          created_at?: string;
-          created_by?: string | null;
-          goal_cents?: number | null;
-          id?: string;
-          influencer_id: string;
-          notes?: string | null;
-          orders?: number;
-          period_end: string;
-          period_start: string;
-          revenue_cents?: number;
-          tenant_id: string;
-          updated_at?: string;
-        };
+          campaign?: string | null
+          commission_cents?: number
+          created_at?: string
+          created_by?: string | null
+          goal_cents?: number | null
+          id?: string
+          influencer_id: string
+          notes?: string | null
+          orders?: number
+          period_end: string
+          period_start: string
+          revenue_cents?: number
+          tenant_id: string
+          updated_at?: string
+        }
         Update: {
-          campaign?: string | null;
-          commission_cents?: number;
-          created_at?: string;
-          created_by?: string | null;
-          goal_cents?: number | null;
-          id?: string;
-          influencer_id?: string;
-          notes?: string | null;
-          orders?: number;
-          period_end?: string;
-          period_start?: string;
-          revenue_cents?: number;
-          tenant_id?: string;
-          updated_at?: string;
-        };
+          campaign?: string | null
+          commission_cents?: number
+          created_at?: string
+          created_by?: string | null
+          goal_cents?: number | null
+          id?: string
+          influencer_id?: string
+          notes?: string | null
+          orders?: number
+          period_end?: string
+          period_start?: string
+          revenue_cents?: number
+          tenant_id?: string
+          updated_at?: string
+        }
         Relationships: [
           {
-            foreignKeyName: "commercial_results_influencer_id_fkey";
-            columns: ["influencer_id"];
-            isOneToOne: false;
-            referencedRelation: "influencers";
-            referencedColumns: ["id"];
+            foreignKeyName: "commercial_results_influencer_id_fkey"
+            columns: ["influencer_id"]
+            isOneToOne: false
+            referencedRelation: "influencers"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "commercial_results_tenant_id_fkey";
-            columns: ["tenant_id"];
-            isOneToOne: false;
-            referencedRelation: "tenants";
-            referencedColumns: ["id"];
+            foreignKeyName: "commercial_results_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
           },
-        ];
-      };
+        ]
+      }
       consent_logs: {
         Row: {
-          accepted_at: string;
-          id: string;
-          influencer_id: string | null;
-          purpose: string;
-          source: string | null;
-          tenant_id: string;
-          version: string;
-        };
+          accepted_at: string
+          id: string
+          influencer_id: string | null
+          purpose: string
+          source: string | null
+          tenant_id: string
+          version: string
+        }
         Insert: {
-          accepted_at?: string;
-          id?: string;
-          influencer_id?: string | null;
-          purpose: string;
-          source?: string | null;
-          tenant_id: string;
-          version?: string;
-        };
+          accepted_at?: string
+          id?: string
+          influencer_id?: string | null
+          purpose: string
+          source?: string | null
+          tenant_id: string
+          version?: string
+        }
         Update: {
-          accepted_at?: string;
-          id?: string;
-          influencer_id?: string | null;
-          purpose?: string;
-          source?: string | null;
-          tenant_id?: string;
-          version?: string;
-        };
+          accepted_at?: string
+          id?: string
+          influencer_id?: string | null
+          purpose?: string
+          source?: string | null
+          tenant_id?: string
+          version?: string
+        }
         Relationships: [
           {
-            foreignKeyName: "consent_logs_influencer_id_fkey";
-            columns: ["influencer_id"];
-            isOneToOne: false;
-            referencedRelation: "influencers";
-            referencedColumns: ["id"];
+            foreignKeyName: "consent_logs_influencer_id_fkey"
+            columns: ["influencer_id"]
+            isOneToOne: false
+            referencedRelation: "influencers"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "consent_logs_tenant_id_fkey";
-            columns: ["tenant_id"];
-            isOneToOne: false;
-            referencedRelation: "tenants";
-            referencedColumns: ["id"];
+            foreignKeyName: "consent_logs_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
           },
-        ];
-      };
+        ]
+      }
       feedbacks: {
         Row: {
-          author_id: string | null;
-          body: string;
-          created_at: string;
-          id: string;
-          influencer_id: string;
-          tenant_id: string;
-        };
+          author_id: string | null
+          body: string
+          created_at: string
+          id: string
+          influencer_id: string
+          tenant_id: string
+        }
         Insert: {
-          author_id?: string | null;
-          body: string;
-          created_at?: string;
-          id?: string;
-          influencer_id: string;
-          tenant_id: string;
-        };
+          author_id?: string | null
+          body: string
+          created_at?: string
+          id?: string
+          influencer_id: string
+          tenant_id: string
+        }
         Update: {
-          author_id?: string | null;
-          body?: string;
-          created_at?: string;
-          id?: string;
-          influencer_id?: string;
-          tenant_id?: string;
-        };
+          author_id?: string | null
+          body?: string
+          created_at?: string
+          id?: string
+          influencer_id?: string
+          tenant_id?: string
+        }
         Relationships: [
           {
-            foreignKeyName: "feedbacks_influencer_id_fkey";
-            columns: ["influencer_id"];
-            isOneToOne: false;
-            referencedRelation: "influencers";
-            referencedColumns: ["id"];
+            foreignKeyName: "feedbacks_influencer_id_fkey"
+            columns: ["influencer_id"]
+            isOneToOne: false
+            referencedRelation: "influencers"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "feedbacks_tenant_id_fkey";
-            columns: ["tenant_id"];
-            isOneToOne: false;
-            referencedRelation: "tenants";
-            referencedColumns: ["id"];
+            foreignKeyName: "feedbacks_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
           },
-        ];
-      };
+        ]
+      }
       files: {
         Row: {
-          confirmed: boolean;
-          created_at: string;
-          id: string;
-          influencer_id: string | null;
-          kind: string;
-          mime_type: string | null;
-          size_bytes: number | null;
-          storage_path: string;
-          tenant_id: string;
-          uploaded_by: string | null;
-        };
+          confirmed: boolean
+          created_at: string
+          id: string
+          influencer_id: string | null
+          kind: string
+          mime_type: string | null
+          size_bytes: number | null
+          storage_path: string
+          tenant_id: string
+          uploaded_by: string | null
+        }
         Insert: {
-          confirmed?: boolean;
-          created_at?: string;
-          id?: string;
-          influencer_id?: string | null;
-          kind?: string;
-          mime_type?: string | null;
-          size_bytes?: number | null;
-          storage_path: string;
-          tenant_id: string;
-          uploaded_by?: string | null;
-        };
+          confirmed?: boolean
+          created_at?: string
+          id?: string
+          influencer_id?: string | null
+          kind?: string
+          mime_type?: string | null
+          size_bytes?: number | null
+          storage_path: string
+          tenant_id: string
+          uploaded_by?: string | null
+        }
         Update: {
-          confirmed?: boolean;
-          created_at?: string;
-          id?: string;
-          influencer_id?: string | null;
-          kind?: string;
-          mime_type?: string | null;
-          size_bytes?: number | null;
-          storage_path?: string;
-          tenant_id?: string;
-          uploaded_by?: string | null;
-        };
+          confirmed?: boolean
+          created_at?: string
+          id?: string
+          influencer_id?: string | null
+          kind?: string
+          mime_type?: string | null
+          size_bytes?: number | null
+          storage_path?: string
+          tenant_id?: string
+          uploaded_by?: string | null
+        }
         Relationships: [
           {
-            foreignKeyName: "files_influencer_id_fkey";
-            columns: ["influencer_id"];
-            isOneToOne: false;
-            referencedRelation: "influencers";
-            referencedColumns: ["id"];
+            foreignKeyName: "files_influencer_id_fkey"
+            columns: ["influencer_id"]
+            isOneToOne: false
+            referencedRelation: "influencers"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "files_tenant_id_fkey";
-            columns: ["tenant_id"];
-            isOneToOne: false;
-            referencedRelation: "tenants";
-            referencedColumns: ["id"];
+            foreignKeyName: "files_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
           },
-        ];
-      };
+        ]
+      }
       influencers: {
         Row: {
-          archived_at: string | null;
-          asked_about: string | null;
-          assigned_to: string | null;
-          avatar_url: string | null;
-          city: string | null;
-          consent_at: string | null;
-          created_at: string;
-          daily_time: string | null;
-          data_source: Database["public"]["Enums"]["data_source"];
-          email: string;
-          female_audience_pct: number | null;
-          followers: number | null;
-          full_name: string;
-          id: string;
-          initial_followers: number | null;
-          initial_posts_count: number | null;
-          instagram_goal: string | null;
-          instagram_handle: string | null;
-          instagram_url: string | null;
-          indicada_por: string | null;
-          level: string;
-          main_difficulty: string | null;
-          origin: string | null;
-          person_id: string | null;
-          posts_count: number | null;
-          profile_goal: string | null;
-          profile_type: Database["public"]["Enums"]["ig_profile_type"] | null;
-          progress_score: number;
-          recent_posts_6m: Database["public"]["Enums"]["tri_state"] | null;
-          reels_frequency: string | null;
-          state: string | null;
-          status: Database["public"]["Enums"]["influencer_status"];
-          stories_frequency: string | null;
-          tenant_id: string;
-          topics: string | null;
-          updated_at: string;
-          user_id: string | null;
-          whatsapp: string | null;
-        };
+          archived_at: string | null
+          asked_about: string | null
+          assigned_to: string | null
+          avatar_url: string | null
+          city: string | null
+          consent_at: string | null
+          created_at: string
+          daily_time: string | null
+          data_source: Database["public"]["Enums"]["data_source"]
+          email: string
+          female_audience_pct: number | null
+          followers: number | null
+          full_name: string
+          id: string
+          indicada_por: string | null
+          initial_followers: number | null
+          initial_posts_count: number | null
+          instagram_goal: string | null
+          instagram_handle: string | null
+          instagram_url: string | null
+          level: string
+          main_difficulty: string | null
+          origin: string | null
+          person_id: string | null
+          posts_count: number | null
+          profile_goal: string | null
+          profile_type: Database["public"]["Enums"]["ig_profile_type"] | null
+          progress_score: number
+          recent_posts_6m: Database["public"]["Enums"]["tri_state"] | null
+          reels_frequency: string | null
+          state: string | null
+          status: Database["public"]["Enums"]["influencer_status"]
+          stories_frequency: string | null
+          tenant_id: string
+          topics: string | null
+          updated_at: string
+          user_id: string | null
+          whatsapp: string | null
+        }
         Insert: {
-          archived_at?: string | null;
-          asked_about?: string | null;
-          assigned_to?: string | null;
-          avatar_url?: string | null;
-          city?: string | null;
-          consent_at?: string | null;
-          created_at?: string;
-          daily_time?: string | null;
-          data_source?: Database["public"]["Enums"]["data_source"];
-          email: string;
-          female_audience_pct?: number | null;
-          followers?: number | null;
-          full_name: string;
-          id?: string;
-          initial_followers?: number | null;
-          initial_posts_count?: number | null;
-          instagram_goal?: string | null;
-          instagram_handle?: string | null;
-          instagram_url?: string | null;
-          indicada_por?: string | null;
-          level?: string;
-          main_difficulty?: string | null;
-          origin?: string | null;
-          person_id?: string | null;
-          posts_count?: number | null;
-          profile_goal?: string | null;
-          profile_type?: Database["public"]["Enums"]["ig_profile_type"] | null;
-          progress_score?: number;
-          recent_posts_6m?: Database["public"]["Enums"]["tri_state"] | null;
-          reels_frequency?: string | null;
-          state?: string | null;
-          status?: Database["public"]["Enums"]["influencer_status"];
-          stories_frequency?: string | null;
-          tenant_id: string;
-          topics?: string | null;
-          updated_at?: string;
-          user_id?: string | null;
-          whatsapp?: string | null;
-        };
+          archived_at?: string | null
+          asked_about?: string | null
+          assigned_to?: string | null
+          avatar_url?: string | null
+          city?: string | null
+          consent_at?: string | null
+          created_at?: string
+          daily_time?: string | null
+          data_source?: Database["public"]["Enums"]["data_source"]
+          email: string
+          female_audience_pct?: number | null
+          followers?: number | null
+          full_name: string
+          id?: string
+          indicada_por?: string | null
+          initial_followers?: number | null
+          initial_posts_count?: number | null
+          instagram_goal?: string | null
+          instagram_handle?: string | null
+          instagram_url?: string | null
+          level?: string
+          main_difficulty?: string | null
+          origin?: string | null
+          person_id?: string | null
+          posts_count?: number | null
+          profile_goal?: string | null
+          profile_type?: Database["public"]["Enums"]["ig_profile_type"] | null
+          progress_score?: number
+          recent_posts_6m?: Database["public"]["Enums"]["tri_state"] | null
+          reels_frequency?: string | null
+          state?: string | null
+          status?: Database["public"]["Enums"]["influencer_status"]
+          stories_frequency?: string | null
+          tenant_id: string
+          topics?: string | null
+          updated_at?: string
+          user_id?: string | null
+          whatsapp?: string | null
+        }
         Update: {
-          archived_at?: string | null;
-          asked_about?: string | null;
-          assigned_to?: string | null;
-          avatar_url?: string | null;
-          city?: string | null;
-          consent_at?: string | null;
-          created_at?: string;
-          daily_time?: string | null;
-          data_source?: Database["public"]["Enums"]["data_source"];
-          email?: string;
-          female_audience_pct?: number | null;
-          followers?: number | null;
-          full_name?: string;
-          id?: string;
-          initial_followers?: number | null;
-          initial_posts_count?: number | null;
-          instagram_goal?: string | null;
-          instagram_handle?: string | null;
-          instagram_url?: string | null;
-          indicada_por?: string | null;
-          level?: string;
-          main_difficulty?: string | null;
-          origin?: string | null;
-          person_id?: string | null;
-          posts_count?: number | null;
-          profile_goal?: string | null;
-          profile_type?: Database["public"]["Enums"]["ig_profile_type"] | null;
-          progress_score?: number;
-          recent_posts_6m?: Database["public"]["Enums"]["tri_state"] | null;
-          reels_frequency?: string | null;
-          state?: string | null;
-          status?: Database["public"]["Enums"]["influencer_status"];
-          stories_frequency?: string | null;
-          tenant_id?: string;
-          topics?: string | null;
-          updated_at?: string;
-          user_id?: string | null;
-          whatsapp?: string | null;
-        };
+          archived_at?: string | null
+          asked_about?: string | null
+          assigned_to?: string | null
+          avatar_url?: string | null
+          city?: string | null
+          consent_at?: string | null
+          created_at?: string
+          daily_time?: string | null
+          data_source?: Database["public"]["Enums"]["data_source"]
+          email?: string
+          female_audience_pct?: number | null
+          followers?: number | null
+          full_name?: string
+          id?: string
+          indicada_por?: string | null
+          initial_followers?: number | null
+          initial_posts_count?: number | null
+          instagram_goal?: string | null
+          instagram_handle?: string | null
+          instagram_url?: string | null
+          level?: string
+          main_difficulty?: string | null
+          origin?: string | null
+          person_id?: string | null
+          posts_count?: number | null
+          profile_goal?: string | null
+          profile_type?: Database["public"]["Enums"]["ig_profile_type"] | null
+          progress_score?: number
+          recent_posts_6m?: Database["public"]["Enums"]["tri_state"] | null
+          reels_frequency?: string | null
+          state?: string | null
+          status?: Database["public"]["Enums"]["influencer_status"]
+          stories_frequency?: string | null
+          tenant_id?: string
+          topics?: string | null
+          updated_at?: string
+          user_id?: string | null
+          whatsapp?: string | null
+        }
         Relationships: [
           {
-            foreignKeyName: "influencers_person_id_fkey";
-            columns: ["person_id"];
-            isOneToOne: false;
-            referencedRelation: "people";
-            referencedColumns: ["id"];
+            foreignKeyName: "influencers_indicada_por_fkey"
+            columns: ["indicada_por"]
+            isOneToOne: false
+            referencedRelation: "influencers"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "influencers_tenant_id_fkey";
-            columns: ["tenant_id"];
-            isOneToOne: false;
-            referencedRelation: "tenants";
-            referencedColumns: ["id"];
+            foreignKeyName: "influencers_person_id_fkey"
+            columns: ["person_id"]
+            isOneToOne: false
+            referencedRelation: "people"
+            referencedColumns: ["id"]
           },
-        ];
-      };
+          {
+            foreignKeyName: "influencers_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       instagram_connections: {
         Row: {
-          connected_at: string;
-          id: string;
-          ig_user_id: string;
-          influencer_id: string;
-          last_sync_at: string | null;
-          last_sync_error: string | null;
-          revoked_at: string | null;
-          scopes: string | null;
-          tenant_id: string;
-          token_expires_at: string | null;
-          token_secret_id: string;
-          username: string | null;
-        };
+          connected_at: string
+          id: string
+          ig_user_id: string
+          influencer_id: string
+          last_sync_at: string | null
+          last_sync_error: string | null
+          revoked_at: string | null
+          scopes: string | null
+          tenant_id: string
+          token_expires_at: string | null
+          token_secret_id: string
+          username: string | null
+        }
         Insert: {
-          connected_at?: string;
-          id?: string;
-          ig_user_id: string;
-          influencer_id: string;
-          last_sync_at?: string | null;
-          last_sync_error?: string | null;
-          revoked_at?: string | null;
-          scopes?: string | null;
-          tenant_id: string;
-          token_expires_at?: string | null;
-          token_secret_id: string;
-          username?: string | null;
-        };
+          connected_at?: string
+          id?: string
+          ig_user_id: string
+          influencer_id: string
+          last_sync_at?: string | null
+          last_sync_error?: string | null
+          revoked_at?: string | null
+          scopes?: string | null
+          tenant_id: string
+          token_expires_at?: string | null
+          token_secret_id: string
+          username?: string | null
+        }
         Update: {
-          connected_at?: string;
-          id?: string;
-          ig_user_id?: string;
-          influencer_id?: string;
-          last_sync_at?: string | null;
-          last_sync_error?: string | null;
-          revoked_at?: string | null;
-          scopes?: string | null;
-          tenant_id?: string;
-          token_expires_at?: string | null;
-          token_secret_id?: string;
-          username?: string | null;
-        };
+          connected_at?: string
+          id?: string
+          ig_user_id?: string
+          influencer_id?: string
+          last_sync_at?: string | null
+          last_sync_error?: string | null
+          revoked_at?: string | null
+          scopes?: string | null
+          tenant_id?: string
+          token_expires_at?: string | null
+          token_secret_id?: string
+          username?: string | null
+        }
         Relationships: [
           {
-            foreignKeyName: "instagram_connections_influencer_id_fkey";
-            columns: ["influencer_id"];
-            isOneToOne: true;
-            referencedRelation: "influencers";
-            referencedColumns: ["id"];
+            foreignKeyName: "instagram_connections_influencer_id_fkey"
+            columns: ["influencer_id"]
+            isOneToOne: true
+            referencedRelation: "influencers"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "instagram_connections_tenant_id_fkey";
-            columns: ["tenant_id"];
-            isOneToOne: false;
-            referencedRelation: "tenants";
-            referencedColumns: ["id"];
+            foreignKeyName: "instagram_connections_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
           },
-        ];
-      };
+        ]
+      }
       invitations: {
         Row: {
-          accepted_at: string | null;
-          created_at: string;
-          email: string;
-          expires_at: string;
-          id: string;
-          invited_by: string | null;
-          role: Database["public"]["Enums"]["tenant_role"];
-          tenant_id: string;
-        };
+          accepted_at: string | null
+          created_at: string
+          email: string
+          expires_at: string
+          id: string
+          invited_by: string | null
+          role: Database["public"]["Enums"]["tenant_role"]
+          tenant_id: string
+        }
         Insert: {
-          accepted_at?: string | null;
-          created_at?: string;
-          email: string;
-          expires_at?: string;
-          id?: string;
-          invited_by?: string | null;
-          role?: Database["public"]["Enums"]["tenant_role"];
-          tenant_id: string;
-        };
+          accepted_at?: string | null
+          created_at?: string
+          email: string
+          expires_at?: string
+          id?: string
+          invited_by?: string | null
+          role?: Database["public"]["Enums"]["tenant_role"]
+          tenant_id: string
+        }
         Update: {
-          accepted_at?: string | null;
-          created_at?: string;
-          email?: string;
-          expires_at?: string;
-          id?: string;
-          invited_by?: string | null;
-          role?: Database["public"]["Enums"]["tenant_role"];
-          tenant_id?: string;
-        };
+          accepted_at?: string | null
+          created_at?: string
+          email?: string
+          expires_at?: string
+          id?: string
+          invited_by?: string | null
+          role?: Database["public"]["Enums"]["tenant_role"]
+          tenant_id?: string
+        }
         Relationships: [
           {
-            foreignKeyName: "invitations_tenant_id_fkey";
-            columns: ["tenant_id"];
-            isOneToOne: false;
-            referencedRelation: "tenants";
-            referencedColumns: ["id"];
+            foreignKeyName: "invitations_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
           },
-        ];
-      };
+        ]
+      }
       meeting_agendas: {
         Row: {
-          completed_at: string | null;
-          confirmed: boolean;
-          created_at: string;
-          created_by: string | null;
-          error: string | null;
-          id: string;
-          influencer_id: string;
-          input: Json;
-          model: string;
-          output: Json | null;
-          period_end: string | null;
-          period_start: string | null;
-          prompt_version: string;
-          status: Database["public"]["Enums"]["ai_analysis_status"];
-          tenant_id: string;
-        };
+          completed_at: string | null
+          confirmed: boolean
+          created_at: string
+          created_by: string | null
+          error: string | null
+          escopo: string
+          id: string
+          influencer_id: string | null
+          input: Json
+          model: string
+          output: Json | null
+          period_end: string | null
+          period_start: string | null
+          prompt_version: string
+          status: Database["public"]["Enums"]["ai_analysis_status"]
+          tenant_id: string
+        }
         Insert: {
-          completed_at?: string | null;
-          confirmed?: boolean;
-          created_at?: string;
-          created_by?: string | null;
-          error?: string | null;
-          id?: string;
-          influencer_id: string;
-          input?: Json;
-          model: string;
-          output?: Json | null;
-          period_end?: string | null;
-          period_start?: string | null;
-          prompt_version: string;
-          status?: Database["public"]["Enums"]["ai_analysis_status"];
-          tenant_id: string;
-        };
+          completed_at?: string | null
+          confirmed?: boolean
+          created_at?: string
+          created_by?: string | null
+          error?: string | null
+          escopo?: string
+          id?: string
+          influencer_id?: string | null
+          input?: Json
+          model: string
+          output?: Json | null
+          period_end?: string | null
+          period_start?: string | null
+          prompt_version: string
+          status?: Database["public"]["Enums"]["ai_analysis_status"]
+          tenant_id: string
+        }
         Update: {
-          completed_at?: string | null;
-          confirmed?: boolean;
-          created_at?: string;
-          created_by?: string | null;
-          error?: string | null;
-          id?: string;
-          influencer_id?: string;
-          input?: Json;
-          model?: string;
-          output?: Json | null;
-          period_end?: string | null;
-          period_start?: string | null;
-          prompt_version?: string;
-          status?: Database["public"]["Enums"]["ai_analysis_status"];
-          tenant_id?: string;
-        };
+          completed_at?: string | null
+          confirmed?: boolean
+          created_at?: string
+          created_by?: string | null
+          error?: string | null
+          escopo?: string
+          id?: string
+          influencer_id?: string | null
+          input?: Json
+          model?: string
+          output?: Json | null
+          period_end?: string | null
+          period_start?: string | null
+          prompt_version?: string
+          status?: Database["public"]["Enums"]["ai_analysis_status"]
+          tenant_id?: string
+        }
         Relationships: [
           {
-            foreignKeyName: "meeting_agendas_influencer_id_fkey";
-            columns: ["influencer_id"];
-            isOneToOne: false;
-            referencedRelation: "influencers";
-            referencedColumns: ["id"];
+            foreignKeyName: "meeting_agendas_influencer_id_fkey"
+            columns: ["influencer_id"]
+            isOneToOne: false
+            referencedRelation: "influencers"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "meeting_agendas_tenant_id_fkey";
-            columns: ["tenant_id"];
-            isOneToOne: false;
-            referencedRelation: "tenants";
-            referencedColumns: ["id"];
+            foreignKeyName: "meeting_agendas_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
           },
-        ];
-      };
+        ]
+      }
       metric_snapshots: {
         Row: {
-          captured_at: string;
-          created_by: string | null;
-          female_audience_pct: number | null;
-          followers: number | null;
-          id: string;
-          influencer_id: string;
-          posts_count: number | null;
-          source: Database["public"]["Enums"]["data_source"];
-          tenant_id: string;
-        };
+          captured_at: string
+          created_by: string | null
+          female_audience_pct: number | null
+          followers: number | null
+          id: string
+          influencer_id: string
+          posts_count: number | null
+          source: Database["public"]["Enums"]["data_source"]
+          tenant_id: string
+        }
         Insert: {
-          captured_at?: string;
-          created_by?: string | null;
-          female_audience_pct?: number | null;
-          followers?: number | null;
-          id?: string;
-          influencer_id: string;
-          posts_count?: number | null;
-          source?: Database["public"]["Enums"]["data_source"];
-          tenant_id: string;
-        };
+          captured_at?: string
+          created_by?: string | null
+          female_audience_pct?: number | null
+          followers?: number | null
+          id?: string
+          influencer_id: string
+          posts_count?: number | null
+          source?: Database["public"]["Enums"]["data_source"]
+          tenant_id: string
+        }
         Update: {
-          captured_at?: string;
-          created_by?: string | null;
-          female_audience_pct?: number | null;
-          followers?: number | null;
-          id?: string;
-          influencer_id?: string;
-          posts_count?: number | null;
-          source?: Database["public"]["Enums"]["data_source"];
-          tenant_id?: string;
-        };
+          captured_at?: string
+          created_by?: string | null
+          female_audience_pct?: number | null
+          followers?: number | null
+          id?: string
+          influencer_id?: string
+          posts_count?: number | null
+          source?: Database["public"]["Enums"]["data_source"]
+          tenant_id?: string
+        }
         Relationships: [
           {
-            foreignKeyName: "metric_snapshots_influencer_id_fkey";
-            columns: ["influencer_id"];
-            isOneToOne: false;
-            referencedRelation: "influencers";
-            referencedColumns: ["id"];
+            foreignKeyName: "metric_snapshots_influencer_id_fkey"
+            columns: ["influencer_id"]
+            isOneToOne: false
+            referencedRelation: "influencers"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "metric_snapshots_tenant_id_fkey";
-            columns: ["tenant_id"];
-            isOneToOne: false;
-            referencedRelation: "tenants";
-            referencedColumns: ["id"];
+            foreignKeyName: "metric_snapshots_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
           },
-        ];
-      };
+        ]
+      }
       notes: {
         Row: {
-          author_id: string | null;
-          body: string;
-          created_at: string;
-          id: string;
-          influencer_id: string;
-          tenant_id: string;
-        };
+          author_id: string | null
+          body: string
+          created_at: string
+          id: string
+          influencer_id: string
+          tenant_id: string
+        }
         Insert: {
-          author_id?: string | null;
-          body: string;
-          created_at?: string;
-          id?: string;
-          influencer_id: string;
-          tenant_id: string;
-        };
+          author_id?: string | null
+          body: string
+          created_at?: string
+          id?: string
+          influencer_id: string
+          tenant_id: string
+        }
         Update: {
-          author_id?: string | null;
-          body?: string;
-          created_at?: string;
-          id?: string;
-          influencer_id?: string;
-          tenant_id?: string;
-        };
+          author_id?: string | null
+          body?: string
+          created_at?: string
+          id?: string
+          influencer_id?: string
+          tenant_id?: string
+        }
         Relationships: [
           {
-            foreignKeyName: "notes_influencer_id_fkey";
-            columns: ["influencer_id"];
-            isOneToOne: false;
-            referencedRelation: "influencers";
-            referencedColumns: ["id"];
+            foreignKeyName: "notes_influencer_id_fkey"
+            columns: ["influencer_id"]
+            isOneToOne: false
+            referencedRelation: "influencers"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "notes_tenant_id_fkey";
-            columns: ["tenant_id"];
-            isOneToOne: false;
-            referencedRelation: "tenants";
-            referencedColumns: ["id"];
+            foreignKeyName: "notes_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
           },
-        ];
-      };
+        ]
+      }
       onbio_metas_mensais: {
         Row: {
-          created_at: string;
-          created_by: string | null;
-          id: string;
-          influencer_id: string;
-          mes: string;
-          origem: string | null;
-          situacao: string;
-          tenant_id: string;
-          updated_at: string;
-        };
+          created_at: string
+          created_by: string | null
+          id: string
+          influencer_id: string
+          mes: string
+          origem: string | null
+          situacao: string
+          tenant_id: string
+          updated_at: string
+        }
         Insert: {
-          created_at?: string;
-          created_by?: string | null;
-          id?: string;
-          influencer_id: string;
-          mes: string;
-          origem?: string | null;
-          situacao: string;
-          tenant_id: string;
-          updated_at?: string;
-        };
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          influencer_id: string
+          mes: string
+          origem?: string | null
+          situacao: string
+          tenant_id: string
+          updated_at?: string
+        }
         Update: {
-          created_at?: string;
-          created_by?: string | null;
-          id?: string;
-          influencer_id?: string;
-          mes?: string;
-          origem?: string | null;
-          situacao?: string;
-          tenant_id?: string;
-          updated_at?: string;
-        };
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          influencer_id?: string
+          mes?: string
+          origem?: string | null
+          situacao?: string
+          tenant_id?: string
+          updated_at?: string
+        }
         Relationships: [
           {
-            foreignKeyName: "onbio_metas_mensais_influencer_id_fkey";
-            columns: ["influencer_id"];
-            isOneToOne: false;
-            referencedRelation: "influencers";
-            referencedColumns: ["id"];
+            foreignKeyName: "onbio_metas_mensais_influencer_id_fkey"
+            columns: ["influencer_id"]
+            isOneToOne: false
+            referencedRelation: "influencers"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "onbio_metas_mensais_tenant_id_fkey";
-            columns: ["tenant_id"];
-            isOneToOne: false;
-            referencedRelation: "tenants";
-            referencedColumns: ["id"];
+            foreignKeyName: "onbio_metas_mensais_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
           },
-        ];
-      };
+        ]
+      }
       pagamentos: {
         Row: {
-          forma: string;
-          id: string;
-          observacao: string | null;
-          periodo_fim: string;
-          periodo_inicio: string;
-          registrado_em: string;
-          registrado_por: string | null;
-          tenant_id: string;
-          valor_centavos: number;
-        };
+          forma: string
+          id: string
+          observacao: string | null
+          periodo_fim: string
+          periodo_inicio: string
+          referencia_externa: string | null
+          registrado_em: string
+          registrado_por: string | null
+          tenant_id: string
+          valor_centavos: number
+        }
         Insert: {
-          forma?: string;
-          id?: string;
-          observacao?: string | null;
-          periodo_fim: string;
-          periodo_inicio: string;
-          registrado_em?: string;
-          registrado_por?: string | null;
-          tenant_id: string;
-          valor_centavos: number;
-        };
+          forma?: string
+          id?: string
+          observacao?: string | null
+          periodo_fim: string
+          periodo_inicio: string
+          referencia_externa?: string | null
+          registrado_em?: string
+          registrado_por?: string | null
+          tenant_id: string
+          valor_centavos: number
+        }
         Update: {
-          forma?: string;
-          id?: string;
-          observacao?: string | null;
-          periodo_fim?: string;
-          periodo_inicio?: string;
-          registrado_em?: string;
-          registrado_por?: string | null;
-          tenant_id?: string;
-          valor_centavos?: number;
-        };
+          forma?: string
+          id?: string
+          observacao?: string | null
+          periodo_fim?: string
+          periodo_inicio?: string
+          referencia_externa?: string | null
+          registrado_em?: string
+          registrado_por?: string | null
+          tenant_id?: string
+          valor_centavos?: number
+        }
         Relationships: [
           {
-            foreignKeyName: "pagamentos_tenant_id_fkey";
-            columns: ["tenant_id"];
-            isOneToOne: false;
-            referencedRelation: "tenants";
-            referencedColumns: ["id"];
+            foreignKeyName: "pagamentos_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
           },
-        ];
-      };
+        ]
+      }
       people: {
         Row: {
-          created_at: string;
-          created_by: string;
-          email: string;
-          full_name: string;
-          id: string;
-          updated_at: string;
-          whatsapp: string | null;
-        };
+          created_at: string
+          created_by: string
+          email: string
+          full_name: string
+          id: string
+          updated_at: string
+          whatsapp: string | null
+        }
         Insert: {
-          created_at?: string;
-          created_by: string;
-          email: string;
-          full_name: string;
-          id?: string;
-          updated_at?: string;
-          whatsapp?: string | null;
-        };
+          created_at?: string
+          created_by: string
+          email: string
+          full_name: string
+          id?: string
+          updated_at?: string
+          whatsapp?: string | null
+        }
         Update: {
-          created_at?: string;
-          created_by?: string;
-          email?: string;
-          full_name?: string;
-          id?: string;
-          updated_at?: string;
-          whatsapp?: string | null;
-        };
-        Relationships: [];
-      };
+          created_at?: string
+          created_by?: string
+          email?: string
+          full_name?: string
+          id?: string
+          updated_at?: string
+          whatsapp?: string | null
+        }
+        Relationships: []
+      }
       plans: {
         Row: {
-          code: string;
-          created_at: string;
-          currency: string;
-          custom_branding: boolean;
-          description: string | null;
-          id: string;
-          is_active: boolean;
-          max_ai_analyses: number;
-          max_candidates: number;
-          max_members: number;
-          name: string;
-          price_cents: number;
-          sort_order: number;
-          storage_mb: number;
-        };
+          code: string
+          created_at: string
+          currency: string
+          custom_branding: boolean
+          description: string | null
+          id: string
+          is_active: boolean
+          max_ai_analyses: number
+          max_candidates: number
+          max_members: number
+          name: string
+          price_cents: number
+          sort_order: number
+          storage_mb: number
+        }
         Insert: {
-          code: string;
-          created_at?: string;
-          currency?: string;
-          custom_branding?: boolean;
-          description?: string | null;
-          id?: string;
-          is_active?: boolean;
-          max_ai_analyses?: number;
-          max_candidates?: number;
-          max_members?: number;
-          name: string;
-          price_cents?: number;
-          sort_order?: number;
-          storage_mb?: number;
-        };
+          code: string
+          created_at?: string
+          currency?: string
+          custom_branding?: boolean
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          max_ai_analyses?: number
+          max_candidates?: number
+          max_members?: number
+          name: string
+          price_cents?: number
+          sort_order?: number
+          storage_mb?: number
+        }
         Update: {
-          code?: string;
-          created_at?: string;
-          currency?: string;
-          custom_branding?: boolean;
-          description?: string | null;
-          id?: string;
-          is_active?: boolean;
-          max_ai_analyses?: number;
-          max_candidates?: number;
-          max_members?: number;
-          name?: string;
-          price_cents?: number;
-          sort_order?: number;
-          storage_mb?: number;
-        };
-        Relationships: [];
-      };
+          code?: string
+          created_at?: string
+          currency?: string
+          custom_branding?: boolean
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          max_ai_analyses?: number
+          max_candidates?: number
+          max_members?: number
+          name?: string
+          price_cents?: number
+          sort_order?: number
+          storage_mb?: number
+        }
+        Relationships: []
+      }
       platform_roles: {
         Row: {
-          created_at: string;
-          id: string;
-          role: Database["public"]["Enums"]["platform_role"];
-          user_id: string;
-        };
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["platform_role"]
+          user_id: string
+        }
         Insert: {
-          created_at?: string;
-          id?: string;
-          role: Database["public"]["Enums"]["platform_role"];
-          user_id: string;
-        };
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["platform_role"]
+          user_id: string
+        }
         Update: {
-          created_at?: string;
-          id?: string;
-          role?: Database["public"]["Enums"]["platform_role"];
-          user_id?: string;
-        };
-        Relationships: [];
-      };
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["platform_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
-          avatar_url: string | null;
-          created_at: string;
-          email: string | null;
-          full_name: string | null;
-          id: string;
-          updated_at: string;
-        };
+          avatar_url: string | null
+          created_at: string
+          email: string | null
+          full_name: string | null
+          id: string
+          updated_at: string
+        }
         Insert: {
-          avatar_url?: string | null;
-          created_at?: string;
-          email?: string | null;
-          full_name?: string | null;
-          id: string;
-          updated_at?: string;
-        };
+          avatar_url?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id: string
+          updated_at?: string
+        }
         Update: {
-          avatar_url?: string | null;
-          created_at?: string;
-          email?: string | null;
-          full_name?: string | null;
-          id?: string;
-          updated_at?: string;
-        };
-        Relationships: [];
-      };
+          avatar_url?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       qualification_results: {
         Row: {
-          computed_at: string;
-          id: string;
-          influencer_id: string;
-          manual_decision: string | null;
-          manual_decision_by: string | null;
-          manual_decision_note: string | null;
-          progress: Json;
-          requirements: Json;
-          rule_set_version: string;
-          status: Database["public"]["Enums"]["qualification_status"];
-          tenant_id: string;
-        };
+          computed_at: string
+          id: string
+          influencer_id: string
+          manual_decision: string | null
+          manual_decision_by: string | null
+          manual_decision_note: string | null
+          progress: Json
+          requirements: Json
+          rule_set_version: string
+          status: Database["public"]["Enums"]["qualification_status"]
+          tenant_id: string
+        }
         Insert: {
-          computed_at?: string;
-          id?: string;
-          influencer_id: string;
-          manual_decision?: string | null;
-          manual_decision_by?: string | null;
-          manual_decision_note?: string | null;
-          progress?: Json;
-          requirements?: Json;
-          rule_set_version?: string;
-          status: Database["public"]["Enums"]["qualification_status"];
-          tenant_id: string;
-        };
+          computed_at?: string
+          id?: string
+          influencer_id: string
+          manual_decision?: string | null
+          manual_decision_by?: string | null
+          manual_decision_note?: string | null
+          progress?: Json
+          requirements?: Json
+          rule_set_version?: string
+          status: Database["public"]["Enums"]["qualification_status"]
+          tenant_id: string
+        }
         Update: {
-          computed_at?: string;
-          id?: string;
-          influencer_id?: string;
-          manual_decision?: string | null;
-          manual_decision_by?: string | null;
-          manual_decision_note?: string | null;
-          progress?: Json;
-          requirements?: Json;
-          rule_set_version?: string;
-          status?: Database["public"]["Enums"]["qualification_status"];
-          tenant_id?: string;
-        };
+          computed_at?: string
+          id?: string
+          influencer_id?: string
+          manual_decision?: string | null
+          manual_decision_by?: string | null
+          manual_decision_note?: string | null
+          progress?: Json
+          requirements?: Json
+          rule_set_version?: string
+          status?: Database["public"]["Enums"]["qualification_status"]
+          tenant_id?: string
+        }
         Relationships: [
           {
-            foreignKeyName: "qualification_results_influencer_id_fkey";
-            columns: ["influencer_id"];
-            isOneToOne: false;
-            referencedRelation: "influencers";
-            referencedColumns: ["id"];
+            foreignKeyName: "qualification_results_influencer_id_fkey"
+            columns: ["influencer_id"]
+            isOneToOne: false
+            referencedRelation: "influencers"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "qualification_results_tenant_id_fkey";
-            columns: ["tenant_id"];
-            isOneToOne: false;
-            referencedRelation: "tenants";
-            referencedColumns: ["id"];
+            foreignKeyName: "qualification_results_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
           },
-        ];
-      };
+        ]
+      }
       qualification_rule_sets: {
         Row: {
-          created_at: string;
-          id: string;
-          is_active: boolean;
-          name: string;
-          requirements: Json;
-          tenant_id: string | null;
-          version: string;
-          weights: Json;
-        };
+          created_at: string
+          id: string
+          is_active: boolean
+          name: string
+          requirements: Json
+          tenant_id: string | null
+          version: string
+          weights: Json
+        }
         Insert: {
-          created_at?: string;
-          id?: string;
-          is_active?: boolean;
-          name: string;
-          requirements: Json;
-          tenant_id?: string | null;
-          version?: string;
-          weights: Json;
-        };
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name: string
+          requirements: Json
+          tenant_id?: string | null
+          version?: string
+          weights: Json
+        }
         Update: {
-          created_at?: string;
-          id?: string;
-          is_active?: boolean;
-          name?: string;
-          requirements?: Json;
-          tenant_id?: string | null;
-          version?: string;
-          weights?: Json;
-        };
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+          requirements?: Json
+          tenant_id?: string | null
+          version?: string
+          weights?: Json
+        }
         Relationships: [
           {
-            foreignKeyName: "qualification_rule_sets_tenant_id_fkey";
-            columns: ["tenant_id"];
-            isOneToOne: false;
-            referencedRelation: "tenants";
-            referencedColumns: ["id"];
+            foreignKeyName: "qualification_rule_sets_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
           },
-        ];
-      };
+        ]
+      }
       status_history: {
         Row: {
-          changed_by: string | null;
-          created_at: string;
-          from_status: Database["public"]["Enums"]["influencer_status"] | null;
-          id: string;
-          influencer_id: string;
-          note: string | null;
-          tenant_id: string;
-          to_status: Database["public"]["Enums"]["influencer_status"];
-        };
+          changed_by: string | null
+          created_at: string
+          from_status: Database["public"]["Enums"]["influencer_status"] | null
+          id: string
+          influencer_id: string
+          note: string | null
+          tenant_id: string
+          to_status: Database["public"]["Enums"]["influencer_status"]
+        }
         Insert: {
-          changed_by?: string | null;
-          created_at?: string;
-          from_status?: Database["public"]["Enums"]["influencer_status"] | null;
-          id?: string;
-          influencer_id: string;
-          note?: string | null;
-          tenant_id: string;
-          to_status: Database["public"]["Enums"]["influencer_status"];
-        };
+          changed_by?: string | null
+          created_at?: string
+          from_status?: Database["public"]["Enums"]["influencer_status"] | null
+          id?: string
+          influencer_id: string
+          note?: string | null
+          tenant_id: string
+          to_status: Database["public"]["Enums"]["influencer_status"]
+        }
         Update: {
-          changed_by?: string | null;
-          created_at?: string;
-          from_status?: Database["public"]["Enums"]["influencer_status"] | null;
-          id?: string;
-          influencer_id?: string;
-          note?: string | null;
-          tenant_id?: string;
-          to_status?: Database["public"]["Enums"]["influencer_status"];
-        };
+          changed_by?: string | null
+          created_at?: string
+          from_status?: Database["public"]["Enums"]["influencer_status"] | null
+          id?: string
+          influencer_id?: string
+          note?: string | null
+          tenant_id?: string
+          to_status?: Database["public"]["Enums"]["influencer_status"]
+        }
         Relationships: [
           {
-            foreignKeyName: "status_history_influencer_id_fkey";
-            columns: ["influencer_id"];
-            isOneToOne: false;
-            referencedRelation: "influencers";
-            referencedColumns: ["id"];
+            foreignKeyName: "status_history_influencer_id_fkey"
+            columns: ["influencer_id"]
+            isOneToOne: false
+            referencedRelation: "influencers"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "status_history_tenant_id_fkey";
-            columns: ["tenant_id"];
-            isOneToOne: false;
-            referencedRelation: "tenants";
-            referencedColumns: ["id"];
+            foreignKeyName: "status_history_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
           },
-        ];
-      };
+        ]
+      }
       task_templates: {
         Row: {
-          created_at: string;
-          description: string | null;
-          due_in_days: number | null;
-          id: string;
-          level: string;
-          priority: Database["public"]["Enums"]["task_priority"];
-          sort_order: number;
-          tenant_id: string | null;
-          title: string;
-        };
+          created_at: string
+          description: string | null
+          due_in_days: number | null
+          id: string
+          level: string
+          priority: Database["public"]["Enums"]["task_priority"]
+          sort_order: number
+          tenant_id: string | null
+          title: string
+        }
         Insert: {
-          created_at?: string;
-          description?: string | null;
-          due_in_days?: number | null;
-          id?: string;
-          level: string;
-          priority?: Database["public"]["Enums"]["task_priority"];
-          sort_order?: number;
-          tenant_id?: string | null;
-          title: string;
-        };
+          created_at?: string
+          description?: string | null
+          due_in_days?: number | null
+          id?: string
+          level: string
+          priority?: Database["public"]["Enums"]["task_priority"]
+          sort_order?: number
+          tenant_id?: string | null
+          title: string
+        }
         Update: {
-          created_at?: string;
-          description?: string | null;
-          due_in_days?: number | null;
-          id?: string;
-          level?: string;
-          priority?: Database["public"]["Enums"]["task_priority"];
-          sort_order?: number;
-          tenant_id?: string | null;
-          title?: string;
-        };
+          created_at?: string
+          description?: string | null
+          due_in_days?: number | null
+          id?: string
+          level?: string
+          priority?: Database["public"]["Enums"]["task_priority"]
+          sort_order?: number
+          tenant_id?: string | null
+          title?: string
+        }
         Relationships: [
           {
-            foreignKeyName: "task_templates_tenant_id_fkey";
-            columns: ["tenant_id"];
-            isOneToOne: false;
-            referencedRelation: "tenants";
-            referencedColumns: ["id"];
+            foreignKeyName: "task_templates_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
           },
-        ];
-      };
+        ]
+      }
       tasks: {
         Row: {
-          completed_at: string | null;
-          created_at: string;
-          created_by: string | null;
-          description: string | null;
-          due_date: string | null;
-          evidence_url: string | null;
-          id: string;
-          influencer_id: string | null;
-          level: string | null;
-          priority: Database["public"]["Enums"]["task_priority"];
-          status: Database["public"]["Enums"]["task_status"];
-          template_id: string | null;
-          tenant_id: string;
-          title: string;
-          updated_at: string;
-        };
+          completed_at: string | null
+          created_at: string
+          created_by: string | null
+          description: string | null
+          due_date: string | null
+          evidence_url: string | null
+          id: string
+          influencer_id: string | null
+          level: string | null
+          priority: Database["public"]["Enums"]["task_priority"]
+          status: Database["public"]["Enums"]["task_status"]
+          template_id: string | null
+          tenant_id: string
+          title: string
+          updated_at: string
+        }
         Insert: {
-          completed_at?: string | null;
-          created_at?: string;
-          created_by?: string | null;
-          description?: string | null;
-          due_date?: string | null;
-          evidence_url?: string | null;
-          id?: string;
-          influencer_id?: string | null;
-          level?: string | null;
-          priority?: Database["public"]["Enums"]["task_priority"];
-          status?: Database["public"]["Enums"]["task_status"];
-          template_id?: string | null;
-          tenant_id: string;
-          title: string;
-          updated_at?: string;
-        };
+          completed_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          due_date?: string | null
+          evidence_url?: string | null
+          id?: string
+          influencer_id?: string | null
+          level?: string | null
+          priority?: Database["public"]["Enums"]["task_priority"]
+          status?: Database["public"]["Enums"]["task_status"]
+          template_id?: string | null
+          tenant_id: string
+          title: string
+          updated_at?: string
+        }
         Update: {
-          completed_at?: string | null;
-          created_at?: string;
-          created_by?: string | null;
-          description?: string | null;
-          due_date?: string | null;
-          evidence_url?: string | null;
-          id?: string;
-          influencer_id?: string | null;
-          level?: string | null;
-          priority?: Database["public"]["Enums"]["task_priority"];
-          status?: Database["public"]["Enums"]["task_status"];
-          template_id?: string | null;
-          tenant_id?: string;
-          title?: string;
-          updated_at?: string;
-        };
+          completed_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          due_date?: string | null
+          evidence_url?: string | null
+          id?: string
+          influencer_id?: string | null
+          level?: string | null
+          priority?: Database["public"]["Enums"]["task_priority"]
+          status?: Database["public"]["Enums"]["task_status"]
+          template_id?: string | null
+          tenant_id?: string
+          title?: string
+          updated_at?: string
+        }
         Relationships: [
           {
-            foreignKeyName: "tasks_influencer_id_fkey";
-            columns: ["influencer_id"];
-            isOneToOne: false;
-            referencedRelation: "influencers";
-            referencedColumns: ["id"];
+            foreignKeyName: "tasks_influencer_id_fkey"
+            columns: ["influencer_id"]
+            isOneToOne: false
+            referencedRelation: "influencers"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "tasks_template_id_fkey";
-            columns: ["template_id"];
-            isOneToOne: false;
-            referencedRelation: "task_templates";
-            referencedColumns: ["id"];
+            foreignKeyName: "tasks_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "task_templates"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "tasks_tenant_id_fkey";
-            columns: ["tenant_id"];
-            isOneToOne: false;
-            referencedRelation: "tenants";
-            referencedColumns: ["id"];
+            foreignKeyName: "tasks_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
           },
-        ];
-      };
+        ]
+      }
       tenant_branding: {
         Row: {
-          accent_color: string | null;
-          authority_quote: string | null;
-          avatar_url: string | null;
-          bio: string | null;
-          headline: string | null;
-          hero_image_url: string | null;
-          instagram_handle: string | null;
-          manager_name: string | null;
-          subheadline: string | null;
-          tenant_id: string;
-          updated_at: string;
-          whatsapp: string | null;
-        };
+          accent_color: string | null
+          authority_quote: string | null
+          avatar_url: string | null
+          bio: string | null
+          headline: string | null
+          hero_image_url: string | null
+          instagram_handle: string | null
+          manager_name: string | null
+          subheadline: string | null
+          tenant_id: string
+          updated_at: string
+          whatsapp: string | null
+        }
         Insert: {
-          accent_color?: string | null;
-          authority_quote?: string | null;
-          avatar_url?: string | null;
-          bio?: string | null;
-          headline?: string | null;
-          hero_image_url?: string | null;
-          instagram_handle?: string | null;
-          manager_name?: string | null;
-          subheadline?: string | null;
-          tenant_id: string;
-          updated_at?: string;
-          whatsapp?: string | null;
-        };
+          accent_color?: string | null
+          authority_quote?: string | null
+          avatar_url?: string | null
+          bio?: string | null
+          headline?: string | null
+          hero_image_url?: string | null
+          instagram_handle?: string | null
+          manager_name?: string | null
+          subheadline?: string | null
+          tenant_id: string
+          updated_at?: string
+          whatsapp?: string | null
+        }
         Update: {
-          accent_color?: string | null;
-          authority_quote?: string | null;
-          avatar_url?: string | null;
-          bio?: string | null;
-          headline?: string | null;
-          hero_image_url?: string | null;
-          instagram_handle?: string | null;
-          manager_name?: string | null;
-          subheadline?: string | null;
-          tenant_id?: string;
-          updated_at?: string;
-          whatsapp?: string | null;
-        };
+          accent_color?: string | null
+          authority_quote?: string | null
+          avatar_url?: string | null
+          bio?: string | null
+          headline?: string | null
+          hero_image_url?: string | null
+          instagram_handle?: string | null
+          manager_name?: string | null
+          subheadline?: string | null
+          tenant_id?: string
+          updated_at?: string
+          whatsapp?: string | null
+        }
         Relationships: [
           {
-            foreignKeyName: "tenant_branding_tenant_id_fkey";
-            columns: ["tenant_id"];
-            isOneToOne: true;
-            referencedRelation: "tenants";
-            referencedColumns: ["id"];
+            foreignKeyName: "tenant_branding_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: true
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
           },
-        ];
-      };
+        ]
+      }
       tenant_memberships: {
         Row: {
-          created_at: string;
-          id: string;
-          role: Database["public"]["Enums"]["tenant_role"];
-          tenant_id: string;
-          user_id: string;
-        };
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["tenant_role"]
+          tenant_id: string
+          user_id: string
+        }
         Insert: {
-          created_at?: string;
-          id?: string;
-          role?: Database["public"]["Enums"]["tenant_role"];
-          tenant_id: string;
-          user_id: string;
-        };
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["tenant_role"]
+          tenant_id: string
+          user_id: string
+        }
         Update: {
-          created_at?: string;
-          id?: string;
-          role?: Database["public"]["Enums"]["tenant_role"];
-          tenant_id?: string;
-          user_id?: string;
-        };
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["tenant_role"]
+          tenant_id?: string
+          user_id?: string
+        }
         Relationships: [
           {
-            foreignKeyName: "tenant_memberships_tenant_id_fkey";
-            columns: ["tenant_id"];
-            isOneToOne: false;
-            referencedRelation: "tenants";
-            referencedColumns: ["id"];
+            foreignKeyName: "tenant_memberships_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
           },
-        ];
-      };
+        ]
+      }
       tenants: {
         Row: {
-          cancelada_em: string | null;
-          cobranca: string;
-          created_at: string;
-          created_by: string | null;
-          id: string;
-          instagram_intervalo_horas: number;
-          is_demo: boolean;
-          is_listed_on_home: boolean;
-          is_public_page_enabled: boolean;
-          module: string;
-          name: string;
-          plan_id: string | null;
-          slug: string;
-          status: string;
-          suspensao_motivo: string | null;
-          updated_at: string;
-          vence_em: string | null;
-        };
+          asaas_customer_id: string | null
+          asaas_subscription_id: string | null
+          cancelada_em: string | null
+          cobranca: string
+          created_at: string
+          created_by: string | null
+          id: string
+          instagram_intervalo_horas: number
+          is_demo: boolean
+          is_listed_on_home: boolean
+          is_public_page_enabled: boolean
+          module: string
+          name: string
+          plan_id: string | null
+          slug: string
+          status: string
+          suspensao_motivo: string | null
+          updated_at: string
+          vence_em: string | null
+        }
         Insert: {
-          cancelada_em?: string | null;
-          cobranca?: string;
-          created_at?: string;
-          created_by?: string | null;
-          id?: string;
-          instagram_intervalo_horas?: number;
-          is_demo?: boolean;
-          is_listed_on_home?: boolean;
-          is_public_page_enabled?: boolean;
-          module?: string;
-          name: string;
-          plan_id?: string | null;
-          slug: string;
-          status?: string;
-          suspensao_motivo?: string | null;
-          updated_at?: string;
-          vence_em?: string | null;
-        };
+          asaas_customer_id?: string | null
+          asaas_subscription_id?: string | null
+          cancelada_em?: string | null
+          cobranca?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          instagram_intervalo_horas?: number
+          is_demo?: boolean
+          is_listed_on_home?: boolean
+          is_public_page_enabled?: boolean
+          module?: string
+          name: string
+          plan_id?: string | null
+          slug: string
+          status?: string
+          suspensao_motivo?: string | null
+          updated_at?: string
+          vence_em?: string | null
+        }
         Update: {
-          cancelada_em?: string | null;
-          cobranca?: string;
-          created_at?: string;
-          created_by?: string | null;
-          id?: string;
-          instagram_intervalo_horas?: number;
-          is_demo?: boolean;
-          is_listed_on_home?: boolean;
-          is_public_page_enabled?: boolean;
-          module?: string;
-          name?: string;
-          plan_id?: string | null;
-          slug?: string;
-          status?: string;
-          suspensao_motivo?: string | null;
-          updated_at?: string;
-          vence_em?: string | null;
-        };
+          asaas_customer_id?: string | null
+          asaas_subscription_id?: string | null
+          cancelada_em?: string | null
+          cobranca?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          instagram_intervalo_horas?: number
+          is_demo?: boolean
+          is_listed_on_home?: boolean
+          is_public_page_enabled?: boolean
+          module?: string
+          name?: string
+          plan_id?: string | null
+          slug?: string
+          status?: string
+          suspensao_motivo?: string | null
+          updated_at?: string
+          vence_em?: string | null
+        }
         Relationships: [
           {
-            foreignKeyName: "tenants_plan_id_fkey";
-            columns: ["plan_id"];
-            isOneToOne: false;
-            referencedRelation: "plans";
-            referencedColumns: ["id"];
+            foreignKeyName: "tenants_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "plans"
+            referencedColumns: ["id"]
           },
-        ];
-      };
-    };
+        ]
+      }
+      vinculos_de_identidade: {
+        Row: {
+          decidido_em: string | null
+          destino_influencer_id: string
+          destino_tenant_id: string
+          id: string
+          origem_influencer_id: string
+          situacao: string
+          solicitado_em: string
+          solicitado_por: string
+          texto_do_consentimento: string | null
+        }
+        Insert: {
+          decidido_em?: string | null
+          destino_influencer_id: string
+          destino_tenant_id: string
+          id?: string
+          origem_influencer_id: string
+          situacao?: string
+          solicitado_em?: string
+          solicitado_por: string
+          texto_do_consentimento?: string | null
+        }
+        Update: {
+          decidido_em?: string | null
+          destino_influencer_id?: string
+          destino_tenant_id?: string
+          id?: string
+          origem_influencer_id?: string
+          situacao?: string
+          solicitado_em?: string
+          solicitado_por?: string
+          texto_do_consentimento?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vinculos_de_identidade_destino_influencer_id_fkey"
+            columns: ["destino_influencer_id"]
+            isOneToOne: false
+            referencedRelation: "influencers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "vinculos_de_identidade_destino_tenant_id_fkey"
+            columns: ["destino_tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "vinculos_de_identidade_origem_influencer_id_fkey"
+            columns: ["origem_influencer_id"]
+            isOneToOne: false
+            referencedRelation: "influencers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+    }
     Views: {
-      [_ in never]: never;
-    };
+      [_ in never]: never
+    }
     Functions: {
-      aceitar_convites_pendentes: { Args: never; Returns: number };
+      aceitar_convites_pendentes: { Args: never; Returns: number }
       aceitar_termos: {
-        Args: { p_versao_politica: string; p_versao_termos: string };
-        Returns: undefined;
-      };
-      ambiente_gera_avisos: { Args: { _tenant: string }; Returns: boolean };
+        Args: { p_versao_politica: string; p_versao_termos: string }
+        Returns: undefined
+      }
+      ambiente_do_asaas: {
+        Args: { p_customer: string; p_subscription: string }
+        Returns: string
+      }
+      ambiente_gera_avisos: { Args: { _tenant: string }; Returns: boolean }
       avisar: {
         Args: {
-          p_influencer: string;
-          p_tenant: string;
-          p_tipo: string;
-          p_titulo: string;
-          p_titulo_grupo?: string;
-          p_user: string;
-        };
-        Returns: undefined;
-      };
-      can_read_tenant: { Args: { _tenant: string }; Returns: boolean };
-      cancelar_assinatura: { Args: { p_tenant: string }; Returns: Json };
+          p_influencer: string
+          p_tenant: string
+          p_tipo: string
+          p_titulo: string
+          p_titulo_grupo?: string
+          p_user: string
+        }
+        Returns: undefined
+      }
+      can_read_tenant: { Args: { _tenant: string }; Returns: boolean }
+      cancelar_assinatura: { Args: { p_tenant: string }; Returns: Json }
       candidatas_inativas_com_arquivos: {
-        Args: never;
+        Args: never
         Returns: {
-          ambiente: string;
-          arquivos: number;
-          email: string;
-          influencer_id: string;
-          nome: string;
-          ultima_atividade: string;
-        }[];
-      };
+          ambiente: string
+          arquivos: number
+          email: string
+          influencer_id: string
+          nome: string
+          ultima_atividade: string
+        }[]
+      }
       candidatas_perto_da_exclusao: {
-        Args: { p_dias_aviso?: number; p_tenant: string };
+        Args: { p_dias_aviso?: number; p_tenant: string }
         Returns: {
-          influencer_id: string;
-          nome: string;
-          ultima_atividade: string;
-        }[];
-      };
+          influencer_id: string
+          nome: string
+          ultima_atividade: string
+        }[]
+      }
+      desfazer_vinculo_de_identidade: {
+        Args: { p_vinculo_id: string }
+        Returns: undefined
+      }
       email_ja_na_equipe: {
-        Args: { _email: string; _tenant: string };
-        Returns: boolean;
-      };
+        Args: { _email: string; _tenant: string }
+        Returns: boolean
+      }
       excluir_afiliada_onbio: {
-        Args: { p_actor: string; p_influencer_id: string };
-        Returns: Json;
-      };
+        Args: { p_actor: string; p_influencer_id: string }
+        Returns: Json
+      }
       excluir_ambiente: {
-        Args: { p_actor: string; p_tenant: string };
-        Returns: Json;
-      };
+        Args: { p_actor: string; p_tenant: string }
+        Returns: Json
+      }
       excluir_candidata: {
-        Args: { p_actor: string; p_influencer_id: string };
-        Returns: Json;
-      };
-      get_portal_data: { Args: never; Returns: Json };
+        Args: { p_actor: string; p_influencer_id: string }
+        Returns: Json
+      }
+      get_portal_data: { Args: never; Returns: Json }
       has_platform_role: {
         Args: {
-          _role: Database["public"]["Enums"]["platform_role"];
-          _user_id: string;
-        };
-        Returns: boolean;
-      };
+          _role: Database["public"]["Enums"]["platform_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
       has_tenant_role: {
         Args: {
-          _roles: Database["public"]["Enums"]["tenant_role"][];
-          _tenant: string;
-        };
-        Returns: boolean;
-      };
+          _roles: Database["public"]["Enums"]["tenant_role"][]
+          _tenant: string
+        }
+        Returns: boolean
+      }
       influencer_set_task_status: {
         Args: {
-          _status: Database["public"]["Enums"]["task_status"];
-          _task: string;
-        };
-        Returns: boolean;
-      };
+          _status: Database["public"]["Enums"]["task_status"]
+          _task: string
+        }
+        Returns: boolean
+      }
       instagram_conexoes_do_ambiente: {
-        Args: { p_tenant: string };
+        Args: { p_tenant: string }
         Returns: {
-          conectado_em: string;
-          expira_em: string;
-          influencer_id: string;
-          ultimo_erro: string;
-          ultimo_sync: string;
-          usuario: string;
-        }[];
-      };
+          conectado_em: string
+          expira_em: string
+          influencer_id: string
+          ultimo_erro: string
+          ultimo_sync: string
+          usuario: string
+        }[]
+      }
       instagram_connect: {
         Args: {
-          p_expires_at: string;
-          p_ig_user_id: string;
-          p_influencer_id: string;
-          p_scopes: string;
-          p_token: string;
-          p_username: string;
-        };
-        Returns: undefined;
-      };
+          p_expires_at: string
+          p_ig_user_id: string
+          p_influencer_id: string
+          p_scopes: string
+          p_token: string
+          p_username: string
+        }
+        Returns: undefined
+      }
       instagram_definir_intervalo: {
-        Args: { p_horas: number; p_tenant: string };
-        Returns: undefined;
-      };
+        Args: { p_horas: number; p_tenant: string }
+        Returns: undefined
+      }
       instagram_desconectar_pela_gestora: {
-        Args: { p_influencer_id: string };
-        Returns: undefined;
-      };
+        Args: { p_influencer_id: string }
+        Returns: undefined
+      }
       instagram_disconnect: {
-        Args: { p_influencer_id: string };
-        Returns: undefined;
-      };
+        Args: { p_influencer_id: string }
+        Returns: undefined
+      }
       instagram_erro_servico: {
-        Args: { p_erro: string; p_influencer_id: string };
-        Returns: undefined;
-      };
+        Args: { p_erro: string; p_influencer_id: string }
+        Returns: undefined
+      }
       instagram_fila_de_atualizacao: {
-        Args: { p_limite?: number };
+        Args: { p_limite?: number }
         Returns: {
-          expira_em: string;
-          influencer_id: string;
-          tenant_id: string;
-          usuario: string;
-        }[];
-      };
+          expira_em: string
+          influencer_id: string
+          tenant_id: string
+          usuario: string
+        }[]
+      }
       instagram_gravar_servico: {
         Args: {
-          p_ator: string;
-          p_followers: number;
-          p_influencer_id: string;
-          p_posts: number;
-        };
-        Returns: undefined;
-      };
+          p_ator: string
+          p_followers: number
+          p_influencer_id: string
+          p_posts: number
+        }
+        Returns: undefined
+      }
       instagram_qualification_input: {
-        Args: { p_influencer_id: string };
-        Returns: Json;
-      };
+        Args: { p_influencer_id: string }
+        Returns: Json
+      }
       instagram_record_error: {
-        Args: { p_error: string; p_influencer_id: string };
-        Returns: undefined;
-      };
+        Args: { p_error: string; p_influencer_id: string }
+        Returns: undefined
+      }
       instagram_record_sync: {
         Args: {
-          p_female: number;
-          p_followers: number;
-          p_influencer_id: string;
-          p_level: string;
-          p_posts: number;
-          p_progress: Json;
-          p_requirements: Json;
-          p_rule_set_version: string;
-          p_score: number;
-          p_status: string;
-        };
-        Returns: undefined;
-      };
+          p_female: number
+          p_followers: number
+          p_influencer_id: string
+          p_level: string
+          p_posts: number
+          p_progress: Json
+          p_requirements: Json
+          p_rule_set_version: string
+          p_score: number
+          p_status: string
+        }
+        Returns: undefined
+      }
       instagram_renovar_token_servico: {
-        Args: { p_expira_em: string; p_influencer_id: string; p_token: string };
-        Returns: undefined;
-      };
-      instagram_segredo_da_rotina: { Args: never; Returns: string };
-      instagram_status: { Args: { p_influencer_id: string }; Returns: Json };
-      instagram_token: { Args: { p_influencer_id: string }; Returns: string };
+        Args: { p_expira_em: string; p_influencer_id: string; p_token: string }
+        Returns: undefined
+      }
+      instagram_segredo_da_rotina: { Args: never; Returns: string }
+      instagram_status: { Args: { p_influencer_id: string }; Returns: Json }
+      instagram_token: { Args: { p_influencer_id: string }; Returns: string }
       instagram_token_servico: {
-        Args: { p_influencer_id: string };
-        Returns: string;
-      };
+        Args: { p_influencer_id: string }
+        Returns: string
+      }
       is_influencer_owner: {
-        Args: { p_influencer_id: string };
-        Returns: boolean;
-      };
-      is_tenant_member: { Args: { _tenant: string }; Returns: boolean };
-      is_tenant_member_raw: { Args: { _tenant: string }; Returns: boolean };
-      limpar_candidatas_inativas: { Args: never; Returns: number };
-      link_influencer_account: { Args: never; Returns: number };
-      onbio_chave_do_nome: { Args: { p_nome: string }; Returns: string };
+        Args: { p_influencer_id: string }
+        Returns: boolean
+      }
+      is_tenant_member: { Args: { _tenant: string }; Returns: boolean }
+      is_tenant_member_raw: { Args: { _tenant: string }; Returns: boolean }
+      limpar_candidatas_inativas: { Args: never; Returns: number }
+      link_influencer_account: { Args: never; Returns: number }
+      onbio_chave_do_nome: { Args: { p_nome: string }; Returns: string }
       onbio_definir_indicacao: {
-        Args: { p_indicada_por: string | null; p_influencer: string };
-        Returns: undefined;
-      };
+        Args: { p_indicada_por: string; p_influencer: string }
+        Returns: undefined
+      }
       onbio_importar_rede: {
-        Args: { p_linhas: Json; p_origem?: string; p_tenant: string };
-        Returns: Json;
-      };
+        Args: { p_linhas: Json; p_origem?: string; p_tenant: string }
+        Returns: Json
+      }
+      pedir_vinculo_de_identidade: {
+        Args: {
+          p_destino_influencer_id: string
+          p_origem_influencer_id: string
+        }
+        Returns: string
+      }
       plataforma_contatos_das_donas: {
-        Args: never;
+        Args: never
         Returns: {
-          email: string;
-          nome: string;
-          tenant_id: string;
-        }[];
-      };
-      pode_ser_primeira_dona: { Args: { _tenant: string }; Returns: boolean };
+          email: string
+          nome: string
+          tenant_id: string
+        }[]
+      }
+      pode_ser_primeira_dona: { Args: { _tenant: string }; Returns: boolean }
       registrar_pagamento: {
         Args: {
-          p_forma: string;
-          p_meses: number;
-          p_observacao: string;
-          p_tenant: string;
-          p_valor_centavos: number;
-        };
-        Returns: string;
-      };
-      pedir_vinculo_de_identidade: {
-        Args: { p_destino_influencer_id: string; p_origem_influencer_id: string };
-        Returns: string;
-      };
+          p_forma: string
+          p_meses: number
+          p_observacao: string
+          p_tenant: string
+          p_valor_centavos: number
+        }
+        Returns: string
+      }
+      registrar_pagamento_do_provedor: {
+        Args: {
+          p_forma: string
+          p_meses: number
+          p_observacao: string
+          p_referencia: string
+          p_tenant: string
+          p_valor_centavos: number
+        }
+        Returns: string
+      }
       responder_vinculo_de_identidade: {
-        Args: { p_vinculo_id: string; p_aceitar: boolean; p_texto: string };
-        Returns: undefined;
-      };
-      desfazer_vinculo_de_identidade: {
-        Args: { p_vinculo_id: string };
-        Returns: undefined;
-      };
-      vinculos_pendentes_da_afiliada: {
-        Args: never;
-        Returns: { id: string; ambiente: string; gestora: string; solicitado_em: string }[];
-      };
+        Args: { p_aceitar: boolean; p_texto: string; p_vinculo_id: string }
+        Returns: undefined
+      }
+      salvar_assinatura_externa: {
+        Args: { p_customer: string; p_subscription: string; p_tenant: string }
+        Returns: undefined
+      }
       segredos_da_meta: {
-        Args: never;
+        Args: never
         Returns: {
-          nome: string;
-          valor: string;
-        }[];
-      };
-      shares_tenant_with: { Args: { _user: string }; Returns: boolean };
-      storage_tenant_id: { Args: { _name: string }; Returns: string };
-      suspender_vencidos: { Args: never; Returns: number };
-      tenant_is_demo: { Args: { _tenant: string }; Returns: boolean };
+          nome: string
+          valor: string
+        }[]
+      }
+      segredos_do_asaas: {
+        Args: never
+        Returns: {
+          nome: string
+          valor: string
+        }[]
+      }
+      shares_tenant_with: { Args: { _user: string }; Returns: boolean }
+      storage_tenant_id: { Args: { _name: string }; Returns: string }
+      suspender_vencidos: { Args: never; Returns: number }
+      tenant_is_demo: { Args: { _tenant: string }; Returns: boolean }
       ultima_atividade_candidata: {
-        Args: { p_influencer_id: string };
-        Returns: string;
-      };
-    };
+        Args: { p_influencer_id: string }
+        Returns: string
+      }
+      vinculos_pendentes_da_afiliada: {
+        Args: never
+        Returns: {
+          ambiente: string
+          gestora: string
+          id: string
+          solicitado_em: string
+        }[]
+      }
+    }
     Enums: {
-      ai_analysis_status: "PENDENTE" | "CONCLUIDA" | "ERRO";
-      data_source: "META_API" | "MANUAL" | "SCREENSHOT" | "INTERNAL";
-      ig_profile_type: "PESSOAL" | "CRIADOR" | "COMERCIAL" | "NAO_SEI";
+      ai_analysis_status: "PENDENTE" | "CONCLUIDA" | "ERRO"
+      data_source: "META_API" | "MANUAL" | "SCREENSHOT" | "INTERNAL"
+      ig_profile_type: "PESSOAL" | "CRIADOR" | "COMERCIAL" | "NAO_SEI"
       influencer_status:
         | "NOVA_INSCRICAO"
         | "AGUARDANDO_DIAGNOSTICO"
@@ -1739,130 +1856,144 @@ export type Database = {
         | "APROVADA"
         | "NAO_APROVADA"
         | "PAUSADA"
-        | "ARQUIVADA";
-      platform_role: "platform_owner" | "platform_admin" | "support_agent";
-      qualification_status: "QUALIFIED" | "NOT_QUALIFIED" | "NEEDS_EVIDENCE" | "MANUAL_REVIEW";
-      task_priority: "BAIXA" | "MEDIA" | "ALTA";
-      task_status: "PENDENTE" | "EM_ANDAMENTO" | "CONCLUIDA" | "CANCELADA";
-      tenant_role: "manager_owner" | "manager_admin" | "manager_member" | "influencer";
-      tri_state: "SIM" | "NAO" | "NAO_SEI";
-    };
+        | "ARQUIVADA"
+      platform_role: "platform_owner" | "platform_admin" | "support_agent"
+      qualification_status:
+        | "QUALIFIED"
+        | "NOT_QUALIFIED"
+        | "NEEDS_EVIDENCE"
+        | "MANUAL_REVIEW"
+      task_priority: "BAIXA" | "MEDIA" | "ALTA"
+      task_status: "PENDENTE" | "EM_ANDAMENTO" | "CONCLUIDA" | "CANCELADA"
+      tenant_role:
+        | "manager_owner"
+        | "manager_admin"
+        | "manager_member"
+        | "influencer"
+      tri_state: "SIM" | "NAO" | "NAO_SEI"
+    }
     CompositeTypes: {
-      [_ in never]: never;
-    };
-  };
-};
+      [_ in never]: never
+    }
+  }
+}
 
-type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">;
+type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
 
-type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">];
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
 
 export type Tables<
   DefaultSchemaTableNameOrOptions extends
     | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
     | { schema: keyof DatabaseWithoutInternals },
   TableName extends (DefaultSchemaTableNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals;
+    schema: keyof DatabaseWithoutInternals
   }
     ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
         DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
     : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals;
+  schema: keyof DatabaseWithoutInternals
 }
   ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
       DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
-      Row: infer R;
+      Row: infer R
     }
     ? R
     : never
-  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
-    ? (DefaultSchema["Tables"] & DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
-        Row: infer R;
+  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])
+    ? (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
+        Row: infer R
       }
       ? R
       : never
-    : never;
+    : never
 
 export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
-    keyof DefaultSchema["Tables"] | { schema: keyof DatabaseWithoutInternals },
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
   TableName extends (DefaultSchemaTableNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals;
+    schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals;
+  schema: keyof DatabaseWithoutInternals
 }
   ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
-      Insert: infer I;
+      Insert: infer I
     }
     ? I
     : never
   : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
     ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
-        Insert: infer I;
+        Insert: infer I
       }
       ? I
       : never
-    : never;
+    : never
 
 export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
-    keyof DefaultSchema["Tables"] | { schema: keyof DatabaseWithoutInternals },
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
   TableName extends (DefaultSchemaTableNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals;
+    schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals;
+  schema: keyof DatabaseWithoutInternals
 }
   ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
-      Update: infer U;
+      Update: infer U
     }
     ? U
     : never
   : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
     ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
-        Update: infer U;
+        Update: infer U
       }
       ? U
       : never
-    : never;
+    : never
 
 export type Enums<
   DefaultSchemaEnumNameOrOptions extends
-    keyof DefaultSchema["Enums"] | { schema: keyof DatabaseWithoutInternals },
+    | keyof DefaultSchema["Enums"]
+    | { schema: keyof DatabaseWithoutInternals },
   EnumName extends (DefaultSchemaEnumNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals;
+    schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
     : never) = never,
 > = DefaultSchemaEnumNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals;
+  schema: keyof DatabaseWithoutInternals
 }
   ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
   : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
     ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
-    : never;
+    : never
 
 export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
-    keyof DefaultSchema["CompositeTypes"] | { schema: keyof DatabaseWithoutInternals },
+    | keyof DefaultSchema["CompositeTypes"]
+    | { schema: keyof DatabaseWithoutInternals },
   CompositeTypeName extends (PublicCompositeTypeNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals;
+    schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
     : never) = never,
 > = PublicCompositeTypeNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals;
+  schema: keyof DatabaseWithoutInternals
 }
   ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
   : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
     ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
-    : never;
+    : never
 
 export const Constants = {
   public: {
@@ -1886,11 +2017,21 @@ export const Constants = {
         "ARQUIVADA",
       ],
       platform_role: ["platform_owner", "platform_admin", "support_agent"],
-      qualification_status: ["QUALIFIED", "NOT_QUALIFIED", "NEEDS_EVIDENCE", "MANUAL_REVIEW"],
+      qualification_status: [
+        "QUALIFIED",
+        "NOT_QUALIFIED",
+        "NEEDS_EVIDENCE",
+        "MANUAL_REVIEW",
+      ],
       task_priority: ["BAIXA", "MEDIA", "ALTA"],
       task_status: ["PENDENTE", "EM_ANDAMENTO", "CONCLUIDA", "CANCELADA"],
-      tenant_role: ["manager_owner", "manager_admin", "manager_member", "influencer"],
+      tenant_role: [
+        "manager_owner",
+        "manager_admin",
+        "manager_member",
+        "influencer",
+      ],
       tri_state: ["SIM", "NAO", "NAO_SEI"],
     },
   },
-} as const;
+} as const
