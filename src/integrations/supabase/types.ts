@@ -1448,8 +1448,8 @@ export type Database = {
           is_listed_on_home: boolean
           is_public_page_enabled: boolean
           module: string
-          onbio_comissao_percentuais: number[]
           name: string
+          onbio_comissao_percentuais: number[]
           plan_id: string | null
           slug: string
           status: string
@@ -1470,8 +1470,8 @@ export type Database = {
           is_listed_on_home?: boolean
           is_public_page_enabled?: boolean
           module?: string
-          onbio_comissao_percentuais?: number[]
           name: string
+          onbio_comissao_percentuais?: number[]
           plan_id?: string | null
           slug: string
           status?: string
@@ -1492,8 +1492,8 @@ export type Database = {
           is_listed_on_home?: boolean
           is_public_page_enabled?: boolean
           module?: string
-          onbio_comissao_percentuais?: number[]
           name?: string
+          onbio_comissao_percentuais?: number[]
           plan_id?: string | null
           slug?: string
           status?: string
