@@ -40,10 +40,26 @@ export const METHOD_STAGES = [
     title: "Estruture",
     description: "Nicho, bio, organização do perfil e posicionamento claro.",
   },
-  { key: "apareca", title: "Apareça", description: "Stories, Reels e presença constante com naturalidade." },
-  { key: "conecte", title: "Conecte", description: "Conversa real com quem te acompanha e construção de vínculo." },
-  { key: "cresca", title: "Cresça", description: "Audiência, público feminino e requisitos numéricos." },
-  { key: "qualifique", title: "Qualifique", description: "Auditoria dos requisitos e preparação para a análise oficial." },
+  {
+    key: "apareca",
+    title: "Apareça",
+    description: "Stories, Reels e presença constante com naturalidade.",
+  },
+  {
+    key: "conecte",
+    title: "Conecte",
+    description: "Conversa real com quem te acompanha e construção de vínculo.",
+  },
+  {
+    key: "cresca",
+    title: "Cresça",
+    description: "Audiência, público feminino e requisitos numéricos.",
+  },
+  {
+    key: "qualifique",
+    title: "Qualifique",
+    description: "Auditoria dos requisitos e preparação para a análise oficial.",
+  },
 ] as const;
 
 export const PILLARS = ["Atrair", "Conectar", "Ensinar"] as const;

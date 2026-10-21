@@ -7,7 +7,8 @@ import reactRefresh from "eslint-plugin-react-refresh";
 import tseslint from "typescript-eslint";
 
 export default tseslint.config(
-  { ignores: ["dist", ".output", ".vinxi"] },
+  // integrations/supabase e routes/lovable são gerados/gerenciados pelo Lovable e reescritos por ele.
+  { ignores: ["dist", ".output", ".vinxi", "src/integrations/**", "src/routes/lovable/**"] },
   {
     extends: [js.configs.recommended, ...tseslint.configs.recommended],
     files: ["**/*.{ts,tsx}"],

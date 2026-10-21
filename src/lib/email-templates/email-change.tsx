@@ -1,4 +1,4 @@
-import * as React from 'react'
+import * as React from "react";
 
 import {
   Body,
@@ -10,26 +10,16 @@ import {
   Link,
   Preview,
   Text,
-} from '@react-email/components'
+} from "@react-email/components";
 
-import {
-  brandName,
-  button,
-  container,
-  darkModeCss,
-  footer,
-  h1,
-  link,
-  main,
-  text,
-} from './brand'
+import { brandName, button, container, darkModeCss, footer, h1, link, main, text } from "./brand";
 
 interface EmailChangeEmailProps {
-  siteName: string
-  oldEmail: string
-  email: string
-  newEmail: string
-  confirmationUrl: string
+  siteName: string;
+  oldEmail: string;
+  email: string;
+  newEmail: string;
+  confirmationUrl: string;
 }
 
 export const EmailChangeEmail = ({
@@ -48,11 +38,11 @@ export const EmailChangeEmail = ({
         <Text style={brandName}>{siteName}</Text>
         <Heading style={h1}>Confirme seu novo e-mail</Heading>
         <Text style={text}>
-          Você pediu para alterar o e-mail da sua conta de{' '}
+          Você pediu para alterar o e-mail da sua conta de{" "}
           <Link href={`mailto:${oldEmail}`} style={link}>
             {oldEmail}
-          </Link>{' '}
-          para{' '}
+          </Link>{" "}
+          para{" "}
           <Link href={`mailto:${newEmail}`} style={link}>
             {newEmail}
           </Link>
@@ -63,12 +53,11 @@ export const EmailChangeEmail = ({
           Confirmar novo e-mail
         </Button>
         <Text style={footer}>
-          Se você não pediu essa alteração, entre em contato com sua gestora e
-          ignore este e-mail.
+          Se você não pediu essa alteração, entre em contato com sua gestora e ignore este e-mail.
         </Text>
       </Container>
     </Body>
   </Html>
-)
+);
 
-export default EmailChangeEmail
+export default EmailChangeEmail;

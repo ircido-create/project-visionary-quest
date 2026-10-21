@@ -38,7 +38,8 @@ export function useWorkspace() {
   }, [tenants, stored]);
   const activeRole = useMemo(
     () =>
-      query.data?.memberships.find((membership) => membership.tenantId === active?.id)?.role ?? null,
+      query.data?.memberships.find((membership) => membership.tenantId === active?.id)?.role ??
+      null,
     [active?.id, query.data?.memberships],
   );
 

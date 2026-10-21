@@ -13,7 +13,10 @@ export const Route = createFileRoute("/reset-password")({
       { title: "Criar nova senha — MCB" },
       { name: "description", content: "Defina uma nova senha para acessar seu ambiente no MCB." },
       { property: "og:title", content: "Criar nova senha — MCB" },
-      { property: "og:description", content: "Defina uma nova senha para acessar seu ambiente no MCB." },
+      {
+        property: "og:description",
+        content: "Defina uma nova senha para acessar seu ambiente no MCB.",
+      },
       { name: "robots", content: "noindex" },
     ],
   }),
@@ -103,8 +106,8 @@ function ResetPasswordPage() {
         ) : !hasSession ? (
           <div className="mt-3 grid gap-4">
             <p className="text-sm text-muted-foreground">
-              Este link não é mais válido — ele expira depois de algum tempo e só pode ser usado uma vez.
-              Peça um novo na tela de entrada.
+              Este link não é mais válido — ele expira depois de algum tempo e só pode ser usado uma
+              vez. Peça um novo na tela de entrada.
             </p>
             <Button asChild variant="outline">
               <Link to="/auth">Voltar para entrar</Link>

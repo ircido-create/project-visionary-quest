@@ -1,28 +1,11 @@
-import * as React from 'react'
+import * as React from "react";
 
-import {
-  Body,
-  Container,
-  Head,
-  Heading,
-  Html,
-  Preview,
-  Text,
-} from '@react-email/components'
+import { Body, Container, Head, Heading, Html, Preview, Text } from "@react-email/components";
 
-import {
-  brandName,
-  codeStyle,
-  container,
-  darkModeCss,
-  footer,
-  h1,
-  main,
-  text,
-} from './brand'
+import { brandName, codeStyle, container, darkModeCss, footer, h1, main, text } from "./brand";
 
 interface ReauthenticationEmailProps {
-  token: string
+  token: string;
 }
 
 export const ReauthenticationEmail = ({ token }: ReauthenticationEmailProps) => (
@@ -43,6 +26,6 @@ export const ReauthenticationEmail = ({ token }: ReauthenticationEmailProps) => 
       </Container>
     </Body>
   </Html>
-)
+);
 
-export default ReauthenticationEmail
+export default ReauthenticationEmail;

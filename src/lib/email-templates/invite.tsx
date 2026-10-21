@@ -1,4 +1,4 @@
-import * as React from 'react'
+import * as React from "react";
 
 import {
   Body,
@@ -10,31 +10,17 @@ import {
   Link,
   Preview,
   Text,
-} from '@react-email/components'
+} from "@react-email/components";
 
-import {
-  brandName,
-  button,
-  container,
-  darkModeCss,
-  footer,
-  h1,
-  link,
-  main,
-  text,
-} from './brand'
+import { brandName, button, container, darkModeCss, footer, h1, link, main, text } from "./brand";
 
 interface InviteEmailProps {
-  siteName: string
-  siteUrl: string
-  confirmationUrl: string
+  siteName: string;
+  siteUrl: string;
+  confirmationUrl: string;
 }
 
-export const InviteEmail = ({
-  siteName,
-  siteUrl,
-  confirmationUrl,
-}: InviteEmailProps) => (
+export const InviteEmail = ({ siteName, siteUrl, confirmationUrl }: InviteEmailProps) => (
   <Html lang="pt-BR" dir="ltr">
     <Head>
       <style>{darkModeCss}</style>
@@ -45,7 +31,7 @@ export const InviteEmail = ({
         <Text style={brandName}>{siteName}</Text>
         <Heading style={h1}>Você foi convidada</Heading>
         <Text style={text}>
-          Você recebeu um convite para participar do{' '}
+          Você recebeu um convite para participar do{" "}
           <Link href={siteUrl} style={link}>
             <strong>{siteName}</strong>
           </Link>
@@ -61,6 +47,6 @@ export const InviteEmail = ({
       </Container>
     </Body>
   </Html>
-)
+);
 
-export default InviteEmail
+export default InviteEmail;

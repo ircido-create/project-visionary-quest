@@ -1,4 +1,4 @@
-import * as React from 'react'
+import * as React from "react";
 
 import {
   Body,
@@ -9,28 +9,16 @@ import {
   Html,
   Preview,
   Text,
-} from '@react-email/components'
+} from "@react-email/components";
 
-import {
-  brandName,
-  button,
-  container,
-  darkModeCss,
-  footer,
-  h1,
-  main,
-  text,
-} from './brand'
+import { brandName, button, container, darkModeCss, footer, h1, main, text } from "./brand";
 
 interface MagicLinkEmailProps {
-  siteName: string
-  confirmationUrl: string
+  siteName: string;
+  confirmationUrl: string;
 }
 
-export const MagicLinkEmail = ({
-  siteName,
-  confirmationUrl,
-}: MagicLinkEmailProps) => (
+export const MagicLinkEmail = ({ siteName, confirmationUrl }: MagicLinkEmailProps) => (
   <Html lang="pt-BR" dir="ltr">
     <Head>
       <style>{darkModeCss}</style>
@@ -52,6 +40,6 @@ export const MagicLinkEmail = ({
       </Container>
     </Body>
   </Html>
-)
+);
 
-export default MagicLinkEmail
+export default MagicLinkEmail;
