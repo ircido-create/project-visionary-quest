@@ -50,6 +50,13 @@
       "when": 1792579736320,
       "tag": "0006_consent_logs_read_only_and_explicit_grants",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1792583843910,
+      "tag": "0007_onbio_comissoes_por_nivel",
+      "breakpoints": true
     }
   ]
 }
