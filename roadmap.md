@@ -623,3 +623,29 @@ Dois ajustes no próprio teste, nenhum problema no sistema:
 
 Continua sendo verificação sob demanda: não roda no `bun run test`.
 
+
+## ONBIO — rede de indicações e importação por planilha (2026-10-20)
+
+- [x] **Quem indicou quem.** Migração `20261020120000_onbio_rede_de_indicacoes`:
+      `influencers.indicada_por` (mesmo ambiente, sem ciclo, conferido por gatilho),
+      `onbio_metas_mensais` (bateu, não bateu, sem vendas, por mês) e
+      `onbio_importar_rede`, que grava a planilha inteira numa transação só. Reimportar não
+      duplica: pessoas são reencontradas por e-mail ou nome sem acento, o resultado do mesmo
+      período e da mesma carga é substituído. Importação não dispara aviso de "Nova
+      candidatura".
+- [x] **Telas.** "Importar rede e vendas" em Afiliadas (dona e administradoras), com leitura
+      e conferência da planilha no navegador antes de gravar. No painel ONBIO: gestoras,
+      afiliadas, vendas da rede, valor por equipe, acompanhamento de vendas e árvore da rede.
+      Na ficha: indicada por (editável), indicadas diretas e metas do mês.
+- [x] **Mesmas contas do painel de vendas da ONBIO (Power BI).** Valor por equipe = soma das
+      indicadas diretas; "vendeu no último mês" = mês de referência ou o anterior. Conferido
+      contra o painel de 2026-10-20: 11 gestoras, R$ 9.792,70, valores por equipe idênticos
+      e acompanhamento 28 / 2 / 1 / 25.
+- [ ] **E-mail real de quem veio do painel.** O painel não traz e-mail; essas pessoas entram
+      com `@importacao.invalid` (domínio reservado, nunca entrega). "Copiar acesso" fica
+      bloqueado até a gestora trocar pelo e-mail real.
+- **Testes.** 15 casos em vitest (`src/lib/onbio/rede.test.ts`). A função SQL passou em 19
+      verificações num Postgres local (PGlite) com réplica mínima do schema; ainda não rodou
+      contra o banco real.
+- **Dados reais fora do repositório.** O repositório é público; a planilha com nomes e
+      vendas não entra aqui. A carga é feita pela tela de importação.

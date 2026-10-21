@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { createOnbioAffiliate } from "@/lib/onbio/onbio.functions";
 import { AcompanhamentoSeguidores } from "@/components/onbio/AcompanhamentoSeguidores";
+import { ImportarRedeSection } from "@/components/onbio/ImportarRedeSection";
 
 export const Route = createFileRoute("/_authenticated/candidatas/")({
   head: () => ({
@@ -29,7 +30,7 @@ export const Route = createFileRoute("/_authenticated/candidatas/")({
 });
 
 function CandidatesPage() {
-  const { tenantId, active, readOnly } = useWorkspace();
+  const { tenantId, active, readOnly, activeRole } = useWorkspace();
   const isOnbio = active?.module === "ONBIO";
   const fetchList = useServerFn(listInfluencers);
   const exportar = useServerFn(exportarCandidatas);
@@ -224,6 +225,9 @@ function CandidatesPage() {
             {cadastrando ? "Cadastrando…" : "Cadastrar afiliada"}
           </Button>
         </form>
+      ) : null}
+      {isOnbio && tenantId && (activeRole === "manager_owner" || activeRole === "manager_admin") ? (
+        <ImportarRedeSection tenantId={tenantId} readOnly={readOnly} />
       ) : null}
       {isOnbio && tenantId ? (
         <AcompanhamentoSeguidores tenantId={tenantId} readOnly={readOnly} modo="lista" />

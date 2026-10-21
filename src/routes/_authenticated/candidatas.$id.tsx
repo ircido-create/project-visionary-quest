@@ -42,9 +42,11 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { CommercialResultsSection } from "@/components/onbio/CommercialResultsSection";
 import { SeguidoresDaAfiliada } from "@/components/onbio/SeguidoresDaAfiliada";
+import { IndicacaoDaAfiliada } from "@/components/onbio/IndicacaoDaAfiliada";
 import { VinculoDaAfiliada } from "@/components/onbio/VinculoDaAfiliada";
 import { PautaSection } from "@/components/mcb/PautaSection";
 import { deleteOnbioAffiliate } from "@/lib/onbio/onbio.functions";
+import { emailPendente } from "@/lib/onbio/rede";
 
 export const Route = createFileRoute("/_authenticated/candidatas/$id")({
   head: () => ({
@@ -290,6 +292,10 @@ function CandidateDetail() {
 
   if (active?.module === "ONBIO") {
     const copiarAcesso = async () => {
+      if (emailPendente(influencer.email)) {
+        toast.error("Cadastre o e-mail real da afiliada no perfil antes de mandar o acesso.");
+        return;
+      }
       const link = `${window.location.origin}/auth?modo=cadastro`;
       const mensagem = `Olá, ${influencer.full_name}! Seu acesso à ONBIO está pronto.\n\nCrie sua conta usando exatamente este e-mail: ${influencer.email}\n${link}\n\nDepois, confirme o e-mail recebido, entre em “Seu acompanhamento” e toque em “Conectar Instagram”. Se você já criou a conta, basta entrar normalmente ou usar “Esqueci minha senha”.`;
       try {
@@ -540,6 +546,12 @@ function CandidateDetail() {
             influencerId={id}
             readOnly={readOnly}
             className="lg:col-span-3"
+          />
+          <IndicacaoDaAfiliada
+            tenantId={tenantId!}
+            influencerId={id}
+            email={influencer.email}
+            readOnly={readOnly}
           />
           <VinculoDaAfiliada
             tenantId={tenantId!}

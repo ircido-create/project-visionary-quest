@@ -5,6 +5,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { AppShell, StatCard } from "@/components/mcb/AppShell";
 import { PautaSection } from "@/components/mcb/PautaSection";
 import { AcompanhamentoSeguidores } from "@/components/onbio/AcompanhamentoSeguidores";
+import { RedeOnbioSection } from "@/components/onbio/RedeOnbioSection";
 import { Button } from "@/components/ui/button";
 import { useWorkspace } from "@/lib/mcb/useWorkspace";
 import { getOnbioDashboard } from "@/lib/onbio/onbio.functions";
@@ -44,6 +45,7 @@ export function OnbioDashboard({ tenantId }: { tenantId: string }) {
               tone={query.data.lateTasks ? "warning" : "default"}
             />
           </div>
+          <RedeOnbioSection tenantId={tenantId} />
           <AcompanhamentoSeguidores tenantId={tenantId} readOnly={readOnly} modo="painel" />
           <PautaSection tenantId={tenantId} readOnly={readOnly} />
           <section className="glass rounded-xl border border-border/60 p-6">
