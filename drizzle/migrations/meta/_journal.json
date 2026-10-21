@@ -57,6 +57,13 @@
       "when": 1792583843910,
       "tag": "0007_onbio_comissoes_por_nivel",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1792586060432,
+      "tag": "0008_onbio_importacao_mensal_e_regra_onbio",
+      "breakpoints": true
     }
   ]
 }
