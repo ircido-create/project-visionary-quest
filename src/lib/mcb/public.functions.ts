@@ -267,7 +267,7 @@ export const submitApplication = createServerFn({ method: "POST" })
 
     if (error || !influencer) throw new Error("Não foi possível registrar sua inscrição agora.");
 
-    await Promise.all([
+    const [aplicacao, resultado, metrica, consentimento, historico] = await Promise.all([
       supabaseAdmin.from("applications").insert({
         tenant_id: tenant.id,
         influencer_id: influencer.id,
@@ -312,6 +312,22 @@ export const submitApplication = createServerFn({ method: "POST" })
         meta: { origin: `landing:${data.slug}` },
       }),
     ]);
+
+    // Estes registros não derrubam a inscrição (a candidata já existe), mas falha neles não
+    // pode passar em silêncio: o de consentimento é a prova de LGPD.
+    for (const [nome, r] of [
+      ["applications", aplicacao],
+      ["qualification_results", resultado],
+      ["metric_snapshots", metrica],
+      ["consent_logs", consentimento],
+      ["status_history", historico],
+    ] as const) {
+      if (r.error) {
+        console.error(
+          `[inscricao] falha ao gravar ${nome} da candidata ${influencer.id}: ${r.error.message}`,
+        );
+      }
+    }
 
     return { ok: true as const, duplicated: false as const };
   });
