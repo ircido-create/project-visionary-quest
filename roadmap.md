@@ -652,7 +652,11 @@ Continua sendo verificação sob demanda: não roda no `bun run test`.
 
 ## ONBIO — comissões por nível da rede (2026-10-21)
 
-- [x] **Regras da ONBIO**: venda própria 15%, 1º nível acima 5%, 2º a 4º 2,5% cada, 5º 1%.
+- [x] **Regras da ONBIO** (revistas no mesmo dia pela regra gravada no sistema da ONBIO,
+      `app_settings.rules`): afiliada 15% sobre a venda própria, gestora 5%, supervisora
+      2,5%, embaixadora 1,5%, diretora executiva 1%; não há 5º nível. Migração
+      `20261021140000_onbio_importacao_mensal_e_regra_onbio` troca o padrão. Versão anterior
+      desta linha: 15 / 5 / 2,5 / 2,5 / 2,5 / 1.
       Ficam por ambiente em `tenants.onbio_comissao_percentuais` (migração
       `20261021120000_onbio_comissoes_por_nivel`); a dona ou uma administradora muda pela
       tela, com auditoria. O cálculo é `calcularComissoes` (puro, 5 testes): arredonda uma
@@ -667,3 +671,22 @@ Continua sendo verificação sob demanda: não roda no `bun run test`.
       período. Fechar mês a mês depende de importar as vendas de cada mês.
 - [ ] **A confirmar com a ONBIO**: mesma regra para gestora e afiliada, base no valor
       líquido, sem condição de meta para receber da rede.
+
+## ONBIO — dados do painel da ONBIO (2026-10-21)
+
+- [x] **Rede conferida contra o painel da ONBIO** (tela "Sua Rede" da Monique): as 51
+      pessoas e os gestores diretos batem com a carga do Power BI. E-mails reais das 51
+      importados, no lugar dos provisórios.
+- [x] **"Total líquido" do Power BI = total do pedido − frete, só pagamento aprovado.**
+      Conferido pessoa a pessoa contra os pedidos da ONBIO.
+- [x] **Importação mês a mês**: a mesma pessoa pode vir em várias linhas, uma por período,
+      e reimportar uma carga de mesmo nome substitui a carga inteira.
+- [ ] **Vendas mensais por pessoa.** A tela "Sua Rede" soma a equipe no volume das
+      gestoras, então não dá a venda própria delas por mês. As vendas continuam vindo do
+      Power BI (total do período). Fonte certa para o mês: "Vendas Diretas" de cada pessoa
+      ou uma exportação da ONBIO.
+- [ ] **Metas mínimas da ONBIO para receber** (R$ 50 pessoal, R$ 5.000 de equipe, limiares
+      de desempenho por cargo) ainda não entram no cálculo de comissão.
+- **Segurança do site da ONBIO (fora deste projeto):** o painel baixa para o navegador de
+      qualquer afiliada logada os cadastros de todos os usuários com CPF, senha, endereço e
+      conta bancária, além de todos os pedidos e saques. Avisado à dona em 2026-10-21.

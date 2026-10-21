@@ -188,6 +188,7 @@ export function lerPlanilhaDeRede(texto: string): LeituraDaPlanilha {
 
   const celula = (linha: string[], i: number) => (i >= 0 ? (linha[i] ?? "").trim() : "");
   const vistas = new Set<string>();
+  const indicadoras = new Map<string, string>();
   const linhas: LinhaDeRede[] = [];
 
   tabela.slice(1).forEach((linha, posicaoNaTabela) => {
@@ -199,11 +200,6 @@ export function lerPlanilhaDeRede(texto: string): LeituraDaPlanilha {
       return;
     }
     const chave = chaveDoTexto(nome);
-    if (vistas.has(chave)) {
-      erros.push(`Linha ${numero}: ${nome} aparece mais de uma vez.`);
-      return;
-    }
-    vistas.add(chave);
 
     const email = celula(linha, col.email).toLowerCase() || null;
     if (email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
@@ -229,6 +225,25 @@ export function lerPlanilhaDeRede(texto: string): LeituraDaPlanilha {
       erros.push(`Linha ${numero}: informe o início e o fim do período das vendas.`);
     } else if (inicio && fim && fim < inicio) {
       erros.push(`Linha ${numero}: o fim do período vem antes do início.`);
+    }
+
+    // A mesma pessoa pode aparecer uma vez por período (planilha mês a mês), sempre com a
+    // mesma indicadora.
+    const chaveDaLinha = `${chave}|${inicio ?? ""}|${fim ?? ""}`;
+    if (vistas.has(chaveDaLinha)) {
+      erros.push(`Linha ${numero}: ${nome} aparece mais de uma vez no mesmo período.`);
+      return;
+    }
+    vistas.add(chaveDaLinha);
+    const indicadoraAnterior = indicadoras.get(chave);
+    if (
+      indicadoraAnterior !== undefined &&
+      indicadoraAnterior !== chaveDoTexto(indicadaPor ?? "")
+    ) {
+      erros.push(`Linha ${numero}: ${nome} aparece com indicadoras diferentes.`);
+    }
+    if (indicadaPor || indicadoraAnterior === undefined) {
+      indicadoras.set(chave, chaveDoTexto(indicadaPor ?? ""));
     }
 
     const situacoes: Record<string, SituacaoMeta> = {};
@@ -453,10 +468,11 @@ export function emailPendente(email: string | null | undefined): boolean {
 // ---------------------------------------------------------------------------
 
 /**
- * Percentuais da ONBIO, na ordem: venda própria, 1º nível acima (quem indicou), 2º, 3º,
- * 4º e 5º nível acima. Cada venda paga a vendedora e até cinco pessoas acima dela.
+ * Percentuais do sistema da ONBIO, na ordem: venda própria (afiliada), 1º nível acima
+ * (gestora), 2º (supervisora), 3º (embaixadora), 4º (diretora executiva) e 5º. A ONBIO
+ * não paga o 5º nível; a posição existe para o ambiente que quiser usar.
  */
-export const COMISSAO_PADRAO: readonly number[] = [15, 5, 2.5, 2.5, 2.5, 1];
+export const COMISSAO_PADRAO: readonly number[] = [15, 5, 2.5, 1.5, 1, 0];
 export const NIVEIS_DE_COMISSAO = 5;
 
 export type ComissaoDaPessoa = {
@@ -532,6 +548,9 @@ export function calcularComissoes(
   return { porPessoa, totalCentavos, percentualMaximo: p.reduce((s, x) => s + x, 0) };
 }
 
+const CARGO_DO_NIVEL = ["", "gestora", "supervisora", "embaixadora", "diretora executiva"];
+
 export function rotuloDoNivel(nivel: number): string {
-  return `${nivel}º nível`;
+  const cargo = CARGO_DO_NIVEL[nivel];
+  return cargo ? `${nivel}º nível (${cargo})` : `${nivel}º nível`;
 }

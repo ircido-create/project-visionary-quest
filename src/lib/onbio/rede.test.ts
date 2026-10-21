@@ -117,11 +117,27 @@ describe("lerPlanilhaDeRede", () => {
     );
     expect(erros).toEqual([
       "Linha 2: e-mail inválido (nao-e-email).",
-      "Linha 3: Ana Lima aparece mais de uma vez.",
       "Linha 4: Bia Souza não pode ter sido indicada por ela mesma.",
       "Linha 4: valor de vendas ilegível.",
       "Linha 4: informe o início e o fim do período das vendas.",
       "Linha 4: situação de meta ilegível em 2026-10 (use Bateu, Não bateu ou Sem vendas).",
+    ]);
+  });
+
+  it("aceita a mesma pessoa uma vez por mês", () => {
+    const { linhas, erros } = lerPlanilhaDeRede(
+      [
+        "nome;indicada por;vendas;periodo inicio;periodo fim",
+        "Ana Lima;Bia Topo;10,00;01/09/2026;30/09/2026",
+        "Ana Lima;Bia Topo;20,00;01/10/2026;31/10/2026",
+        "Ana Lima;;5,00;01/10/2026;31/10/2026",
+        "Ana Lima;Carla Souza;1,00;01/08/2026;31/08/2026",
+      ].join("\n"),
+    );
+    expect(linhas.map((l) => l.vendas_centavos)).toEqual([1000, 2000, 100]);
+    expect(erros).toEqual([
+      "Linha 4: Ana Lima aparece mais de uma vez no mesmo período.",
+      "Linha 5: Ana Lima aparece com indicadoras diferentes.",
     ]);
   });
 
@@ -212,19 +228,19 @@ describe("calcularComissoes", () => {
     indicadaPor: i === 0 ? null : cadeia[i - 1]!,
   }));
 
-  it("paga 15% a quem vendeu, 5% ao 1º nível, 2,5% do 2º ao 4º e 1% ao 5º", () => {
+  it("segue a regra da ONBIO: 15% própria, 5% gestora, 2,5% supervisora, 1,5% embaixadora, 1% diretora", () => {
     const rede = montarRede(pessoas, [{ influencerId: "ana", centavos: 100000, pedidos: 1 }], []);
     const c = calcularComissoes(rede);
     const total = (id: string) => c.porPessoa.get(id)!.totalCentavos;
     expect(c.porPessoa.get("ana")!.propriaCentavos).toBe(15000);
     expect(total("u1")).toBe(5000);
     expect(total("u2")).toBe(2500);
-    expect(total("u3")).toBe(2500);
-    expect(total("u4")).toBe(2500);
-    expect(total("u5")).toBe(1000);
-    expect(total("ze")).toBe(0); // 6º nível acima não recebe
-    expect(c.totalCentavos).toBe(28500);
-    expect(c.percentualMaximo).toBe(28.5);
+    expect(total("u3")).toBe(1500);
+    expect(total("u4")).toBe(1000);
+    expect(total("u5")).toBe(0); // a ONBIO não paga o 5º nível
+    expect(total("ze")).toBe(0);
+    expect(c.totalCentavos).toBe(25000);
+    expect(c.percentualMaximo).toBe(25);
   });
 
   it("separa a comissão própria da que vem de cada nível da rede", () => {
@@ -271,7 +287,7 @@ describe("calcularComissoes", () => {
     expect(percentuaisValidos([90, 20, 0, 0, 0, 0])).toBe(false);
     const rede = montarRede(pessoas, [{ influencerId: "ana", centavos: 100000, pedidos: 1 }], []);
     expect(calcularComissoes(rede, [10, 5, 0, 0, 0, 0]).totalCentavos).toBe(15000);
-    expect(calcularComissoes(rede, [-1, 0, 0, 0, 0, 0]).totalCentavos).toBe(28500);
+    expect(calcularComissoes(rede, [-1, 0, 0, 0, 0, 0]).totalCentavos).toBe(25000);
   });
 
   it("não entra em laço com ciclo nos dados", () => {

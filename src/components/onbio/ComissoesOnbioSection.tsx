@@ -19,7 +19,7 @@ const pct = (v: number) => `${v.toLocaleString("pt-BR", { maximumFractionDigits:
 
 const ROTULOS_REGRA = [
   "Venda própria",
-  ...Array.from({ length: NIVEIS_DE_COMISSAO }, (_, i) => `${rotuloDoNivel(i + 1)} abaixo`),
+  ...Array.from({ length: NIVEIS_DE_COMISSAO }, (_, i) => rotuloDoNivel(i + 1)),
 ];
 
 function EditorDeRegras({
@@ -116,6 +116,7 @@ export function ComissoesOnbioSection({
   if (!rede || !comissoes) return null;
   if (![...rede.nos.values()].some((n) => n.indicadaPor !== null)) return null;
 
+  const niveisPagos = percentuais.slice(1).filter((v) => v > 0).length;
   const daRede = [...comissoes.porPessoa.values()].reduce((s, c) => s + c.redeCentavos, 0);
   const propria = comissoes.totalCentavos - daRede;
   // Colunas de nível só aparecem se alguém recebeu naquele nível.
@@ -129,8 +130,8 @@ export function ComissoesOnbioSection({
         <div>
           <h2 className="text-xl font-semibold">Comissões da rede</h2>
           <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
-            Cada venda paga quem vendeu e até {NIVEIS_DE_COMISSAO} pessoas acima dela na rede.
-            Calculado sobre as vendas importadas.
+            Cada venda paga quem vendeu e até {niveisPagos} pessoa{niveisPagos === 1 ? "" : "s"}{" "}
+            acima dela na rede. Calculado sobre as vendas importadas (valor sem frete).
           </p>
         </div>
         {podeEditar && !editando ? (
@@ -141,11 +142,13 @@ export function ComissoesOnbioSection({
       </div>
 
       <ul className="mt-4 flex flex-wrap gap-2 text-sm">
-        {ROTULOS_REGRA.map((rotulo, i) => (
-          <li key={rotulo} className="rounded-full border border-border px-3 py-1">
-            {rotulo}: <strong>{pct(percentuais[i] ?? 0)}</strong>
-          </li>
-        ))}
+        {ROTULOS_REGRA.map((rotulo, i) =>
+          i > 0 && !percentuais[i] ? null : (
+            <li key={rotulo} className="rounded-full border border-border px-3 py-1">
+              {rotulo}: <strong>{pct(percentuais[i] ?? 0)}</strong>
+            </li>
+          ),
+        )}
       </ul>
       {editando ? (
         <EditorDeRegras

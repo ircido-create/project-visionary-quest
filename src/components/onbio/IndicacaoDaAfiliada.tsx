@@ -116,7 +116,7 @@ export function IndicacaoDaAfiliada({
                   {comissao.porNivelCentavos.map((v, i) =>
                     v > 0 ? (
                       <li key={i}>
-                        {rotuloDoNivel(i + 1)} abaixo ({percentuais[i + 1]}%): {money(v)}
+                        {rotuloDoNivel(i + 1)} ({percentuais[i + 1]}%): {money(v)}
                       </li>
                     ) : null,
                   )}
