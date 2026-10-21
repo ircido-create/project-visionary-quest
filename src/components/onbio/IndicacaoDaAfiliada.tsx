@@ -4,7 +4,12 @@ import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 
 import { money, useRedeOnbio } from "@/components/onbio/useRedeOnbio";
-import { emailPendente, ROTULO_META, ROTULO_SITUACAO_DE_VENDAS } from "@/lib/onbio/rede";
+import {
+  emailPendente,
+  ROTULO_META,
+  ROTULO_SITUACAO_DE_VENDAS,
+  rotuloDoNivel,
+} from "@/lib/onbio/rede";
 import { definirIndicacaoOnbio } from "@/lib/onbio/rede.functions";
 
 /** Lugar da afiliada na rede: quem indicou, quem ela indicou e as metas de cada mês. */
@@ -21,7 +26,8 @@ export function IndicacaoDaAfiliada({
 }) {
   const queryClient = useQueryClient();
   const definir = useServerFn(definirIndicacaoOnbio);
-  const { consulta, rede } = useRedeOnbio(tenantId);
+  const { consulta, rede, comissoes, percentuais } = useRedeOnbio(tenantId);
+  const comissao = comissoes?.porPessoa.get(influencerId);
 
   const mudar = useMutation({
     mutationFn: (indicadaPor: string | null) =>
@@ -96,6 +102,27 @@ export function IndicacaoDaAfiliada({
                 </>
               ) : null}
             </p>
+            {comissao && comissao.totalCentavos > 0 ? (
+              <div className="rounded-md border border-border p-3">
+                <p>
+                  Comissão: <strong>{money(comissao.totalCentavos)}</strong>
+                </p>
+                <ul className="mt-1 grid gap-0.5 text-muted-foreground">
+                  {comissao.propriaCentavos > 0 ? (
+                    <li>
+                      Venda própria ({percentuais[0]}%): {money(comissao.propriaCentavos)}
+                    </li>
+                  ) : null}
+                  {comissao.porNivelCentavos.map((v, i) =>
+                    v > 0 ? (
+                      <li key={i}>
+                        {rotuloDoNivel(i + 1)} abaixo ({percentuais[i + 1]}%): {money(v)}
+                      </li>
+                    ) : null,
+                  )}
+                </ul>
+              </div>
+            ) : null}
             {meses.length > 0 ? (
               <ul className="grid grid-cols-2 gap-x-4 gap-y-1 sm:grid-cols-3">
                 {meses.map((mes) => {

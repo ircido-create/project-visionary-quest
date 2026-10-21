@@ -649,3 +649,21 @@ Continua sendo verificação sob demanda: não roda no `bun run test`.
       contra o banco real.
 - **Dados reais fora do repositório.** O repositório é público; a planilha com nomes e
       vendas não entra aqui. A carga é feita pela tela de importação.
+
+## ONBIO — comissões por nível da rede (2026-10-21)
+
+- [x] **Regras da ONBIO**: venda própria 15%, 1º nível acima 5%, 2º a 4º 2,5% cada, 5º 1%.
+      Ficam por ambiente em `tenants.onbio_comissao_percentuais` (migração
+      `20261021120000_onbio_comissoes_por_nivel`); a dona ou uma administradora muda pela
+      tela, com auditoria. O cálculo é `calcularComissoes` (puro, 5 testes): arredonda uma
+      vez por pessoa e nível, e quem está acima do 5º nível não recebe.
+- [x] **Telas.** Painel ONBIO: cartão Comissões passa a usar o cálculo da rede e a seção
+      "Comissões da rede" mostra regras, total, própria × rede e o valor de cada pessoa por
+      nível. Ficha da afiliada: detalhamento da comissão dela.
+- [x] **Pedidos do painel de vendas** importados por pessoa (88, iguais ao Power BI).
+- **Conferido com a carga de 2026-10-20**: R$ 9.792,70 em vendas geram R$ 2.258,93 de
+      comissão. A rede tem no máximo 4 níveis, então o 5º nível ainda não paga ninguém.
+- [ ] **Por mês.** A carga do painel é o total de abril a outubro; a comissão sai sobre o
+      período. Fechar mês a mês depende de importar as vendas de cada mês.
+- [ ] **A confirmar com a ONBIO**: mesma regra para gestora e afiliada, base no valor
+      líquido, sem condição de meta para receber da rede.

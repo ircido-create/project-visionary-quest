@@ -447,3 +447,91 @@ export const ROTULO_META: Record<SituacaoMeta, string> = {
 export function emailPendente(email: string | null | undefined): boolean {
   return !!email && email.endsWith("@importacao.invalid");
 }
+
+// ---------------------------------------------------------------------------
+// Comissões por nível
+// ---------------------------------------------------------------------------
+
+/**
+ * Percentuais da ONBIO, na ordem: venda própria, 1º nível acima (quem indicou), 2º, 3º,
+ * 4º e 5º nível acima. Cada venda paga a vendedora e até cinco pessoas acima dela.
+ */
+export const COMISSAO_PADRAO: readonly number[] = [15, 5, 2.5, 2.5, 2.5, 1];
+export const NIVEIS_DE_COMISSAO = 5;
+
+export type ComissaoDaPessoa = {
+  /** Comissão sobre as próprias vendas. */
+  propriaCentavos: number;
+  /** Índice 0 = 1º nível abaixo (indicadas diretas), 1 = 2º nível, e assim por diante. */
+  porNivelCentavos: number[];
+  /** Soma do que vem da rede abaixo. */
+  redeCentavos: number;
+  totalCentavos: number;
+};
+
+export type ResumoDeComissoes = {
+  porPessoa: Map<string, ComissaoDaPessoa>;
+  totalCentavos: number;
+  /** Percentual da venda que vira comissão quando a cadeia acima está completa. */
+  percentualMaximo: number;
+};
+
+export function percentuaisValidos(p: readonly number[]): boolean {
+  return (
+    p.length === NIVEIS_DE_COMISSAO + 1 &&
+    p.every((v) => Number.isFinite(v) && v >= 0 && v <= 100) &&
+    p.reduce((s, v) => s + v, 0) <= 100
+  );
+}
+
+/**
+ * Distribui a comissão de cada venda: a vendedora recebe o percentual da posição 0 e quem
+ * está acima recebe o da posição do nível. Quem fica acima do 5º nível não recebe. Os
+ * valores são acumulados sem arredondar e arredondados uma vez por pessoa e nível, para a
+ * soma não perder centavos em redes grandes.
+ */
+export function calcularComissoes(
+  rede: ResumoDaRede,
+  percentuais: readonly number[] = COMISSAO_PADRAO,
+): ResumoDeComissoes {
+  const p = percentuaisValidos(percentuais) ? percentuais : COMISSAO_PADRAO;
+  const bruto = new Map<string, number[]>();
+  const conta = (id: string) => {
+    let v = bruto.get(id);
+    if (!v) {
+      v = new Array(NIVEIS_DE_COMISSAO + 1).fill(0);
+      bruto.set(id, v);
+    }
+    return v;
+  };
+
+  for (const no of rede.nos.values()) {
+    conta(no.id);
+    if (no.vendasCentavos <= 0) continue;
+    conta(no.id)[0]! += (no.vendasCentavos * p[0]!) / 100;
+    const vistos = new Set([no.id]);
+    let acima = no.indicadaPor ? rede.nos.get(no.indicadaPor) : undefined;
+    for (let nivel = 1; acima && nivel <= NIVEIS_DE_COMISSAO; nivel++) {
+      if (vistos.has(acima.id)) break;
+      vistos.add(acima.id);
+      conta(acima.id)[nivel]! += (no.vendasCentavos * p[nivel]!) / 100;
+      acima = acima.indicadaPor ? rede.nos.get(acima.indicadaPor) : undefined;
+    }
+  }
+
+  const porPessoa = new Map<string, ComissaoDaPessoa>();
+  let totalCentavos = 0;
+  for (const [id, v] of bruto) {
+    const propriaCentavos = Math.round(v[0]!);
+    const porNivelCentavos = v.slice(1).map((x) => Math.round(x));
+    const redeCentavos = porNivelCentavos.reduce((s, x) => s + x, 0);
+    const total = propriaCentavos + redeCentavos;
+    porPessoa.set(id, { propriaCentavos, porNivelCentavos, redeCentavos, totalCentavos: total });
+    totalCentavos += total;
+  }
+  return { porPessoa, totalCentavos, percentualMaximo: p.reduce((s, x) => s + x, 0) };
+}
+
+export function rotuloDoNivel(nivel: number): string {
+  return `${nivel}º nível`;
+}

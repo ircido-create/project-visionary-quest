@@ -1448,6 +1448,7 @@ export type Database = {
           is_listed_on_home: boolean
           is_public_page_enabled: boolean
           module: string
+          onbio_comissao_percentuais: number[]
           name: string
           plan_id: string | null
           slug: string
@@ -1469,6 +1470,7 @@ export type Database = {
           is_listed_on_home?: boolean
           is_public_page_enabled?: boolean
           module?: string
+          onbio_comissao_percentuais?: number[]
           name: string
           plan_id?: string | null
           slug: string
@@ -1490,6 +1492,7 @@ export type Database = {
           is_listed_on_home?: boolean
           is_public_page_enabled?: boolean
           module?: string
+          onbio_comissao_percentuais?: number[]
           name?: string
           plan_id?: string | null
           slug?: string
@@ -1754,6 +1757,10 @@ export type Database = {
       limpar_candidatas_inativas: { Args: never; Returns: number }
       link_influencer_account: { Args: never; Returns: number }
       onbio_chave_do_nome: { Args: { p_nome: string }; Returns: string }
+      onbio_definir_comissoes: {
+        Args: { p_percentuais: number[]; p_tenant: string }
+        Returns: undefined
+      }
       onbio_definir_indicacao: {
         Args: { p_indicada_por: string; p_influencer: string }
         Returns: undefined

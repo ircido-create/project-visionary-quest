@@ -8,6 +8,8 @@ import {
   lerPlanilhaDeRede,
   lerSituacao,
   montarRede,
+  calcularComissoes,
+  percentuaisValidos,
 } from "./rede";
 
 describe("lerCsv", () => {
@@ -198,5 +200,89 @@ describe("montarRede", () => {
       [],
     );
     expect(ciclo.raizes).toEqual([]);
+  });
+});
+
+describe("calcularComissoes", () => {
+  // Cadeia de seis: Zé no topo, Ana vende na ponta. Ana tem 5 pessoas acima e Zé fica fora.
+  const cadeia = ["ze", "u5", "u4", "u3", "u2", "u1", "ana"];
+  const pessoas = cadeia.map((id, i) => ({
+    id,
+    nome: id,
+    indicadaPor: i === 0 ? null : cadeia[i - 1]!,
+  }));
+
+  it("paga 15% a quem vendeu, 5% ao 1º nível, 2,5% do 2º ao 4º e 1% ao 5º", () => {
+    const rede = montarRede(pessoas, [{ influencerId: "ana", centavos: 100000, pedidos: 1 }], []);
+    const c = calcularComissoes(rede);
+    const total = (id: string) => c.porPessoa.get(id)!.totalCentavos;
+    expect(c.porPessoa.get("ana")!.propriaCentavos).toBe(15000);
+    expect(total("u1")).toBe(5000);
+    expect(total("u2")).toBe(2500);
+    expect(total("u3")).toBe(2500);
+    expect(total("u4")).toBe(2500);
+    expect(total("u5")).toBe(1000);
+    expect(total("ze")).toBe(0); // 6º nível acima não recebe
+    expect(c.totalCentavos).toBe(28500);
+    expect(c.percentualMaximo).toBe(28.5);
+  });
+
+  it("separa a comissão própria da que vem de cada nível da rede", () => {
+    const rede = montarRede(
+      pessoas,
+      [
+        { influencerId: "ana", centavos: 100000, pedidos: 1 },
+        { influencerId: "u1", centavos: 20000, pedidos: 1 },
+        { influencerId: "u3", centavos: 10000, pedidos: 1 },
+      ],
+      [],
+    );
+    const u2 = calcularComissoes(rede).porPessoa.get("u2")!;
+    // própria 0; 1º nível (u1) 5% de 200; 2º nível (ana) 2,5% de 1.000
+    expect(u2).toEqual({
+      propriaCentavos: 0,
+      porNivelCentavos: [1000, 2500, 0, 0, 0],
+      redeCentavos: 3500,
+      totalCentavos: 3500,
+    });
+  });
+
+  it("arredonda uma vez por pessoa, sem perder centavos na soma", () => {
+    const rede = montarRede(
+      [
+        { id: "m", nome: "m", indicadaPor: null },
+        { id: "a", nome: "a", indicadaPor: "m" },
+        { id: "b", nome: "b", indicadaPor: "m" },
+      ],
+      [
+        { influencerId: "a", centavos: 1667, pedidos: 1 },
+        { influencerId: "b", centavos: 1667, pedidos: 1 },
+      ],
+      [],
+    );
+    // 2,5% de 16,67 = 0,41675 cada; somados 0,8335 → 0,83
+    const c = calcularComissoes(rede, [15, 2.5, 0, 0, 0, 0]);
+    expect(c.porPessoa.get("m")!.totalCentavos).toBe(83);
+  });
+
+  it("aceita percentuais próprios e recusa os inválidos", () => {
+    expect(percentuaisValidos([10, 5, 0, 0, 0, 0])).toBe(true);
+    expect(percentuaisValidos([10, 5])).toBe(false);
+    expect(percentuaisValidos([90, 20, 0, 0, 0, 0])).toBe(false);
+    const rede = montarRede(pessoas, [{ influencerId: "ana", centavos: 100000, pedidos: 1 }], []);
+    expect(calcularComissoes(rede, [10, 5, 0, 0, 0, 0]).totalCentavos).toBe(15000);
+    expect(calcularComissoes(rede, [-1, 0, 0, 0, 0, 0]).totalCentavos).toBe(28500);
+  });
+
+  it("não entra em laço com ciclo nos dados", () => {
+    const rede = montarRede(
+      [
+        { id: "a", nome: "a", indicadaPor: "b" },
+        { id: "b", nome: "b", indicadaPor: "a" },
+      ],
+      [{ influencerId: "a", centavos: 10000, pedidos: 1 }],
+      [],
+    );
+    expect(calcularComissoes(rede).porPessoa.get("b")!.totalCentavos).toBe(500);
   });
 });

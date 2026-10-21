@@ -5,7 +5,9 @@ import { useServerFn } from "@tanstack/react-start";
 import { AppShell, StatCard } from "@/components/mcb/AppShell";
 import { PautaSection } from "@/components/mcb/PautaSection";
 import { AcompanhamentoSeguidores } from "@/components/onbio/AcompanhamentoSeguidores";
+import { ComissoesOnbioSection } from "@/components/onbio/ComissoesOnbioSection";
 import { RedeOnbioSection } from "@/components/onbio/RedeOnbioSection";
+import { useRedeOnbio } from "@/components/onbio/useRedeOnbio";
 import { Button } from "@/components/ui/button";
 import { useWorkspace } from "@/lib/mcb/useWorkspace";
 import { getOnbioDashboard } from "@/lib/onbio/onbio.functions";
@@ -14,7 +16,12 @@ const money = (cents: number) =>
   new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(cents / 100);
 
 export function OnbioDashboard({ tenantId }: { tenantId: string }) {
-  const { readOnly } = useWorkspace();
+  const { readOnly, activeRole } = useWorkspace();
+  const podeEditarRegras =
+    !readOnly && (activeRole === "manager_owner" || activeRole === "manager_admin");
+  // Com rede importada, a comissão vem das regras por nível; sem rede, do lançamento manual.
+  const { rede, comissoes } = useRedeOnbio(tenantId);
+  const temRede = !!rede && [...rede.nos.values()].some((n) => n.indicadaPor !== null);
   const fetchDashboard = useServerFn(getOnbioDashboard);
   const query = useQuery({
     queryKey: ["onbio", "dashboard", tenantId],
@@ -38,7 +45,11 @@ export function OnbioDashboard({ tenantId }: { tenantId: string }) {
             <StatCard label="Afiliadas" value={query.data.affiliates} />
             <StatCard label="Faturamento" value={money(query.data.revenue)} tone="positive" />
             <StatCard label="Pedidos" value={query.data.orders} />
-            <StatCard label="Comissões" value={money(query.data.commission)} />
+            <StatCard
+              label="Comissões"
+              value={money(temRede && comissoes ? comissoes.totalCentavos : query.data.commission)}
+              {...(temRede ? { hint: "Calculadas pelas regras por nível" } : {})}
+            />
             <StatCard
               label="Tarefas atrasadas"
               value={query.data.lateTasks}
@@ -46,6 +57,7 @@ export function OnbioDashboard({ tenantId }: { tenantId: string }) {
             />
           </div>
           <RedeOnbioSection tenantId={tenantId} />
+          <ComissoesOnbioSection tenantId={tenantId} podeEditar={podeEditarRegras} />
           <AcompanhamentoSeguidores tenantId={tenantId} readOnly={readOnly} modo="painel" />
           <PautaSection tenantId={tenantId} readOnly={readOnly} />
           <section className="glass rounded-xl border border-border/60 p-6">

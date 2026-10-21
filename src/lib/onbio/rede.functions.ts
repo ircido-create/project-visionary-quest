@@ -3,7 +3,7 @@ import { z } from "zod";
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import type { Json } from "@/integrations/supabase/types";
-import type { SituacaoMeta } from "@/lib/onbio/rede";
+import { COMISSAO_PADRAO, NIVEIS_DE_COMISSAO, type SituacaoMeta } from "@/lib/onbio/rede";
 
 const tenantInput = z.object({ tenantId: z.string().uuid() });
 
@@ -57,7 +57,7 @@ export const getRedeOnbio = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => tenantInput.parse(input))
   .handler(async ({ data, context }) => {
     const { supabase } = context;
-    const [pessoas, resultados, metas] = await Promise.all([
+    const [pessoas, resultados, metas, ambiente] = await Promise.all([
       supabase
         .from("influencers")
         .select("id, full_name, indicada_por, email")
@@ -71,8 +71,13 @@ export const getRedeOnbio = createServerFn({ method: "POST" })
         .from("onbio_metas_mensais")
         .select("influencer_id, mes, situacao")
         .eq("tenant_id", data.tenantId),
+      supabase
+        .from("tenants")
+        .select("onbio_comissao_percentuais")
+        .eq("id", data.tenantId)
+        .maybeSingle(),
     ]);
-    const erro = pessoas.error ?? resultados.error ?? metas.error;
+    const erro = pessoas.error ?? resultados.error ?? metas.error ?? ambiente.error;
     if (erro) throw new Error(erro.message);
     return {
       pessoas: (pessoas.data ?? []).map((p) => ({
@@ -91,7 +96,30 @@ export const getRedeOnbio = createServerFn({ method: "POST" })
         mes: m.mes,
         situacao: m.situacao as SituacaoMeta,
       })),
+      // numeric chega como texto ou número, conforme o driver.
+      percentuais: (ambiente.data?.onbio_comissao_percentuais ?? [...COMISSAO_PADRAO]).map(Number),
     };
+  });
+
+export const definirComissoesOnbio = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) =>
+    tenantInput
+      .extend({
+        percentuais: z
+          .array(z.number().min(0).max(100))
+          .length(NIVEIS_DE_COMISSAO + 1)
+          .refine((p) => p.reduce((s, v) => s + v, 0) <= 100, "A soma não pode passar de 100%."),
+      })
+      .parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    const { error } = await context.supabase.rpc("onbio_definir_comissoes", {
+      p_tenant: data.tenantId,
+      p_percentuais: data.percentuais,
+    });
+    if (error) throw new Error(error.message);
+    return { ok: true };
   });
 
 export const definirIndicacaoOnbio = createServerFn({ method: "POST" })
