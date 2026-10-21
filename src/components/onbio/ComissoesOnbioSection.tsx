@@ -15,6 +15,15 @@ import {
 } from "@/lib/onbio/rede";
 import { definirComissoesOnbio } from "@/lib/onbio/rede.functions";
 
+const nomeDoMes = (mes: string) => {
+  const t = new Date(`${mes}-15T12:00:00Z`).toLocaleDateString("pt-BR", {
+    month: "long",
+    year: "numeric",
+    timeZone: "UTC",
+  });
+  return t.charAt(0).toUpperCase() + t.slice(1);
+};
+
 const pct = (v: number) => `${v.toLocaleString("pt-BR", { maximumFractionDigits: 2 })}%`;
 
 const ROTULOS_REGRA = [
@@ -199,13 +208,7 @@ export function ComissoesOnbioSection({
             <tbody>
               {porMes.map((m) => (
                 <tr key={m.mes} className="border-t border-border/60">
-                  <td className="py-2 pr-4 capitalize">
-                    {new Date(`${m.mes}-15T12:00:00Z`).toLocaleDateString("pt-BR", {
-                      month: "long",
-                      year: "numeric",
-                      timeZone: "UTC",
-                    })}
-                  </td>
+                  <td className="py-2 pr-4">{nomeDoMes(m.mes)}</td>
                   <td className="py-2 pr-4 text-right tabular-nums">{money(m.vendasCentavos)}</td>
                   <td className="py-2 pr-4 text-right tabular-nums">{money(m.propriaCentavos)}</td>
                   <td className="py-2 pr-4 text-right tabular-nums">{money(m.redeCentavos)}</td>
