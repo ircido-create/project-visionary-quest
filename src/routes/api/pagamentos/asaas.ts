@@ -45,8 +45,9 @@ export const Route = createFileRoute("/api/pagamentos/asaas")({
           });
           return Response.json({ ok: true });
         } catch (erro) {
-          const mensagem = erro instanceof Error ? erro.message : "falha ao registrar";
-          return Response.json({ erro: mensagem }, { status: 500 });
+          // O detalhe fica no log do servidor; o provedor recebe só um aviso genérico.
+          console.error("[asaas] falha ao registrar pagamento:", erro);
+          return Response.json({ erro: "falha ao registrar" }, { status: 500 });
         }
       },
     },

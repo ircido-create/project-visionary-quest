@@ -47,8 +47,8 @@ Ambas devolvem só nomes, nunca valores.
 
 ### O que remover quando resolver
 
-- a Edge Function `supabase/functions/diagnostico-segredos` e a entrada dela em
-  `supabase/config.toml` (e a função publicada, pelo agente do Lovable);
+- a função publicada `diagnostico-segredos` (o código e a entrada em `supabase/config.toml`
+  já saíram do repositório; falta tirar a função do Supabase, pelo agente do Lovable);
 - os campos temporários `referencias` e `origem` da checagem, em
   `src/lib/mcb/instagram.ts` e `src/lib/mcb/instagram.functions.ts`.
 
@@ -210,4 +210,3 @@ agendada com a service role key, decidindo antes se vale abrir essa porta.
 | `src/components/mcb/InstagramSection.tsx` | a tela, nos dois modos |
 | `src/routes/_authenticated/instagram.retorno.tsx` | retorno do OAuth |
 | `src/lib/mcb/env.ts` | leitura de variáveis: `process.env` e, na falta, os bindings do Worker |
-| `supabase/functions/diagnostico-segredos/index.ts` | diagnóstico temporário: quais secrets uma Edge Function enxerga |
