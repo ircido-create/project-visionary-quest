@@ -157,7 +157,7 @@ export function RedeOnbioView({ rede, pendentes }: { rede: ResumoDaRede; pendent
   const equipes = useMemo(
     () =>
       [...rede.nos.values()]
-        .filter((n) => n.papel === "GESTORA")
+        .filter((n) => n.indicadas.length > 0)
         .sort(
           (a, b) =>
             b.vendasDaEquipeCentavos - a.vendasDaEquipeCentavos ||
