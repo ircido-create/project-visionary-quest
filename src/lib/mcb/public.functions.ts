@@ -133,6 +133,10 @@ const applicationSchema = z.object({
 
 export type ApplicationInput = z.infer<typeof applicationSchema>;
 
+/** Máximo de inscrições pela landing page, por ambiente, dentro da janela abaixo. */
+const LIMITE_INSCRICOES_POR_JANELA = 20;
+const LIMITE_INSCRICOES_JANELA_MS = 60 * 60 * 1000;
+
 export const submitApplication = createServerFn({ method: "POST" })
   .inputValidator((input: ApplicationInput) => applicationSchema.parse(input))
   .handler(async ({ data }) => {
@@ -166,6 +170,24 @@ export const submitApplication = createServerFn({ method: "POST" })
 
     if (existing) {
       return { ok: true as const, duplicated: true as const };
+    }
+
+    // Freio contra enchente de cadastros falsos: sem ele, um script poderia consumir toda
+    // a cota de candidatas do plano da gestora em minutos. O limite é por ambiente e
+    // largo o bastante para um lançamento real; quem ficar de fora tenta mais tarde.
+    const desde = new Date(Date.now() - LIMITE_INSCRICOES_JANELA_MS).toISOString();
+    const { count: recentes } = await supabaseAdmin
+      .from("influencers")
+      .select("id", { count: "exact", head: true })
+      .eq("tenant_id", tenant.id)
+      .like("origin", "landing:%")
+      .gte("created_at", desde);
+    if ((recentes ?? 0) >= LIMITE_INSCRICOES_POR_JANELA) {
+      return {
+        ok: false as const,
+        reason:
+          "Recebemos muitas inscrições em pouco tempo. Aguarde alguns minutos e envie novamente.",
+      };
     }
 
     // O limite é da gestora, não da afiliada. Ela não deve ver o nome do plano nem
