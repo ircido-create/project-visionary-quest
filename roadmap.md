@@ -134,7 +134,14 @@ porque tudo que depende de secret está travado em produção (ver Pendências).
       gestora, lembrete de prazo para a candidata. Exigem credencial do provedor de
       envio e um job agendado (`pg_cron`, disponível no banco mas não instalado; ligar é
       configuração da plataforma).
-- [ ] Análise de IA em produção (Fase 2), hoje sem a chave do Gemini no servidor.
+- [x] Análise de IA em produção (Fase 2). Resolvida pelo gateway de IA do Lovable
+      (`LOVABLE_API_KEY`, provisionada pelo Lovable; ver item de 2026-09-16 abaixo): a
+      `GEMINI_API_KEY` não é mais usada. Verificado em 2026-11-16 gerando uma pauta de
+      equipe da ONBIO pela prévia, que voltou completa.
+      **Achado no mesmo teste:** a pauta da ONBIO diz "comissão zerada", enquanto o
+      painel mostra a comissão calculada pelas regras por nível. A pauta soma
+      `commission_cents` das linhas importadas (`pautas.functions.ts`); o painel usa as
+      regras da rede. Corrigir para a pauta usar o mesmo cálculo do painel.
 
 ## Fase 6 — Pronta para as primeiras gestoras
 
