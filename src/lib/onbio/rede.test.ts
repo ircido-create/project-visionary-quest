@@ -11,6 +11,7 @@ import {
   calcularComissoes,
   percentuaisValidos,
   comissoesPorMes,
+  comissaoPelaRede,
 } from "./rede";
 
 describe("lerCsv", () => {
@@ -333,5 +334,28 @@ describe("comissoesPorMes", () => {
         redeCentavos: 1000,
       },
     ]);
+  });
+});
+
+describe("comissaoPelaRede", () => {
+  it("calcula pelas regras quando há rede, como o painel", () => {
+    const c = comissaoPelaRede(
+      [
+        { id: "m", nome: "m", indicadaPor: null },
+        { id: "a", nome: "a", indicadaPor: "m" },
+      ],
+      [{ influencerId: "a", centavos: 10000, pedidos: 1 }],
+    );
+    expect(c?.totalCentavos).toBe(2000);
+    expect(c?.porPessoa.get("m")?.redeCentavos).toBe(500);
+  });
+
+  it("devolve null sem rede, para valer a comissão lançada", () => {
+    expect(
+      comissaoPelaRede(
+        [{ id: "a", nome: "a", indicadaPor: null }],
+        [{ influencerId: "a", centavos: 10000, pedidos: 1 }],
+      ),
+    ).toBeNull();
   });
 });

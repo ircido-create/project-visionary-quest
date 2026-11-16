@@ -554,6 +554,20 @@ export function calcularComissoes(
   return { porPessoa, totalCentavos, percentualMaximo: p.reduce((s, x) => s + x, 0) };
 }
 
+/**
+ * Comissão de um conjunto de resultados pelas regras por nível, como o painel mostra.
+ * Devolve null quando o ambiente não tem rede (ninguém com indicadora): aí vale a comissão
+ * lançada à mão em cada resultado.
+ */
+export function comissaoPelaRede(
+  pessoas: PessoaDaRede[],
+  resultados: ResultadoDaRede[],
+  percentuais: readonly number[] = COMISSAO_PADRAO,
+): ResumoDeComissoes | null {
+  if (!pessoas.some((p) => p.indicadaPor !== null)) return null;
+  return calcularComissoes(montarRede(pessoas, resultados, []), percentuais);
+}
+
 const CARGO_DO_NIVEL = ["", "gestora", "supervisora", "embaixadora", "diretora executiva"];
 
 export function rotuloDoNivel(nivel: number): string {

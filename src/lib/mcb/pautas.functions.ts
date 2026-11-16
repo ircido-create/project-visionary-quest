@@ -16,6 +16,7 @@ import {
   type Pauta,
   type Programa,
 } from "@/lib/mcb/pautas";
+import { COMISSAO_PADRAO, comissaoPelaRede } from "@/lib/onbio/rede";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 type Cliente = {
@@ -47,6 +48,45 @@ async function programaDoAmbiente(supabase: Cliente, tenantId: string): Promise<
 
 const reais = (centavos: number | null) => (centavos === null ? null : centavos / 100);
 
+/**
+ * Comissão do período pelas regras por nível da rede, como o painel da ONBIO mostra. Os
+ * resultados importados não trazem comissão (o campo fica zerado), então somar o campo
+ * deixava a pauta dizendo "comissão zerada" com o painel mostrando o valor certo.
+ * Devolve null quando o ambiente não tem rede: aí vale a comissão lançada à mão.
+ */
+async function comissaoDoPeriodoPelaRede(supabase: Cliente, tenantId: string, desde: string) {
+  const [pessoas, resultados, ambiente] = await Promise.all([
+    supabase
+      .from("influencers")
+      .select("id, full_name, indicada_por")
+      .eq("tenant_id", tenantId)
+      .is("archived_at", null),
+    supabase
+      .from("commercial_results")
+      .select("influencer_id, revenue_cents, orders")
+      .eq("tenant_id", tenantId)
+      .gte("period_end", desde.slice(0, 10)),
+    supabase.from("tenants").select("onbio_comissao_percentuais").eq("id", tenantId).maybeSingle(),
+  ]);
+  const percentuais = (
+    (ambiente.data as { onbio_comissao_percentuais: unknown[] | null } | null)
+      ?.onbio_comissao_percentuais ?? [...COMISSAO_PADRAO]
+  ).map(Number);
+  return comissaoPelaRede(
+    (
+      (pessoas.data ?? []) as Array<{ id: string; full_name: string; indicada_por: string | null }>
+    ).map((p) => ({ id: p.id, nome: p.full_name, indicadaPor: p.indicada_por })),
+    (
+      (resultados.data ?? []) as Array<{
+        influencer_id: string;
+        revenue_cents: number;
+        orders: number;
+      }>
+    ).map((r) => ({ influencerId: r.influencer_id, centavos: r.revenue_cents, pedidos: r.orders })),
+    percentuais,
+  );
+}
+
 /** Dados de uma afiliada. Só o que ajuda a conversar: nada de nota interna nem token. */
 async function insumosIndividuais(
   supabase: Cliente,
@@ -55,7 +95,7 @@ async function insumosIndividuais(
   programa: Programa,
   desde: string,
 ) {
-  const [afiliada, evolucao, tarefas, feedbacks, resultados] = await Promise.all([
+  const [afiliada, evolucao, tarefas, feedbacks, resultados, pelaRede] = await Promise.all([
     supabase
       .from("influencers")
       .select(
@@ -93,6 +133,7 @@ async function insumosIndividuais(
           .order("period_end", { ascending: false })
           .limit(12)
       : Promise.resolve({ data: null }),
+    programa === "ONBIO" ? comissaoDoPeriodoPelaRede(supabase, tenantId, desde) : null,
   ]);
 
   if (!afiliada.data) throw new Error("Afiliada não encontrada neste ambiente.");
@@ -122,6 +163,18 @@ async function insumosIndividuais(
     })),
     ...(programa === "ONBIO"
       ? {
+          ...(pelaRede
+            ? {
+                comissao_no_periodo_pelas_regras_da_rede: (() => {
+                  const c = pelaRede.porPessoa.get(influencerId);
+                  return {
+                    total_reais: reais(c?.totalCentavos ?? 0),
+                    sobre_venda_propria_reais: reais(c?.propriaCentavos ?? 0),
+                    sobre_a_rede_reais: reais(c?.redeCentavos ?? 0),
+                  };
+                })(),
+              }
+            : {}),
           resultados_comerciais: (resultados.data ?? []).map(
             (r: {
               period_start: string;
@@ -136,7 +189,8 @@ async function insumosIndividuais(
               periodo: { de: r.period_start, ate: r.period_end },
               faturamento_reais: reais(r.revenue_cents),
               pedidos: r.orders,
-              comissao_reais: reais(r.commission_cents),
+              // Com rede, a comissão vem das regras (campo acima); o lançado vem zerado.
+              comissao_reais: pelaRede ? undefined : reais(r.commission_cents),
               meta_reais: reais(r.goal_cents),
               campanha: r.campaign,
               observacoes: r.notes,
@@ -154,7 +208,7 @@ async function insumosDaEquipe(
   programa: Programa,
   desde: string,
 ) {
-  const [afiliadas, registros, tarefas, resultados] = await Promise.all([
+  const [afiliadas, registros, tarefas, resultados, pelaRede] = await Promise.all([
     supabase
       .from("influencers")
       .select("id, full_name, status, level, progress_score, followers, created_at, data_source")
@@ -178,6 +232,7 @@ async function insumosDaEquipe(
           .eq("tenant_id", tenantId)
           .gte("period_end", desde.slice(0, 10))
       : Promise.resolve({ data: null }),
+    programa === "ONBIO" ? comissaoDoPeriodoPelaRede(supabase, tenantId, desde) : null,
   ]);
 
   const lista = (afiliadas.data ?? []) as Array<{
@@ -251,7 +306,10 @@ async function insumosDaEquipe(
     resultados_no_periodo: {
       faturamento_reais: reais(linhas.reduce((s, r) => s + r.revenue_cents, 0)),
       pedidos: linhas.reduce((s, r) => s + r.orders, 0),
-      comissao_reais: reais(linhas.reduce((s, r) => s + r.commission_cents, 0)),
+      comissao_reais: reais(
+        pelaRede ? pelaRede.totalCentavos : linhas.reduce((s, r) => s + r.commission_cents, 0),
+      ),
+      ...(pelaRede ? { comissao_calculada_pelas_regras_da_rede: true } : {}),
       lancamentos: linhas.length,
       campanhas: [...new Set(linhas.map((r) => r.campaign).filter(Boolean))].slice(0, 10),
     },
